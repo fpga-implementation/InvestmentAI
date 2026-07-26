@@ -17,7 +17,7 @@ app.add_middleware(
 
 # Initialize database tables on startup
 @app.on_event("startup")
-on_startup():
+def on_startup():
     init_db()
 
 # Include authentication routes
