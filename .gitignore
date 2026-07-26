@@ -1,0 +1,11 @@
+# Python & Virtual Environments
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local Database
+investment_ai.db
+
+# Environment Secrets
+.env
