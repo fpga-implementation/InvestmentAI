@@ -51,7 +51,7 @@ def request_account(data: AccountRequest, db: Session = Depends(get_db)):
     new_user = User(email=data.email, is_approved=False, is_admin=False)
     db.add(new_user)
     db.commit()
-    return {"message": f"Account request submitted. Notification sent to administrator ({ADMIN_EMAIL})."}
+    return {"message": "Account request submitted successfully. Pending administrator review."}
 
 @router.post("/admin/approve")
 def approve_user(data: AdminApproval, db: Session = Depends(get_db)):
