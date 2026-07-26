@@ -2,11 +2,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import init_db
 import auth
+import portfolio  # Import our new phase 2 logic
 
-# Initialize our InvestmentAI app
-app = FastAPI(title="InvestmentAI API", version="1.0.0")
+app = FastAPI(title="InvestmentAI Backend")
 
-# Allow frontend communication
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -15,14 +14,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Initialize database tables on startup
+# Attach both router modules
+app.include_router(auth.router)
+app.include_router(portfolio.router)
+
 @app.on_event("startup")
 def on_startup():
     init_db()
 
-# Include authentication routes
-app.include_router(auth.router)
-
 @app.get("/")
 def read_root():
-    return {"status": "online", "message": "Welcome to InvestmentAI Backend!"}
+    return {"message": "Welcome to InvestmentAI API"}
