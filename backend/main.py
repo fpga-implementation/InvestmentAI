@@ -1,8 +1,10 @@
-from fastapi import FastAPI
+import json
+import os
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from database import init_db
-import auth
-import portfolio  # Import our new phase 2 logic
+from pydantic import BaseModel
+import requests
+import yfinance as yf
 
 app = FastAPI(title="InvestmentAI Backend")
 
@@ -14,14 +16,489 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Attach both router modules
-app.include_router(auth.router)
-app.include_router(portfolio.router)
+DB_FILE = "database.json"
 
-@app.on_event("startup")
-def on_startup():
-    init_db()
+
+def load_db():
+  if not os.path.exists(DB_FILE):
+    return {}
+  try:
+    with open(DB_FILE, "r") as f:
+      return json.load(f)
+  except Exception:
+    return {}
+
+
+def save_db(data):
+  with open(DB_FILE, "w") as f:
+    json.dump(data, f, indent=4)
+
+
+# Pydantic Models
+class TickerItem(BaseModel):
+  symbol: str
+  shares: float = 0.0
+  buy_price: float = 0.0
+
+
+class StockItem(BaseModel):
+  symbol: str
+  shares: float = 0.0
+  avg_cost: float = 0.0
+  target_price: float = 0.0
+  notes: str = ""
+
+
+class CryptoItem(BaseModel):
+  symbol: str
+  units: float = 0.0
+  avg_cost: float = 0.0
+  target_price: float = 0.0
+  notes: str = ""
+
+
+class OptionItem(BaseModel):
+  symbol: str
+  type: str = "Call"
+  action: str = "Buy"
+  contracts: int = 0
+  strike: float = 0.0
+  cost: float = 0.0
+  premium: float = 0.0
+  expiration: str = ""
+  target: float = 0.0
+  notes: str = ""
+
+
+class WatchlistItem(BaseModel):
+  symbol: str
+  target_price: float = 0.0
+  notes: str = ""
+
+
+class PortfolioPayload(BaseModel):
+  username: str
+  tickers: list[TickerItem] = []
+
+
+class StocksPayload(BaseModel):
+  username: str
+  items: list[StockItem] = []
+
+
+class CryptoPayload(BaseModel):
+  username: str
+  items: list[CryptoItem] = []
+
+
+class OptionsPayload(BaseModel):
+  username: str
+  items: list[OptionItem] = []
+
+
+class WatchlistPayload(BaseModel):
+  username: str
+  items: list[WatchlistItem] = []
+
+
+# Configure requests Session with User-Agent for yfinance
+session = requests.Session()
+session.headers.update({
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,"
+        " like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    )
+})
+
 
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to InvestmentAI API"}
+  return {"status": "success", "message": "InvestmentAI Backend is running."}
+
+
+# --- NEW TICKERS ---
+@app.get("/portfolio/{username}/new-tickers")
+def get_new_tickers(username: str):
+  db = load_db()
+  return {
+      "status": "success",
+      "tickers": db.get(username, {}).get("new_tickers", []),
+  }
+
+
+@app.post("/portfolio/validate-and-save")
+def validate_and_save_new(payload: PortfolioPayload):
+  validated = []
+  for item in payload.tickers:
+    symbol = item.symbol.upper().strip()
+    if not symbol:
+      continue
+    try:
+      ticker_obj = yf.Ticker(symbol, session=session)
+      hist = ticker_obj.history(period="1d")
+      if hist.empty:
+        raise HTTPException(
+            status_code=400, detail=f"Invalid symbol '{symbol}'."
+        )
+      validated.append({
+          "symbol": symbol,
+          "shares": item.shares,
+          "buy_price": item.buy_price,
+      })
+    except HTTPException as he:
+      raise he
+    except Exception as e:
+      raise HTTPException(
+          status_code=400, detail=f"Error validating '{symbol}': {str(e)}"
+      )
+
+  db = load_db()
+  if payload.username not in db:
+    db[payload.username] = {}
+  db[payload.username]["new_tickers"] = validated
+  save_db(db)
+  return {"status": "success", "message": "New tickers saved successfully."}
+
+
+@app.delete("/portfolio/{username}/clear-new-tickers")
+def clear_new_tickers(username: str):
+  db = load_db()
+  if username in db:
+    db[username]["new_tickers"] = []
+    save_db(db)
+  return {"status": "success", "message": "Cleared successfully."}
+
+
+# --- STOCKS ---
+@app.get("/portfolio/{username}/stocks")
+def get_stocks(username: str):
+  db = load_db()
+  return {"status": "success", "items": db.get(username, {}).get("stocks", [])}
+
+
+@app.post("/portfolio/stocks/save")
+def save_stocks(payload: StocksPayload):
+  validated = []
+  for item in payload.items:
+    symbol = item.symbol.upper().strip()
+    if not symbol:
+      continue
+    try:
+      ticker_obj = yf.Ticker(symbol, session=session)
+      if ticker_obj.history(period="1d").empty:
+        raise HTTPException(
+            status_code=400, detail=f"Invalid stock symbol '{symbol}'."
+        )
+      validated.append(item.model_dump())
+    except HTTPException as he:
+      raise he
+    except Exception as e:
+      raise HTTPException(
+          status_code=400, detail=f"Error validating '{symbol}': {str(e)}"
+      )
+
+  db = load_db()
+  if payload.username not in db:
+    db[payload.username] = {}
+  db[payload.username]["stocks"] = validated
+  save_db(db)
+  return {"status": "success", "message": "Stocks saved successfully."}
+
+
+@app.delete("/portfolio/{username}/stocks")
+def clear_stocks(username: str):
+  db = load_db()
+  if username in db:
+    db[username]["stocks"] = []
+    save_db(db)
+  return {"status": "success", "message": "Stocks cleared."}
+
+
+# --- CRYPTO ---
+@app.get("/portfolio/{username}/crypto")
+def get_crypto(username: str):
+  db = load_db()
+  return {"status": "success", "items": db.get(username, {}).get("crypto", [])}
+
+
+@app.post("/portfolio/crypto/save")
+def save_crypto(payload: CryptoPayload):
+  validated = []
+  for item in payload.items:
+    symbol = item.symbol.upper().strip()
+    if not symbol:
+      continue
+    # Format crypto for Yahoo Finance if needed (e.g. BTC -> BTC-USD if missing dash)
+    query_sym = symbol if "-" in symbol else f"{symbol}-USD"
+    try:
+      ticker_obj = yf.Ticker(query_sym, session=session)
+      if ticker_obj.history(period="1d").empty:
+        # fallback to raw symbol
+        ticker_obj = yf.Ticker(symbol, session=session)
+        if ticker_obj.history(period="1d").empty:
+          raise HTTPException(
+              status_code=400, detail=f"Invalid crypto symbol '{symbol}'."
+          )
+      validated.append(item.model_dump())
+    except HTTPException as he:
+      raise he
+    except Exception as e:
+      raise HTTPException(
+          status_code=400, detail=f"Error validating '{symbol}': {str(e)}"
+      )
+
+  db = load_db()
+  if payload.username not in db:
+    db[payload.username] = {}
+  db[payload.username]["crypto"] = validated
+  save_db(db)
+  return {"status": "success", "message": "Crypto saved successfully."}
+
+
+@app.delete("/portfolio/{username}/crypto")
+def clear_crypto(username: str):
+  db = load_db()
+  if username in db:
+    db[username]["crypto"] = []
+    save_db(db)
+  return {"status": "success", "message": "Crypto cleared."}
+
+
+# --- OPTIONS ---
+@app.get("/portfolio/{username}/options")
+def get_options(username: str):
+  db = load_db()
+  return {"status": "success", "items": db.get(username, {}).get("options", [])}
+
+
+@app.post("/portfolio/options/save")
+def save_options(payload: OptionsPayload):
+  validated = [item.model_dump() for item in payload.items if item.symbol.strip()]
+  db = load_db()
+  if payload.username not in db:
+    db[payload.username] = {}
+  db[payload.username]["options"] = validated
+  save_db(db)
+  return {"status": "success", "message": "Options saved successfully."}
+
+
+@app.delete("/portfolio/{username}/options")
+def clear_options(username: str):
+  db = load_db()
+  if username in db:
+    db[username]["options"] = []
+    save_db(db)
+  return {"status": "success", "message": "Options cleared."}
+
+
+# --- WATCHLIST ---
+@app.get("/portfolio/{username}/watchlist")
+def get_watchlist(username: str):
+  db = load_db()
+  return {
+      "status": "success",
+      "items": db.get(username, {}).get("watchlist", []),
+  }
+
+
+@app.post("/portfolio/watchlist/save")
+def save_watchlist(payload: WatchlistPayload):
+  validated = []
+  for item in payload.items:
+    symbol = item.symbol.upper().strip()
+    if not symbol:
+      continue
+    try:
+      ticker_obj = yf.Ticker(symbol, session=session)
+      if ticker_obj.history(period="1d").empty:
+        # Try crypto format fallback
+        if yf.Ticker(f"{symbol}-USD", session=session).history(period="1d").empty:
+          raise HTTPException(
+              status_code=400, detail=f"Invalid watchlist symbol '{symbol}'."
+          )
+      validated.append(item.model_dump())
+    except HTTPException as he:
+      raise he
+    except Exception as e:
+      raise HTTPException(
+          status_code=400, detail=f"Error validating '{symbol}': {str(e)}"
+      )
+
+  db = load_db()
+  if payload.username not in db:
+    db[payload.username] = {}
+  db[payload.username]["watchlist"] = validated
+  save_db(db)
+  return {"status": "success", "message": "Watchlist saved successfully."}
+
+
+@app.delete("/portfolio/{username}/watchlist")
+def clear_watchlist(username: str):
+  db = load_db()
+  if username in db:
+    db[payload.username if 'payload' in locals() else username][
+        "watchlist"
+    ] = []  # safe clear
+    db[username]["watchlist"] = []
+    save_db(db)
+  return {"status": "success", "message": "Watchlist cleared."}
+
+
+# --- VALUATION TAB API ---
+@app.get("/portfolio/{username}/valuation")
+def get_valuation(username: str):
+  db = load_db()
+  user_data = db.get(username, {})
+  stocks = user_data.get("stocks", [])
+  crypto = user_data.get("crypto", [])
+  watchlist = user_data.get("watchlist", [])
+
+  holdings = []
+  total_value = 0.0
+  total_cost_basis = 0.0
+
+  # Process Stocks
+  for s in stocks:
+    sym = s.get("symbol")
+    shares = float(s.get("shares", 0))
+    avg_cost = float(s.get("avg_cost", 0))
+    if not sym or shares <= 0:
+      continue
+
+    try:
+      t = yf.Ticker(sym, session=session)
+      hist = t.history(period="2d")
+      if hist.empty:
+        current_price = avg_cost
+        prev_close = avg_cost
+      else:
+        current_price = float(hist["Close"].iloc[-1])
+        prev_close = (
+            float(hist["Close"].iloc[-2])
+            if len(hist) > 1
+            else current_price
+        )
+
+      cost_basis = shares * avg_cost
+      curr_val = shares * current_price
+      total_pnl = curr_val - cost_basis
+      total_return_pct = (total_pnl / cost_basis * 100) if cost_basis > 0 else 0
+      day_pnl = shares * (current_price - prev_close)
+
+      total_value += curr_val
+      total_cost_basis += cost_basis
+
+      holdings.append({
+          "ticker": sym,
+          "shares": shares,
+          "avg_cost": avg_cost,
+          "current_price": current_price,
+          "day_pnl": day_pnl,
+          "total_pnl": total_pnl,
+          "total_return_pct": total_return_pct,
+          "current_total_value": curr_val,
+      })
+    except Exception:
+      pass
+
+  # Process Crypto
+  for c in crypto:
+    sym = c.get("symbol")
+    units = float(c.get("units", 0))
+    avg_cost = float(c.get("avg_cost", 0))
+    if not sym or units <= 0:
+      continue
+
+    query_sym = sym if "-" in sym else f"{sym}-USD"
+    try:
+      t = yf.Ticker(query_sym, session=session)
+      hist = t.history(period="2d")
+      if hist.empty:
+        t = yf.Ticker(sym, session=session)
+        hist = t.history(period="2d")
+
+      if hist.empty:
+        current_price = avg_cost
+        prev_close = avg_cost
+      else:
+        current_price = float(hist["Close"].iloc[-1])
+        prev_close = (
+            float(hist["Close"].iloc[-2])
+            if len(hist) > 1
+            else current_price
+        )
+
+      cost_basis = units * avg_cost
+      curr_val = units * current_price
+      total_pnl = curr_val - cost_basis
+      total_return_pct = (total_pnl / cost_basis * 100) if cost_basis > 0 else 0
+      day_pnl = units * (current_price - prev_close)
+
+      total_value += curr_val
+      total_cost_basis += cost_basis
+
+      holdings.append({
+          "ticker": sym,
+          "shares": units,
+          "avg_cost": avg_cost,
+          "current_price": current_price,
+          "day_pnl": day_pnl,
+          "total_pnl": total_pnl,
+          "total_return_pct": total_return_pct,
+          "current_total_value": curr_val,
+      })
+    except Exception:
+      pass
+
+  unrealized_pnl = total_value - total_cost_basis
+  return_pct = (
+      (unrealized_pnl / total_cost_basis * 100) if total_cost_basis > 0 else 0
+  )
+
+  summary = {
+      "total_value": total_value,
+      "cost_basis": total_cost_basis,
+      "unrealized_pnl": unrealized_pnl,
+      "return_pct": return_pct,
+  }
+
+  # Process Watchlist live prices
+  watchlist_resolved = []
+  for w in watchlist:
+    sym = w.get("symbol")
+    target = float(w.get("target_price", 0))
+    notes = w.get("notes", "")
+    if not sym:
+      continue
+
+    curr_price = 0.0
+    try:
+      t = yf.Ticker(sym, session=session)
+      hist = t.history(period="1d")
+      if hist.empty:
+        t = yf.Ticker(f"{sym}-USD", session=session)
+        hist = t.history(period="1d")
+      if not hist.empty:
+        curr_price = float(hist["Close"].iloc[-1])
+    except Exception:
+      pass
+
+    watchlist_resolved.append({
+        "symbol": sym,
+        "target_price": target,
+        "current_price": curr_price,
+        "notes": notes,
+    })
+
+  return {
+      "status": "success",
+      "summary": summary,
+      "holdings": holdings,
+      "watchlist": watchlist_resolved,
+  }
+
+
+if __name__ == "__main__":
+  import uvicorn
+
+  uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)

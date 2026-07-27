@@ -3,141 +3,499 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InvestmentAI - Dashboard</title>
+    <title>InvestmentAI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-main: #030712;
+            --bg-surface: rgba(17, 24, 39, 0.75);
+            --bg-surface-hover: rgba(31, 41, 55, 0.85);
+            --bg-card: rgba(11, 15, 25, 0.85);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --border-glow: rgba(99, 102, 241, 0.3);
+            --text-primary: #f9fafb;
+            --text-secondary: #9ca3af;
+            --accent-primary: #6366f1; /* Indigo */
+            --accent-hover: #4f46e5;
+            --accent-green: #10b981;
+            --accent-red: #f43f5e;
+            --radius: 12px;
+        }
+
         body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: #121212; /* Dark Grey background */
-            color: #e0e0e0; 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+            background: radial-gradient(circle at top center, #0f172a 0%, var(--bg-main) 70%);
+            color: var(--text-primary); 
             margin: 0; 
-            padding: 20px; 
+            padding: 35px; 
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
         }
         
-        /* Header Grid Layout (Black Title Bar) */
+        /* Sleek Glass Header */
         .header { 
             display: grid; 
             grid-template-columns: 1fr auto 1fr;
             align-items: center; 
-            background: #000000; /* Black title bar */
-            padding: 15px 30px; 
-            border-radius: 8px; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.6); 
-            margin-bottom: 20px; 
-            border: 1px solid #333;
+            background: var(--bg-surface); 
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 20px 32px; 
+            border-radius: var(--radius); 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2); 
+            margin-bottom: 25px; 
+            border: 1px solid var(--border-color);
         }
         .header-left { justify-self: start; }
         .header-center { justify-self: center; display: flex; align-items: center; }
-        .header-right { justify-self: end; display: flex; align-items: center; }
+        .header-right { justify-self: end; display: flex; align-items: center; gap: 18px; }
         
-        .header h2 { margin: 0; color: #ffffff; font-size: 20px; }
-        .logout-btn { background: #c0392b; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        .logout-btn:hover { background: #e74c3c; }
+        .header h2 { margin: 0; color: #ffffff; font-size: 20px; font-weight: 700; letter-spacing: -0.03em; }
         
-        /* Collapsible Section Styles (Reverted Input Tickers Bar to #1e1e1e) */
-        .collapsible { 
-            background-color: #1e1e1e; /* Reverted to original dark theme color */
-            color: #ffffff; 
+        .logout-btn { 
+            background: rgba(244, 63, 94, 0.1); 
+            color: var(--accent-red); 
+            border: 1px solid rgba(244, 63, 94, 0.25); 
+            padding: 8px 18px; 
+            border-radius: 8px; 
             cursor: pointer; 
-            padding: 15px; 
+            font-weight: 600; 
+            font-size: 13px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .logout-btn:hover { background: var(--accent-red); color: white; box-shadow: 0 0 15px rgba(244, 63, 94, 0.4); }
+        
+        /* Main Collapsible Section Styles */
+        .collapsible { 
+            background-color: var(--bg-surface); 
+            backdrop-filter: blur(12px);
+            color: var(--text-primary); 
+            cursor: pointer; 
+            padding: 20px 24px; 
             width: 100%; 
-            border: 1px solid #333; 
+            border: 1px solid var(--border-color); 
             text-align: left; 
             outline: none; 
-            font-size: 18px; 
-            border-radius: 5px; 
-            margin-bottom: 5px; 
+            font-size: 16px; 
+            border-radius: var(--radius); 
+            margin-bottom: 10px; 
             display: flex; 
             justify-content: space-between;
-            font-weight: bold;
+            align-items: center;
+            font-weight: 600;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+            transition: all 0.25s ease;
         }
-        .collapsible:hover { background-color: #2a2a2a; }
-        .collapsible:after { content: '\002B'; font-weight: bold; color: #3498db; }
-        .active:after { content: "\2212"; }
+        .collapsible:hover { background-color: var(--bg-surface-hover); border-color: var(--border-glow); }
+        .collapsible:after { content: '+'; font-weight: 600; color: var(--accent-primary); font-size: 20px; transition: transform 0.25s ease; }
+        .collapsible.active:after { content: "−"; }
+        
         .content { 
-            padding: 0 18px; 
+            padding: 0 24px; 
             max-height: 0; 
             overflow: hidden; 
-            transition: max-height 0.2s ease-out; 
-            background-color: #181818; /* Dark grey content background */
-            border-radius: 0 0 5px 5px; 
-            margin-bottom: 15px; 
-            border: 1px solid #333;
+            transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1); 
+            background-color: var(--bg-card); 
+            border-radius: 0 0 var(--radius) var(--radius); 
+            margin-bottom: 20px; 
+            border: 1px solid var(--border-color);
+            border-top: none;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* Nested Sub-Collapsible Styles */
+        .sub-collapsible { 
+            background-color: rgba(17, 24, 39, 0.6); 
+            color: var(--text-primary); 
+            cursor: pointer; 
+            padding: 16px 20px; 
+            width: 100%; 
+            border: 1px solid var(--border-color); 
+            text-align: left; 
+            outline: none; 
+            font-size: 15px; 
+            border-radius: 10px; 
+            margin-top: 24px; 
+            margin-bottom: 10px; 
+            display: flex; 
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        .sub-collapsible:hover { background-color: rgba(31, 41, 55, 0.8); border-color: var(--border-glow); }
+        .sub-collapsible:after { content: '+'; font-weight: 600; color: var(--accent-primary); font-size: 18px; }
+        .sub-collapsible.active:after { content: "−"; }
+        
+        .sub-content { 
+            padding: 0 20px; 
+            max-height: 0; 
+            overflow: hidden; 
+            transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1); 
+            background-color: rgba(7, 10, 18, 0.9); 
+            border-radius: 0 0 10px 10px; 
+            border: 1px solid var(--border-color);
             border-top: none;
         }
         
-        /* Table Styles */
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th { color: #888; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
-        th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #2a2a2a; }
-        input[type="text"], input[type="number"] { 
-            width: 100%; 
-            padding: 9px; 
-            box-sizing: border-box; 
-            background: #2c2c2c; 
-            border: 1px solid #444; 
-            color: #fff; 
-            border-radius: 4px; 
+        /* Portfolio Sub-Tabs */
+        .portfolio-tabs {
+            display: flex;
+            gap: 10px;
+            margin-top: 24px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0;
         }
-        input:focus { border-color: #3498db; outline: none; }
+        .portfolio-tab {
+            padding: 10px 22px;
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-secondary);
+            border: 1px solid transparent;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.2s ease;
+        }
+        .portfolio-tab:hover { color: var(--text-primary); background: rgba(255, 255, 255, 0.05); }
+        .portfolio-tab.active {
+            background: var(--bg-card);
+            color: #818cf8;
+            border-color: var(--border-color);
+            border-bottom-color: var(--bg-card);
+            box-shadow: 0 -2px 10px rgba(99, 102, 241, 0.15);
+        }
+        .portfolio-pane {
+            display: none;
+            padding: 24px 0;
+        }
+        .portfolio-pane.active {
+            display: block;
+        }
+
+        /* Responsive Table Container with Custom Visible Scrollbar */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 12px;
+            padding-bottom: 8px;
+        }
+        .table-container::-webkit-scrollbar { height: 6px; }
+        .table-container::-webkit-scrollbar-track { background: var(--bg-surface); border-radius: 4px; }
+        .table-container::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
+        .table-container::-webkit-scrollbar-thumb:hover { background: var(--accent-primary); }
+
+        /* Table & Input Styles */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; table-layout: fixed; }
+        th { color: var(--text-secondary); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; padding: 14px 12px; border-bottom: 1px solid var(--border-color); }
+        th, td { padding: 14px 12px; text-align: left; border-bottom: 1px solid rgba(255, 255, 255, 0.03); overflow: hidden; }
+        
+        /* Column Widths */
+        #stocks-table th, #stocks-table td,
+        #crypto-table th, #crypto-table td { width: 12.5%; }
+        #stocks-table th:last-child, #stocks-table td:last-child,
+        #crypto-table th:last-child, #crypto-table td:last-child { width: 50%; }
+
+        #watchlist-table th, #watchlist-table td { width: 20%; }
+        #watchlist-table th:last-child, #watchlist-table td:last-child { width: 60%; }
+
+        input[type="text"], input[type="number"], input[type="date"], select { 
+            width: 100%; 
+            padding: 10px 14px; 
+            box-sizing: border-box; 
+            background: rgba(15, 23, 42, 0.9); 
+            border: 1px solid var(--border-color); 
+            color: #fff; 
+            border-radius: 8px; 
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s ease;
+        }
+        input:focus, select:focus { border-color: var(--accent-primary); outline: none; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); }
         
         /* Button Styles */
-        .controls { padding: 20px 0; display: flex; justify-content: flex-end; gap: 10px; }
-        .btn-clear { background: #4f5b66; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        .btn-clear:hover { background: #65737e; }
-        .btn-save { background: #27ae60; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        .btn-save:hover { background: #2ecc71; }
+        .controls { padding: 20px 0; display: flex; justify-content: flex-end; gap: 12px; }
+        .btn-clear { 
+            background: rgba(255, 255, 255, 0.04); 
+            color: var(--text-secondary); 
+            border: 1px solid var(--border-color); 
+            padding: 10px 22px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            font-size: 13px;
+            transition: all 0.2s ease;
+        }
+        .btn-clear:hover { background: rgba(255, 255, 255, 0.08); color: var(--text-primary); }
         
-        #message-box { padding: 12px; margin-top: 15px; display: none; border-radius: 4px; font-size: 14px; }
-        .success { background-color: #1e3a2f; color: #2ecc71; border: 1px solid #27ae60; }
-        .error { background-color: #3c1f1f; color: #e74c3c; border: 1px solid #c0392b; }
+        .btn-save { 
+            background: var(--accent-green); 
+            color: white; 
+            border: none; 
+            padding: 10px 22px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            font-size: 13px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+            transition: all 0.2s ease;
+        }
+        .btn-save:hover { background: #059669; box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4); transform: translateY(-1px); }
+
+        .btn-run { 
+            background: var(--accent-green); 
+            color: white; 
+            border: none; 
+            padding: 10px 22px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            font-size: 13px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+            transition: all 0.2s ease;
+        }
+        .btn-run:hover { background: #059669; box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4); transform: translateY(-1px); }
+        
+        .message-box { padding: 14px 18px; margin-top: 14px; display: none; border-radius: 8px; font-size: 13px; font-weight: 500; }
+        .success { background-color: rgba(16, 185, 129, 0.12); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.25); }
+        .error { background-color: rgba(244, 63, 94, 0.12); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.25); }
+        
+        /* Value Tab Summary Bar */
+        .summary-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            background: rgba(17, 24, 39, 0.6);
+            backdrop-filter: blur(12px);
+            padding: 24px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            margin-bottom: 24px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+        .summary-card h4 { margin: 0 0 8px 0; color: var(--text-secondary); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+        .summary-card p { margin: 0; font-size: 22px; font-weight: 700; color: #fff; letter-spacing: -0.02em; }
     </style>
 </head>
 <body>
 
-    <!-- Title Bar with Custom Centered App Logo -->
+    <!-- Title Bar -->
     <div class="header">
         <div class="header-left">
-            <h2>InvestmentAI Dashboard</h2>
+            <h2>InvestmentAI</h2>
         </div>
         
         <div class="header-center">
-            <!-- Place your logo.png inside the frontend folder -->
             <img src="logo.png" alt="InvestmentAI Logo" style="height: 32px; width: auto; object-fit: contain;">
         </div>
         
         <div class="header-right">
-            <span id="welcome-text" style="margin-right: 15px; font-weight: bold; font-size: 14px; color: #bbb;"></span>
+            <span id="welcome-text" style="font-weight: 500; font-size: 13px; color: #ffffff;"></span>
             <button class="logout-btn" onclick="logout()">Log Out</button>
         </div>
     </div>
 
-    <!-- Phase 2: Input Tickers Group -->
-    <button class="collapsible">Input Tickers</button>
-    <div class="content">
+    <!-- Main Parent Collapsible: Input Tickers -->
+    <button class="collapsible" id="btn-main-input">Input Tickers</button>
+    <div class="content" id="content-main-input">
         
-        <h3 style="margin-top:20px; color: #ffffff;">New Tickers</h3>
-        <p style="font-size: 14px; color: #888;">Enter up to 5 tickers below. Data is validated against live market data and saved securely.</p>
-        
-        <div id="message-box"></div>
-
-        <table id="new-tickers-table">
-            <thead>
-                <tr>
-                    <th>Ticker Symbol (e.g. CRM)</th>
-                    <th>Shares</th>
-                    <th>Buy Price ($)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- 5 Rows generated by Javascript -->
-            </tbody>
-        </table>
-        
-        <div class="controls">
-            <button class="btn-clear" onclick="clearNewTickers()">Clear</button>
-            <button class="btn-save" onclick="validateAndSave()">Validate & Save</button>
+        <!-- Nested Sub-Collapsible: New Tickers -->
+        <button class="sub-collapsible" id="btn-sub-new">New Tickers</button>
+        <div class="sub-content" id="content-sub-new">
+            <p style="font-size: 13px; color: var(--text-secondary); margin-top: 14px; margin-bottom: 16px;">Enter up to 5 tickers below. Data is validated against live market data and saved securely.</p>
+            <div id="msg-new-tickers" class="message-box"></div>
+            <table id="new-tickers-table">
+                <thead>
+                    <tr>
+                        <th>Ticker Symbol (e.g. CRM)</th>
+                        <th>Shares</th>
+                        <th>Buy Price ($)</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <div class="controls">
+                <button class="btn-clear" onclick="clearTable('new-tickers-table', 'new-tickers')">Clear</button>
+                <button class="btn-save" onclick="saveSection('new-tickers')">Validate & Save</button>
+            </div>
         </div>
+
+        <!-- Nested Sub-Collapsible: Portfolio -->
+        <button class="sub-collapsible" id="btn-sub-portfolio" style="margin-bottom: 15px;">Portfolio</button>
+        <div class="sub-content" id="content-sub-portfolio" style="margin-bottom: 15px;">
+            <!-- Portfolio Sub-Tabs -->
+            <div class="portfolio-tabs">
+                <button class="portfolio-tab" data-pane="pane-stocks" onclick="switchPortfolioTab(event, 'pane-stocks')">Stocks</button>
+                <button class="portfolio-tab" data-pane="pane-crypto" onclick="switchPortfolioTab(event, 'pane-crypto')">Crypto</button>
+                <button class="portfolio-tab" data-pane="pane-options" onclick="switchPortfolioTab(event, 'pane-options')">Options</button>
+                <button class="portfolio-tab" data-pane="pane-watchlist" onclick="switchPortfolioTab(event, 'pane-watchlist')">Watchlist</button>
+                <button class="portfolio-tab" data-pane="pane-value" onclick="switchPortfolioTab(event, 'pane-value')">Value</button>
+            </div>
+
+            <!-- STOCKS TAB -->
+            <div id="pane-stocks" class="portfolio-pane">
+                <div id="msg-stocks" class="message-box"></div>
+                <table id="stocks-table">
+                    <thead>
+                        <tr>
+                            <th>Ticker</th>
+                            <th>Shares</th>
+                            <th>Avg Cost ($)</th>
+                            <th>Target Price ($)</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <div class="controls">
+                    <button class="btn-clear" onclick="clearTable('stocks-table', 'stocks')">Clear</button>
+                    <button class="btn-save" onclick="saveSection('stocks')">Validate & Save</button>
+                </div>
+            </div>
+
+            <!-- CRYPTO TAB -->
+            <div id="pane-crypto" class="portfolio-pane">
+                <div id="msg-crypto" class="message-box"></div>
+                <table id="crypto-table">
+                    <thead>
+                        <tr>
+                            <th>Ticker</th>
+                            <th>Units</th>
+                            <th>Avg Cost ($)</th>
+                            <th>Target Price ($)</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <div class="controls">
+                    <button class="btn-clear" onclick="clearTable('crypto-table', 'crypto')">Clear</button>
+                    <button class="btn-save" onclick="saveSection('crypto')">Validate & Save</button>
+                </div>
+            </div>
+
+            <!-- OPTIONS TAB -->
+            <div id="pane-options" class="portfolio-pane">
+                <div id="msg-options" class="message-box"></div>
+                <div class="table-container">
+                    <table id="options-table" style="min-width: 1100px; table-layout: auto;">
+                        <thead>
+                            <tr>
+                                <th style="width: 90px;">Ticker</th>
+                                <th style="width: 80px;">Type</th>
+                                <th style="width: 80px;">Action</th>
+                                <th style="width: 85px;">Contracts</th>
+                                <th style="width: 95px;">Strike ($)</th>
+                                <th style="width: 90px;">Cost ($)</th>
+                                <th style="width: 95px;">Premium ($)</th>
+                                <th style="width: 125px;">Expiration</th>
+                                <th style="width: 90px;">Target ($)</th>
+                                <th style="width: 220px;">Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="controls">
+                    <button class="btn-clear" onclick="clearTable('options-table', 'options')">Clear</button>
+                    <button class="btn-save" onclick="saveSection('options')">Validate & Save</button>
+                </div>
+            </div>
+
+            <!-- WATCHLIST TAB -->
+            <div id="pane-watchlist" class="portfolio-pane">
+                <div id="msg-watchlist" class="message-box"></div>
+                <table id="watchlist-table">
+                    <thead>
+                        <tr>
+                            <th>Ticker</th>
+                            <th>Target Price ($)</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <div class="controls">
+                    <button class="btn-clear" onclick="clearTable('watchlist-table', 'watchlist')">Clear</button>
+                    <button class="btn-save" onclick="saveSection('watchlist')">Validate & Save</button>
+                </div>
+            </div>
+
+            <!-- VALUE TAB -->
+            <div id="pane-value" class="portfolio-pane">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <h3 style="margin: 0; color: #fff; font-size: 16px; font-weight: 600;">Portfolio Valuation</h3>
+                    <button class="btn-run" onclick="loadValuationTab(true)">Run</button>
+                </div>
+                
+                <div style="background-color: rgba(245, 158, 11, 0.08); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.25); padding: 14px 18px; border-radius: 8px; margin-bottom: 24px; font-size: 13px; font-weight: 500;">
+                    <strong>Warning:</strong> Options contracts are currently excluded from total portfolio valuation calculations.
+                </div>
+
+                <!-- Summary Bar -->
+                <div class="summary-bar">
+                    <div class="summary-card">
+                        <h4>Total Value</h4>
+                        <p id="sum-total-value">$0.00</p>
+                    </div>
+                    <div class="summary-card">
+                        <h4>Cost Basis</h4>
+                        <p id="sum-cost-basis">$0.00</p>
+                    </div>
+                    <div class="summary-card">
+                        <h4>Unrealized P&L</h4>
+                        <p id="sum-unrealized-pnl">$0.00</p>
+                    </div>
+                    <div class="summary-card">
+                        <h4>Return %</h4>
+                        <p id="sum-return-pct">0.00%</p>
+                    </div>
+                </div>
+
+                <h4 style="color: #fff; margin-top: 32px; font-size: 15px; font-weight: 600;">Active Holdings</h4>
+                <div class="table-container">
+                    <table id="val-holdings-table" style="min-width: 950px;">
+                        <thead>
+                            <tr>
+                                <th>Ticker</th>
+                                <th>Shares / Units</th>
+                                <th>Avg Cost</th>
+                                <th>Current Price</th>
+                                <th>Day P&L</th>
+                                <th>Total P&L</th>
+                                <th>Total Return %</th>
+                                <th>Current Total Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="8" style="text-align: center; color: var(--text-secondary); padding: 30px;">Click 'Run' to load valuation.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h4 style="color: #fff; margin-top: 32px; font-size: 15px; font-weight: 600;">Watchlist Summary</h4>
+                <table id="val-watchlist-table">
+                    <thead>
+                        <tr>
+                            <th>Ticker</th>
+                            <th>Target Price</th>
+                            <th>Current Price</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 30px;">Click 'Run' to load watchlist.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
+
+    <!-- Footer Disclaimer -->
+    <footer style="text-align: center; margin-top: 40px; padding: 20px 0; border-top: 1px solid var(--border-color); color: var(--text-secondary); font-size: 11px; letter-spacing: 0.02em;">
+        Disclaimer: InvestmentAI is for informational and portfolio-tracking purposes only and does not constitute financial or investment advice.
+    </footer>
 
     <script>
         const API_URL = "http://127.0.0.1:8000";
@@ -146,28 +504,115 @@
         if (!currentUser) {
             window.location.href = "index.html";
         } else {
-            document.getElementById("welcome-text").innerText = `Logged in as: ${currentUser}`;
-            generateTableRows();
-            loadSavedTickers();
+            document.getElementById("welcome-text").innerHTML = `Logged in as: <span style="color: #fbbf24;">${currentUser}</span>`;
+            initTables();
+            restoreState();
         }
 
-        var coll = document.getElementsByClassName("collapsible");
-        for (let i = 0; i < coll.length; i++) {
-            coll[i].addEventListener("click", function() {
+        // Main Accordion functionality with state persistence
+        var mainColl = document.getElementById("btn-main-input");
+        mainColl.addEventListener("click", function() {
+            this.classList.toggle("active");
+            var content = this.nextElementSibling;
+            let isOpen = this.classList.contains("active");
+            localStorage.setItem("dash_main_open", isOpen);
+            if (content.style.maxHeight){
+                content.style.maxHeight = null;
+            } else {
+                content.style.maxHeight = content.scrollHeight + 6000 + "px";
+            }
+        });
+
+        // Nested Sub-Accordion functionality with state persistence
+        setupSubAccordion("btn-sub-new", "dash_sub_new_open");
+        setupSubAccordion("btn-sub-portfolio", "dash_sub_portfolio_open");
+
+        function setupSubAccordion(btnId, storageKey) {
+            let btn = document.getElementById(btnId);
+            btn.addEventListener("click", function(e) {
+                e.stopPropagation();
                 this.classList.toggle("active");
                 var content = this.nextElementSibling;
+                let isOpen = this.classList.contains("active");
+                localStorage.setItem(storageKey, isOpen);
                 if (content.style.maxHeight){
                     content.style.maxHeight = null;
                 } else {
-                    content.style.maxHeight = content.scrollHeight + 100 + "px";
+                    content.style.maxHeight = content.scrollHeight + 3000 + "px";
+                    let parentContent = this.closest('.content');
+                    if(parentContent) {
+                        parentContent.style.maxHeight = (parseInt(parentContent.style.maxHeight || 0) + content.scrollHeight + 3000) + "px";
+                    }
                 }
             });
         }
 
-        function generateTableRows() {
-            const tbody = document.querySelector("#new-tickers-table tbody");
+        // Portfolio Sub-Tab Switching with state persistence
+        function switchPortfolioTab(evt, paneId) {
+            const panes = document.getElementsByClassName("portfolio-pane");
+            for (let pane of panes) pane.classList.remove("active");
+
+            const tabs = document.getElementsByClassName("portfolio-tab");
+            for (let tab of tabs) tab.classList.remove("active");
+
+            document.getElementById(paneId).classList.add("active");
+            if (evt && evt.currentTarget) {
+                evt.currentTarget.classList.add("active");
+            } else {
+                let tabBtn = document.querySelector(`.portfolio-tab[data-pane="${paneId}"]`);
+                if(tabBtn) tabBtn.classList.add("active");
+            }
+
+            localStorage.setItem("dash_active_pane", paneId);
+
+            if (paneId === 'pane-value') {
+                let cached = localStorage.getItem(`dash_valuation_cache_${currentUser}`);
+                if (cached && !document.querySelector("#val-holdings-table tbody tr td strong")) {
+                    try {
+                        renderValuationData(JSON.parse(cached));
+                    } catch(e) {}
+                }
+            }
+
+            let parentSubContent = document.getElementById("content-sub-portfolio");
+            let parentMainContent = document.getElementById("content-main-input");
+            if(parentSubContent) parentSubContent.style.maxHeight = parentSubContent.scrollHeight + 1000 + "px";
+            if(parentMainContent) parentMainContent.style.maxHeight = parentMainContent.scrollHeight + 1000 + "px";
+        }
+
+        // Restore UI state after refresh
+        function restoreState() {
+            if (localStorage.getItem("dash_main_open") === "true") {
+                mainColl.classList.add("active");
+                let content = document.getElementById("content-main-input");
+                content.style.maxHeight = "6000px";
+            }
+            if (localStorage.getItem("dash_sub_new_open") === "true") {
+                let btn = document.getElementById("btn-sub-new");
+                btn.classList.add("active");
+                btn.nextElementSibling.style.maxHeight = "3000px";
+            }
+            if (localStorage.getItem("dash_sub_portfolio_open") === "true") {
+                let btn = document.getElementById("btn-sub-portfolio");
+                btn.classList.add("active");
+                btn.nextElementSibling.style.maxHeight = "3000px";
+            }
+            let savedPane = localStorage.getItem("dash_active_pane") || "pane-stocks";
+            switchPortfolioTab(null, savedPane);
+
+            let cached = localStorage.getItem(`dash_valuation_cache_${currentUser}`);
+            if (cached) {
+                try {
+                    renderValuationData(JSON.parse(cached));
+                } catch(e) {}
+            }
+        }
+
+        // Generate 5 rows for each table dynamically and load saved data
+        function initTables() {
+            const ntBody = document.querySelector("#new-tickers-table tbody");
             for(let i=0; i<5; i++) {
-                tbody.innerHTML += `
+                ntBody.innerHTML += `
                     <tr>
                         <td><input type="text" class="ticker-symbol" placeholder="Symbol" style="text-transform:uppercase"></td>
                         <td><input type="number" class="ticker-shares" placeholder="0.00" step="0.01"></td>
@@ -175,93 +620,379 @@
                     </tr>
                 `;
             }
+
+            const stBody = document.querySelector("#stocks-table tbody");
+            for(let i=0; i<5; i++) {
+                stBody.innerHTML += `
+                    <tr>
+                        <td><input type="text" class="stocks-symbol" placeholder="Symbol" style="text-transform:uppercase"></td>
+                        <td><input type="number" class="stocks-shares" placeholder="0.00" step="0.01"></td>
+                        <td><input type="number" class="stocks-cost" placeholder="0.00" step="0.01"></td>
+                        <td><input type="number" class="stocks-target" placeholder="0.00" step="0.01"></td>
+                        <td><input type="text" class="stocks-notes" placeholder="Notes"></td>
+                    </tr>
+                `;
+            }
+
+            const crBody = document.querySelector("#crypto-table tbody");
+            for(let i=0; i<5; i++) {
+                crBody.innerHTML += `
+                    <tr>
+                        <td><input type="text" class="crypto-symbol" placeholder="Symbol" style="text-transform:uppercase"></td>
+                        <td><input type="number" class="crypto-units" placeholder="0.00" step="0.0001"></td>
+                        <td><input type="number" class="crypto-cost" placeholder="0.00" step="0.01"></td>
+                        <td><input type="number" class="crypto-target" placeholder="0.00" step="0.01"></td>
+                        <td><input type="text" class="crypto-notes" placeholder="Notes"></td>
+                    </tr>
+                `;
+            }
+
+            const opBody = document.querySelector("#options-table tbody");
+            for(let i=0; i<5; i++) {
+                opBody.innerHTML += `
+                    <tr>
+                        <td><input type="text" class="options-symbol" placeholder="Symbol" style="text-transform:uppercase"></td>
+                        <td><select class="options-type"><option value="Call">Call</option><option value="Put">Put</option></select></td>
+                        <td><select class="options-action"><option value="Buy">Buy</option><option value="Sell">Sell</option></select></td>
+                        <td><input type="number" class="options-contracts" placeholder="1" step="1"></td>
+                        <td><input type="number" class="options-strike" placeholder="0.00" step="0.01"></td>
+                        <td><input type="number" class="options-cost" placeholder="0.00" step="0.01"></td>
+                        <td><input type="number" class="options-premium" placeholder="0.00" step="0.01"></td>
+                        <td><input type="date" class="options-expiration"></td>
+                        <td><input type="number" class="options-target" placeholder="0.00" step="0.01"></td>
+                        <td><input type="text" class="options-notes" placeholder="Notes"></td>
+                    </tr>
+                `;
+            }
+
+            const wtBody = document.querySelector("#watchlist-table tbody");
+            for(let i=0; i<5; i++) {
+                wtBody.innerHTML += `
+                    <tr>
+                        <td><input type="text" class="watchlist-symbol" placeholder="Symbol" style="text-transform:uppercase"></td>
+                        <td><input type="number" class="watchlist-target" placeholder="0.00" step="0.01"></td>
+                        <td><input type="text" class="watchlist-notes" placeholder="Notes"></td>
+                    </tr>
+                `;
+            }
+
+            loadAllSavedData();
         }
 
-        async function loadSavedTickers() {
+        async function loadAllSavedData() {
             try {
-                const response = await fetch(`${API_URL}/portfolio/${currentUser}/new-tickers`);
-                const data = await response.json();
-                
+                const res = await fetch(`${API_URL}/portfolio/${currentUser}/new-tickers`);
+                const data = await res.json();
                 if(data.status === "success" && data.tickers.length > 0) {
                     const symbols = document.getElementsByClassName("ticker-symbol");
                     const shares = document.getElementsByClassName("ticker-shares");
                     const prices = document.getElementsByClassName("ticker-price");
-                    
-                    data.tickers.forEach((ticker, index) => {
-                        if(index < 5) {
-                            symbols[index].value = ticker.symbol;
-                            shares[index].value = ticker.shares > 0 ? ticker.shares : "";
-                            prices[index].value = ticker.buy_price > 0 ? ticker.buy_price : "";
+                    data.tickers.forEach((t, i) => {
+                        if(i < 5) {
+                            symbols[i].value = t.symbol;
+                            shares[i].value = t.shares > 0 ? t.shares : "";
+                            prices[i].value = t.buy_price > 0 ? t.buy_price : "";
                         }
                     });
                 }
-            } catch (error) {
-                console.error("Failed to load tickers:", error);
+            } catch (e) { console.error(e); }
+
+            try {
+                const res = await fetch(`${API_URL}/portfolio/${currentUser}/stocks`);
+                const data = await res.json();
+                if(data.status === "success" && data.items.length > 0) {
+                    const syms = document.getElementsByClassName("stocks-symbol");
+                    const shares = document.getElementsByClassName("stocks-shares");
+                    const costs = document.getElementsByClassName("stocks-cost");
+                    const targets = document.getElementsByClassName("stocks-target");
+                    const notes = document.getElementsByClassName("stocks-notes");
+                    data.items.forEach((item, i) => {
+                        if(i < 5) {
+                            syms[i].value = item.symbol;
+                            shares[i].value = item.shares > 0 ? item.shares : "";
+                            costs[i].value = item.avg_cost > 0 ? item.avg_cost : "";
+                            targets[i].value = item.target_price > 0 ? item.target_price : "";
+                            notes[i].value = item.notes || "";
+                        }
+                    });
+                }
+            } catch (e) { console.error(e); }
+
+            try {
+                const res = await fetch(`${API_URL}/portfolio/${currentUser}/crypto`);
+                const data = await res.json();
+                if(data.status === "success" && data.items.length > 0) {
+                    const syms = document.getElementsByClassName("crypto-symbol");
+                    const units = document.getElementsByClassName("crypto-units");
+                    const costs = document.getElementsByClassName("crypto-cost");
+                    const targets = document.getElementsByClassName("crypto-target");
+                    const notes = document.getElementsByClassName("crypto-notes");
+                    data.items.forEach((item, i) => {
+                        if(i < 5) {
+                            syms[i].value = item.symbol;
+                            units[i].value = item.units > 0 ? item.units : "";
+                            costs[i].value = item.avg_cost > 0 ? item.avg_cost : "";
+                            targets[i].value = item.target_price > 0 ? item.target_price : "";
+                            notes[i].value = item.notes || "";
+                        }
+                    });
+                }
+            } catch (e) { console.error(e); }
+
+            try {
+                const res = await fetch(`${API_URL}/portfolio/${currentUser}/options`);
+                const data = await res.json();
+                if(data.status === "success" && data.items.length > 0) {
+                    const syms = document.getElementsByClassName("options-symbol");
+                    const types = document.getElementsByClassName("options-type");
+                    const actions = document.getElementsByClassName("options-action");
+                    const contracts = document.getElementsByClassName("options-contracts");
+                    const strikes = document.getElementsByClassName("options-strike");
+                    const costs = document.getElementsByClassName("options-cost");
+                    const premiums = document.getElementsByClassName("options-premium");
+                    const expirations = document.getElementsByClassName("options-expiration");
+                    const targets = document.getElementsByClassName("options-target");
+                    const notes = document.getElementsByClassName("options-notes");
+                    data.items.forEach((item, i) => {
+                        if(i < 5) {
+                            syms[i].value = item.symbol;
+                            types[i].value = item.type;
+                            actions[i].value = item.action;
+                            contracts[i].value = item.contracts > 0 ? item.contracts : "";
+                            strikes[i].value = item.strike > 0 ? item.strike : "";
+                            costs[i].value = item.cost > 0 ? item.cost : "";
+                            premiums[i].value = item.premium > 0 ? item.premium : "";
+                            expirations[i].value = item.expiration || "";
+                            targets[i].value = item.target > 0 ? item.target : "";
+                            notes[i].value = item.notes || "";
+                        }
+                    });
+                }
+            } catch (e) { console.error(e); }
+
+            try {
+                const res = await fetch(`${API_URL}/portfolio/${currentUser}/watchlist`);
+                const data = await res.json();
+                if(data.status === "success" && data.items.length > 0) {
+                    const syms = document.getElementsByClassName("watchlist-symbol");
+                    const targets = document.getElementsByClassName("watchlist-target");
+                    const notes = document.getElementsByClassName("watchlist-notes");
+                    data.items.forEach((item, i) => {
+                        if(i < 5) {
+                            syms[i].value = item.symbol;
+                            targets[i].value = item.target_price > 0 ? item.target_price : "";
+                            notes[i].value = item.notes || "";
+                        }
+                    });
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        async function clearTable(tableId, sectionKey) {
+            const inputs = document.querySelectorAll(`#${tableId} input, #${tableId} select`);
+            inputs.forEach(input => input.value = "");
+            
+            try {
+                await fetch(`${API_URL}/portfolio/${currentUser}/${sectionKey}`, { method: "DELETE" });
+                showMsg(sectionKey, "success", "Section cleared successfully.");
+                if(sectionKey === 'stocks' || sectionKey === 'crypto' || sectionKey === 'watchlist') {
+                    localStorage.removeItem(`dash_valuation_cache_${currentUser}`);
+                }
+            } catch (e) {
+                showMsg(sectionKey, "error", "Failed to clear from database.");
             }
         }
 
-        async function validateAndSave() {
-            const symbols = document.getElementsByClassName("ticker-symbol");
-            const shares = document.getElementsByClassName("ticker-shares");
-            const prices = document.getElementsByClassName("ticker-price");
-            
-            let payload = { username: currentUser, tickers: [] };
+        async function saveSection(sectionKey) {
+            let payload = { username: currentUser, items: [] };
             let hasInput = false;
 
-            for(let i=0; i<5; i++) {
-                if(symbols[i].value.trim() !== "") {
-                    hasInput = true;
-                    payload.tickers.push({
-                        symbol: symbols[i].value.toUpperCase().trim(),
-                        shares: parseFloat(shares[i].value) || 0,
-                        buy_price: parseFloat(prices[i].value) || 0
+            if (sectionKey === 'new-tickers') {
+                let symbols = document.getElementsByClassName('ticker-symbol');
+                let shares = document.getElementsByClassName('ticker-shares');
+                let prices = document.getElementsByClassName('ticker-price');
+                let tickersList = [];
+                for(let i=0; i<symbols.length; i++) {
+                    if(symbols[i].value.trim() !== "") {
+                        hasInput = true;
+                        tickersList.push({
+                            symbol: symbols[i].value.toUpperCase().trim(),
+                            shares: parseFloat(shares[i].value) || 0,
+                            buy_price: parseFloat(prices[i].value) || 0
+                        });
+                    }
+                }
+                if(!hasInput) { showMsg('new-tickers', "error", "Please enter at least one ticker."); return; }
+                showMsg('new-tickers', "success", "Validating & saving new tickers...");
+                try {
+                    const res = await fetch(`${API_URL}/portfolio/validate-and-save`, {
+                        method: "POST", headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ username: currentUser, tickers: tickersList })
                     });
+                    const data = await res.json();
+                    if(data.status === "success") showMsg('new-tickers', "success", data.message);
+                    else showMsg('new-tickers', "error", data.message);
+                } catch (err) { showMsg('new-tickers', "error", "Network error."); }
+                return;
+            }
+
+            let syms = document.getElementsByClassName(`${sectionKey}-symbol`);
+            for(let i=0; i<syms.length; i++) {
+                if(syms[i].value.trim() !== "") {
+                    hasInput = true;
+                    if(sectionKey === 'stocks') {
+                        payload.items.push({
+                            symbol: syms[i].value.toUpperCase().trim(),
+                            shares: parseFloat(document.getElementsByClassName('stocks-shares')[i].value) || 0,
+                            avg_cost: parseFloat(document.getElementsByClassName('stocks-cost')[i].value) || 0,
+                            target_price: parseFloat(document.getElementsByClassName('stocks-target')[i].value) || 0,
+                            notes: document.getElementsByClassName('stocks-notes')[i].value || ""
+                        });
+                    } else if(sectionKey === 'crypto') {
+                        payload.items.push({
+                            symbol: syms[i].value.toUpperCase().trim(),
+                            units: parseFloat(document.getElementsByClassName('crypto-units')[i].value) || 0,
+                            avg_cost: parseFloat(document.getElementsByClassName('crypto-cost')[i].value) || 0,
+                            target_price: parseFloat(document.getElementsByClassName('crypto-target')[i].value) || 0,
+                            notes: document.getElementsByClassName('crypto-notes')[i].value || ""
+                        });
+                    } else if(sectionKey === 'options') {
+                        payload.items.push({
+                            symbol: syms[i].value.toUpperCase().trim(),
+                            type: document.getElementsByClassName('options-type')[i].value,
+                            action: document.getElementsByClassName('options-action')[i].value,
+                            contracts: parseInt(document.getElementsByClassName('options-contracts')[i].value) || 0,
+                            strike: parseFloat(document.getElementsByClassName('options-strike')[i].value) || 0,
+                            cost: parseFloat(document.getElementsByClassName('options-cost')[i].value) || 0,
+                            premium: parseFloat(document.getElementsByClassName('options-premium')[i].value) || 0,
+                            expiration: document.getElementsByClassName('options-expiration')[i].value || "",
+                            target: parseFloat(document.getElementsByClassName('options-target')[i].value) || 0,
+                            notes: document.getElementsByClassName('options-notes')[i].value || ""
+                        });
+                    } else if(sectionKey === 'watchlist') {
+                        payload.items.push({
+                            symbol: syms[i].value.toUpperCase().trim(),
+                            target_price: parseFloat(document.getElementsByClassName('watchlist-target')[i].value) || 0,
+                            notes: document.getElementsByClassName('watchlist-notes')[i].value || ""
+                        });
+                    }
                 }
             }
 
             if(!hasInput) {
-                showMessage("error", "Please enter at least one ticker symbol.");
+                showMsg(sectionKey, "error", "Please enter at least one symbol before saving.");
                 return;
             }
 
-            showMessage("success", "Validating symbols with live market data... please wait.");
+            showMsg(sectionKey, "success", "Validating with live market data & saving...");
 
             try {
-                const response = await fetch(`${API_URL}/portfolio/validate-and-save`, {
+                const response = await fetch(`${API_URL}/portfolio/${sectionKey}/save`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(payload)
                 });
-                
                 const data = await response.json();
-                
                 if(data.status === "success") {
-                    showMessage("success", data.message);
+                    showMsg(sectionKey, "success", data.message);
                 } else {
-                    showMessage("error", data.message);
+                    showMsg(sectionKey, "error", data.message);
                 }
             } catch (error) {
-                showMessage("error", "Network error. Make sure the backend server is running.");
+                showMsg(sectionKey, "error", "Network error connecting to backend.");
             }
         }
 
-        async function clearNewTickers() {
-            const inputs = document.querySelectorAll("#new-tickers-table input");
-            inputs.forEach(input => input.value = "");
+        function formatMoney(val) {
+            const num = parseFloat(val) || 0;
+            const absVal = Math.abs(num).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            if (num < 0) return `-$${absVal}`;
+            return `$${absVal}`;
+        }
+
+        async function loadValuationTab(forceRun = false) {
+            const holdingsTbody = document.querySelector("#val-holdings-table tbody");
+            const watchlistTbody = document.querySelector("#val-watchlist-table tbody");
             
+            holdingsTbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-secondary); padding: 30px;">Fetching live market data and calculating valuation...</td></tr>`;
+            watchlistTbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 30px;">Loading watchlist...</td></tr>`;
+
             try {
-                await fetch(`${API_URL}/portfolio/${currentUser}/clear-new-tickers`, { method: "DELETE" });
-                showMessage("success", "New Tickers cleared successfully.");
-            } catch (error) {
-                console.error("Failed to clear database:", error);
+                const response = await fetch(`${API_URL}/portfolio/${currentUser}/valuation`);
+                const data = await response.json();
+
+                if (data.status === "success") {
+                    localStorage.setItem(`dash_valuation_cache_${currentUser}`, JSON.stringify(data));
+                    renderValuationData(data);
+                }
+            } catch (err) {
+                holdingsTbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--accent-red); padding: 30px;">Failed to load valuation data.</td></tr>`;
+                watchlistTbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--accent-red); padding: 30px;">Failed to load watchlist.</td></tr>`;
             }
         }
 
-        function showMessage(type, text) {
-            const box = document.getElementById("message-box");
-            box.style.display = "block";
-            box.className = type;
-            box.innerText = text;
+        function renderValuationData(data) {
+            const holdingsTbody = document.querySelector("#val-holdings-table tbody");
+            const watchlistTbody = document.querySelector("#val-watchlist-table tbody");
+
+            document.getElementById("sum-total-value").innerText = formatMoney(data.summary.total_value);
+            document.getElementById("sum-cost-basis").innerText = formatMoney(data.summary.cost_basis);
+            
+            const pnlElem = document.getElementById("sum-unrealized-pnl");
+            pnlElem.innerText = formatMoney(data.summary.unrealized_pnl);
+            pnlElem.style.color = data.summary.unrealized_pnl >= 0 ? "var(--accent-green)" : "var(--accent-red)";
+
+            const retElem = document.getElementById("sum-return-pct");
+            retElem.innerText = `${data.summary.return_pct.toFixed(2)}%`;
+            retElem.style.color = data.summary.return_pct >= 0 ? "var(--accent-green)" : "var(--accent-red)";
+
+            holdingsTbody.innerHTML = "";
+            if (data.holdings.length === 0) {
+                holdingsTbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-secondary); padding: 30px;">No active stock or crypto holdings found.</td></tr>`;
+            } else {
+                data.holdings.forEach(h => {
+                    const dayColor = h.day_pnl >= 0 ? "var(--accent-green)" : "var(--accent-red)";
+                    const totColor = h.total_pnl >= 0 ? "var(--accent-green)" : "var(--accent-red)";
+                    holdingsTbody.innerHTML += `
+                        <tr>
+                            <td><strong>${h.ticker}</strong></td>
+                            <td>${h.shares.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 4})}</td>
+                            <td>${formatMoney(h.avg_cost)}</td>
+                            <td>${formatMoney(h.current_price)}</td>
+                            <td style="color: ${dayColor};">${formatMoney(h.day_pnl)}</td>
+                            <td style="color: ${totColor};">${formatMoney(h.total_pnl)}</td>
+                            <td style="color: ${totColor};">${h.total_return_pct.toFixed(2)}%</td>
+                            <td>${formatMoney(h.current_total_value)}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            watchlistTbody.innerHTML = "";
+            if (data.watchlist.length === 0) {
+                watchlistTbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 30px;">No watchlist items found.</td></tr>`;
+            } else {
+                data.watchlist.forEach(w => {
+                    watchlistTbody.innerHTML += `
+                        <tr>
+                            <td><strong>${w.symbol}</strong></td>
+                            <td>${formatMoney(w.target_price)}</td>
+                            <td>${formatMoney(w.current_price)}</td>
+                            <td>${w.notes || "-"}</td>
+                        </tr>
+                    `;
+                });
+            }
+        }
+
+        function showMsg(sectionKey, type, text) {
+            let msgBoxId = sectionKey === 'new-tickers' ? 'msg-new-tickers' : `msg-${sectionKey}`;
+            const box = document.getElementById(msgBoxId);
+            if(box) {
+                box.style.display = "block";
+                box.className = `message-box ${type}`;
+                box.innerText = text;
+            }
         }
 
         function logout() {

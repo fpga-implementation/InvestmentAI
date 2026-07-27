@@ -1,0 +1,27 @@
+{
+    "khoa": {
+        "stocks": [
+            {
+                "symbol": "TSLA",
+                "shares": 100.0,
+                "avg_cost": 350.0,
+                "target_price": 400.0,
+                "notes": ""
+            },
+            {
+                "symbol": "ALAB",
+                "shares": 300.0,
+                "avg_cost": 135.0,
+                "target_price": 400.0,
+                "notes": ""
+            }
+        ],
+        "watchlist": [
+            {
+                "symbol": "GOOGL",
+                "target_price": 300.0,
+                "notes": "Start DCA"
+            }
+        ]
+    }
+}
