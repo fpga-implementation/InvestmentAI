@@ -87,8 +87,20 @@
             transition: all 0.25s ease;
         }
         .collapsible:hover { background-color: var(--bg-surface-hover); border-color: var(--border-glow); }
-        .collapsible:after { content: '+'; font-weight: 600; color: var(--accent-primary); font-size: 20px; transition: transform 0.25s ease; }
-        .collapsible.active:after { content: "−"; }
+        
+        /* Consistent Plus/Minus Indicators */
+        .collapsible:after, 
+        .sub-collapsible:after { 
+            content: '+'; 
+            font-weight: 600; 
+            color: var(--accent-primary); 
+            font-size: 18px; 
+            transition: transform 0.25s ease; 
+        }
+        .collapsible.active:after, 
+        .sub-collapsible.active:after { 
+            content: "−"; 
+        }
         
         .content { 
             padding: 0 24px; 
@@ -124,8 +136,6 @@
             transition: all 0.2s ease;
         }
         .sub-collapsible:hover { background-color: rgba(31, 41, 55, 0.8); border-color: var(--border-glow); }
-        .sub-collapsible:after { content: '+'; font-weight: 600; color: var(--accent-primary); font-size: 18px; }
-        .sub-collapsible.active:after { content: "−"; }
         
         .sub-content { 
             padding: 0 20px; 
