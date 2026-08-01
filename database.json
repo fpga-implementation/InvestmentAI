@@ -2,32 +2,166 @@
     "khoa": {
         "stocks": [
             {
+                "symbol": "ACN",
+                "shares": 100.0,
+                "avg_cost": 175.0,
+                "target_price": 176.0,
+                "notes": "unload as soon as profit"
+            },
+            {
                 "symbol": "ALAB",
-                "shares": 300.0,
-                "avg_cost": 134.67,
-                "target_price": 350.0,
-                "notes": ""
+                "shares": 200.0,
+                "avg_cost": 132.0,
+                "target_price": 400.0,
+                "notes": "sell 100s at 400 or above. The other 100s are in cc option."
             },
             {
                 "symbol": "AMZN",
                 "shares": 300.0,
-                "avg_cost": 213.08,
-                "target_price": 0.0,
-                "notes": ""
+                "avg_cost": 217.43,
+                "target_price": 280.0,
+                "notes": "sell 100s at 280 and keep 200s"
             },
             {
-                "symbol": "GOOGL",
+                "symbol": "GOOG",
                 "shares": 150.0,
-                "avg_cost": 323.0,
+                "avg_cost": 326.33,
                 "target_price": 0.0,
-                "notes": ""
+                "notes": "DCA to 300 shares"
+            },
+            {
+                "symbol": "MSTU",
+                "shares": 1800.0,
+                "avg_cost": 10.57,
+                "target_price": 12.0,
+                "notes": "unload as soon as profit"
+            },
+            {
+                "symbol": "PLTR",
+                "shares": 1050.0,
+                "avg_cost": 147.19,
+                "target_price": 160.0,
+                "notes": "unload some at 160"
+            },
+            {
+                "symbol": "RMBS",
+                "shares": 200.0,
+                "avg_cost": 112.5,
+                "target_price": 113.0,
+                "notes": "unload as soon as profit"
+            },
+            {
+                "symbol": "SPCX",
+                "shares": 351.0,
+                "avg_cost": 149.1,
+                "target_price": 80.0,
+                "notes": "DCA once hit around 80. Becareful of expiration unlock dates."
+            },
+            {
+                "symbol": "UNH",
+                "shares": 309.0,
+                "avg_cost": 330.91,
+                "target_price": 350.0,
+                "notes": "cc 500 once price reaches at lesat 450."
             }
         ],
         "new_tickers": [
             {
                 "symbol": "META",
                 "shares": 100.0,
-                "buy_price": 550.0
+                "buy_price": 520.0
+            },
+            {
+                "symbol": "OKLO",
+                "shares": 100.0,
+                "buy_price": 35.0
+            }
+        ],
+        "crypto": [
+            {
+                "symbol": "ADA",
+                "units": 1583.0,
+                "avg_cost": 0.9484,
+                "target_price": 0.0,
+                "notes": ""
+            },
+            {
+                "symbol": "ETH",
+                "units": 3.23622,
+                "avg_cost": 1719.28,
+                "target_price": 0.0,
+                "notes": ""
+            },
+            {
+                "symbol": "SOL",
+                "units": 9.96,
+                "avg_cost": 103.19,
+                "target_price": 0.0,
+                "notes": ""
+            },
+            {
+                "symbol": "XRP",
+                "units": 1298.202,
+                "avg_cost": 1.696,
+                "target_price": 0.0,
+                "notes": ""
+            }
+        ],
+        "options": [
+            {
+                "symbol": "ALAB",
+                "type": "Call",
+                "action": "Sell",
+                "contracts": 1,
+                "strike": 320.0,
+                "cost": 0.0,
+                "premium": 26.0,
+                "expiration": "2026-09-18",
+                "target": 0.0,
+                "notes": "let expires"
+            },
+            {
+                "symbol": "INTC",
+                "type": "Call",
+                "action": "Buy",
+                "contracts": 4,
+                "strike": 160.0,
+                "cost": 8.75,
+                "premium": 0.0,
+                "expiration": "2027-01-15",
+                "target": 15.0,
+                "notes": ""
+            },
+            {
+                "symbol": "PLTR",
+                "type": "Call",
+                "action": "Buy",
+                "contracts": 5,
+                "strike": 150.0,
+                "cost": 19.54,
+                "premium": 0.0,
+                "expiration": "2027-01-15",
+                "target": 30.0,
+                "notes": ""
+            },
+            {
+                "symbol": "ZS",
+                "type": "Call",
+                "action": "Buy",
+                "contracts": 1,
+                "strike": 150.0,
+                "cost": 27.5,
+                "premium": 0.0,
+                "expiration": "2027-06-17",
+                "target": 47.0,
+                "notes": ""
+            }
+        ],
+        "watchlist": [
+            {
+                "symbol": "NVDA",
+                "target_price": 190.0,
+                "notes": "DCA at 190 and below to 300 shares"
             }
         ]
     }
