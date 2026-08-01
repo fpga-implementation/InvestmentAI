@@ -6,13 +6,13 @@ from sqlalchemy.orm import Session
 from dotenv import load_dotenv
 
 # Import database session and User model
-from database import SessionLocal, User
+from .database import SessionLocal, User
 
 # Load environment variables
 load_dotenv()
 ADMIN_SECRET_KEY = os.getenv("ADMIN_SECRET_KEY", "my_super_secret_admin_key")
 
-router = APIRouter(prefix="/auth", tags=["Auth"])
+router = APIRouter(tags=["Auth"])
 
 # Dependency to get DB session
 def get_db():

@@ -3,258 +3,202 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InvestmentAI - Access Portal</title>
-    <style>
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: #121212; 
-            color: #e0e0e0; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            margin: 0; 
-        }
-        .container { 
-            background: #1e1e1e; 
-            padding: 30px; 
-            border-radius: 8px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5); 
-            width: 350px; 
-            border: 1px solid #333;
-        }
-        .tabs { 
-            display: flex; 
-            margin-bottom: 20px; 
-            border-bottom: 2px solid #333; 
-        }
-        .tab { 
-            flex: 1; 
-            padding: 10px; 
-            text-align: center; 
-            cursor: pointer; 
-            background: #1e1e1e; 
-            color: #888; 
-            border: none; 
-            font-weight: bold; 
-            font-size: 13px;
-        }
-        .tab.active { 
-            background: #2a2a2a; 
-            color: #3498db; 
-            border-bottom: 2px solid #3498db; 
-        }
-        .form-group { 
-            margin-bottom: 15px; 
-        }
-        label { 
-            display: block; 
-            margin-bottom: 5px; 
-            font-size: 14px; 
-            color: #bbb; 
-        }
-        input { 
-            width: 100%; 
-            padding: 10px; 
-            box-sizing: border-box; 
-            background: #2c2c2c; 
-            border: 1px solid #444; 
-            color: #fff; 
-            border-radius: 4px; 
-        }
-        input:focus { 
-            border-color: #3498db; 
-            outline: none; 
-        }
-        button.action-btn { 
-            width: 100%; 
-            padding: 10px; 
-            background: #3498db; 
-            color: white; 
-            border: none; 
-            border-radius: 4px; 
-            cursor: pointer; 
-            font-weight: bold; 
-        }
-        button.action-btn:hover { 
-            background: #2980b9; 
-        }
-        .banner { 
-            padding: 10px; 
-            margin-bottom: 15px; 
-            border-radius: 4px; 
-            display: none; 
-            font-size: 14px; 
-        }
-        .success { background-color: #1e3a2f; color: #2ecc71; border: 1px solid #27ae60; }
-        .error { background-color: #3c1f1f; color: #e74c3c; border: 1px solid #c0392b; }
-        .hidden { display: none; }
-    </style>
+    <title>InvestmentAI - Secure Login</title>
+    <!-- Tailwind CSS for a clean, professional look -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
-    <div class="container">
-        <div class="tabs">
-            <button class="tab active" onclick="switchTab('login')">Login</button>
-            <button class="tab" onclick="switchTab('register')">Register</button>
-            <button class="tab" onclick="switchTab('request')">Request Access</button>
+<body class="bg-slate-900 text-slate-100 flex items-center justify-center min-h-screen p-4">
+
+    <div class="bg-slate-800 p-8 rounded-2xl shadow-2xl w-full max-w-lg border border-slate-700">
+        <h1 class="text-3xl font-bold text-center mb-2 text-cyan-400">InvestmentAI</h1>
+        <p class="text-center text-slate-400 mb-6 text-sm">Secure Quantitative Platform</p>
+
+        <!-- Tab Switcher -->
+        <div class="flex border-b border-slate-700 mb-6">
+            <button onclick="switchTab('login')" id="tab-login" class="flex-1 pb-2 font-semibold text-cyan-400 border-b-2 border-cyan-400 transition">Login</button>
+            <button onclick="switchTab('request')" id="tab-request" class="flex-1 pb-2 font-semibold text-slate-400 hover:text-slate-200 transition">Request Access</button>
+            <button onclick="switchTab('register')" id="tab-register" class="flex-1 pb-2 font-semibold text-slate-400 hover:text-slate-200 transition">Register</button>
         </div>
 
-        <!-- Login Form -->
-        <div id="login-form">
-            <div id="login-banner" class="banner"></div>
-            <div class="form-group">
-                <label>Username</label>
-                <input type="text" id="login-username">
+        <!-- Notification Banner -->
+        <div id="alert-box" class="hidden mb-4 p-3 rounded-lg text-sm"></div>
+
+        <!-- LOGIN FORM -->
+        <div id="form-login" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium mb-1">Username</label>
+                <input type="text" id="login-username" class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg focus:outline-none focus:border-cyan-400" placeholder="Enter username">
             </div>
-            <div class="form-group">
-                <label>Password</label>
-                <input type="password" id="login-password">
+            <div>
+                <label class="block text-sm font-medium mb-1">Password</label>
+                <div class="relative">
+                    <input type="password" id="login-password" class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg focus:outline-none focus:border-cyan-400" placeholder="Enter password">
+                    <button type="button" onclick="togglePassword('login-password', 'eye-login')" class="absolute right-3 top-3 text-slate-400 hover:text-slate-200">
+                        <i id="eye-login" class="fa-solid fa-eye"></i>
+                    </button>
+                </div>
             </div>
-            <button class="action-btn" onclick="handleLogin()">Log In</button>
+            <div class="flex items-center justify-between text-sm">
+                <label class="flex items-center space-x-2 cursor-pointer">
+                    <input type="checkbox" id="remember-me" class="rounded bg-slate-900 border-slate-700 text-cyan-500 focus:ring-0">
+                    <span class="text-slate-300">Remember Username</span>
+                </label>
+            </div>
+            <button onclick="handleLogin()" class="w-full bg-cyan-500 hover:bg-cyan-600 font-semibold py-2 rounded-lg transition text-slate-950">Log In</button>
         </div>
 
-        <!-- Register Form -->
-        <div id="register-form" class="hidden">
-            <div id="register-banner" class="banner"></div>
-            <div class="form-group">
-                <label>Approved Email</label>
-                <input type="email" id="register-email">
+        <!-- REQUEST ACCOUNT FORM -->
+        <div id="form-request" class="space-y-4 hidden">
+            <p class="text-xs text-slate-400">Access is invite-gated. Enter your email to request an account from the administrator.</p>
+            <div>
+                <label class="block text-sm font-medium mb-1">Email Address</label>
+                <input type="email" id="request-email" class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg focus:outline-none focus:border-cyan-400" placeholder="you@example.com">
             </div>
-            <div class="form-group">
-                <label>Choose Username</label>
-                <input type="text" id="register-username">
-            </div>
-            <div class="form-group">
-                <label>Choose Password</label>
-                <input type="password" id="register-password">
-            </div>
-            <button class="action-btn" onclick="register()">Complete Registration</button>
+            <button onclick="handleRequest()" class="w-full bg-cyan-500 hover:bg-cyan-600 font-semibold py-2 rounded-lg transition text-slate-950">Submit Request</button>
         </div>
 
-        <!-- Request Access Form -->
-        <div id="request-form" class="hidden">
-            <div id="request-banner" class="banner"></div>
-            <div class="form-group">
-                <label>Email Address</label>
-                <input type="email" id="request-email">
+        <!-- REGISTER FORM (Post-Approval) -->
+        <div id="form-register" class="space-y-4 hidden">
+            <p class="text-xs text-slate-400">Approved? Create your username and password here.</p>
+            <div>
+                <label class="block text-sm font-medium mb-1">Email Address</label>
+                <input type="email" id="reg-email" class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg focus:outline-none focus:border-cyan-400" placeholder="Your approved email">
             </div>
-            <button class="action-btn" onclick="requestAccess()">Request Access</button>
+            <div>
+                <label class="block text-sm font-medium mb-1">Choose Username</label>
+                <input type="text" id="reg-username" class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg focus:outline-none focus:border-cyan-400" placeholder="New username">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Choose Password</label>
+                <div class="relative">
+                    <input type="password" id="reg-password" class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg focus:outline-none focus:border-cyan-400" placeholder="Secure password">
+                    <button type="button" onclick="togglePassword('reg-password', 'eye-reg')" class="absolute right-3 top-3 text-slate-400 hover:text-slate-200">
+                        <i id="eye-reg" class="fa-solid fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+            <button onclick="handleRegister()" class="w-full bg-cyan-500 hover:bg-cyan-600 font-semibold py-2 rounded-lg transition text-slate-950">Complete Registration</button>
+        </div>
+
+        <!-- Financial Disclaimer -->
+        <div class="mt-8 pt-4 border-t border-slate-700 text-[11px] text-yellow-200 leading-relaxed text-justify">
+            <span class="font-semibold text-yellow-300 block mb-1 text-center">⚠️ DISCLAIMER</span>
+            InvestmentAI is for educational and informational purposes only. InvestmentAI does not provide investment, financial, or tax advice. The information provided is general in nature and does not constitute a personal recommendation or opinion. Past performance does not guarantee future results. All investments involve risk, including the possible loss of principal. InvestmentAI does not guarantee the accuracy, completeness, or timeliness of any market data or analysis presented. You should consult a licensed financial advisor or tax professional regarding your specific financial situation before making any investment decisions.
         </div>
     </div>
 
     <script>
-        const API_URL = "http://127.0.0.1:8000";
+        // Note: Using a relative URL to support dynamic routing if needed.
+        const API_URL = "/auth"; 
 
-        function switchTab(tabName) {
-            document.getElementById("login-form").classList.add("hidden");
-            document.getElementById("register-form").classList.add("hidden");
-            document.getElementById("request-form").classList.add("hidden");
-            
-            const tabs = document.getElementsByClassName("tab");
-            for(let t of tabs) t.classList.remove("active");
+        window.onload = function() {
+            const savedUser = localStorage.getItem("investment_ai_saved_user");
+            if (savedUser) {
+                document.getElementById("login-username").value = savedUser;
+                document.getElementById("remember-me").checked = true;
+            }
+        };
 
-            if(tabName === 'login') {
-                document.getElementById("login-form").classList.remove("hidden");
-                tabs[0].classList.add("active");
-            } else if(tabName === 'register') {
-                document.getElementById("register-form").classList.remove("hidden");
-                tabs[1].classList.add("active");
-            } else if(tabName === 'request') {
-                document.getElementById("request-form").classList.remove("hidden");
-                tabs[2].classList.add("active");
+        function switchTab(tab) {
+            ['login', 'request', 'register'].forEach(t => {
+                document.getElementById(`form-${t}`).classList.add('hidden');
+                document.getElementById(`tab-${t}`).classList.remove('text-cyan-400', 'border-b-2', 'border-cyan-400');
+                document.getElementById(`tab-${t}`).classList.add('text-slate-400');
+            });
+            document.getElementById(`form-${tab}`).classList.remove('hidden');
+            document.getElementById(`tab-${tab}`).classList.add('text-cyan-400', 'border-b-2', 'border-cyan-400');
+            document.getElementById(`tab-${tab}`).classList.remove('text-slate-400');
+            hideAlert();
+        }
+
+        function togglePassword(fieldId, iconId) {
+            const field = document.getElementById(fieldId);
+            const icon = document.getElementById(iconId);
+            if (field.type === "password") {
+                field.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            } else {
+                field.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
             }
         }
 
-        function showBanner(bannerId, message, type) {
-            const banner = document.getElementById(bannerId);
-            banner.style.display = "block";
-            banner.className = `banner ${type}`;
-            banner.innerText = message;
+        function showAlert(message, isSuccess = false) {
+            const box = document.getElementById("alert-box");
+            box.textContent = message;
+            box.className = `mb-4 p-3 rounded-lg text-sm ${isSuccess ? 'bg-emerald-900 text-emerald-200 border border-emerald-700' : 'bg-rose-900 text-rose-200 border border-rose-700'}`;
+            box.classList.remove('hidden');
+        }
+
+        function hideAlert() {
+            document.getElementById("alert-box").classList.add('hidden');
+        }
+
+        async function handleRequest() {
+            const email = document.getElementById("request-email").value;
+            try {
+                const res = await fetch(`${API_URL}/request-account`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({email})
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || "Failed request");
+                showAlert(data.message, true);
+            } catch (err) {
+                showAlert(err.message);
+            }
+        }
+
+        async function handleRegister() {
+            const email = document.getElementById("reg-email").value;
+            const username = document.getElementById("reg-username").value;
+            const password = document.getElementById("reg-password").value;
+            try {
+                const res = await fetch(`${API_URL}/register`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({email, username, password})
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || "Registration failed");
+                showAlert(data.message, true);
+                setTimeout(() => switchTab('login'), 2000);
+            } catch (err) {
+                showAlert(err.message);
+            }
         }
 
         async function handleLogin() {
             const username = document.getElementById("login-username").value;
             const password = document.getElementById("login-password").value;
-            
-            if(!username || !password) {
-                showBanner("login-banner", "Please fill in all fields.", "error");
-                return;
+            const remember = document.getElementById("remember-me").checked;
+
+            if (remember) {
+                localStorage.setItem("investment_ai_saved_user", username);
+            } else {
+                localStorage.removeItem("investment_ai_saved_user");
             }
-            
+
             try {
-                const response = await fetch(`${API_URL}/auth/login`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ username, password })
+                const res = await fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({username, password})
                 });
-                const data = await response.json();
-                
-                if(response.ok) {
+                const data = await res.json();
+                if (res.ok) {
+                    // Added critical routing logic from v1.1.0 to transition to the new dashboard
                     localStorage.setItem("investment_username", username);
                     window.location.href = "dashboard.html";
                 } else {
-                    showBanner("login-banner", data.detail || "Login failed.", "error");
+                     throw new Error(data.detail || "Login failed");
                 }
-            } catch(error) {
-                showBanner("login-banner", "Network error. Is the server running?", "error");
-            }
-        }
-
-        async function register() {
-            const email = document.getElementById("register-email").value;
-            const username = document.getElementById("register-username").value;
-            const password = document.getElementById("register-password").value;
-            
-            if(!email || !username || !password) {
-                showBanner("register-banner", "Please fill in all fields.", "error");
-                return;
-            }
-            
-            try {
-                const response = await fetch(`${API_URL}/auth/register`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email, username, password })
-                });
-                const data = await response.json();
-                
-                if(response.ok) {
-                    showBanner("register-banner", "Registration successful! You can now log in.", "success");
-                    document.getElementById("register-email").value = "";
-                    document.getElementById("register-username").value = "";
-                    document.getElementById("register-password").value = "";
-                } else {
-                    showBanner("register-banner", data.detail || "Registration failed.", "error");
-                }
-            } catch(error) {
-                showBanner("register-banner", "Network error. Is the server running?", "error");
-            }
-        }
-
-        async function requestAccess() {
-            const email = document.getElementById("request-email").value;
-            
-            if(!email) {
-                showBanner("request-banner", "Please enter your email.", "error");
-                return;
-            }
-            
-            try {
-                const response = await fetch(`${API_URL}/auth/request-account`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email })
-                });
-                const data = await response.json();
-                
-                if(response.ok) {
-                    showBanner("request-banner", data.message, "success");
-                    document.getElementById("request-email").value = "";
-                } else {
-                    showBanner("request-banner", data.detail || "Request failed.", "error");
-                }
-            } catch(error) {
-                showBanner("request-banner", "Network error. Is the server running?", "error");
+            } catch (err) {
+                showAlert(err.message);
             }
         }
     </script>

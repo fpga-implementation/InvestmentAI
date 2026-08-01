@@ -102,17 +102,20 @@
             content: "−"; 
         }
         
+        /* Bulletproof Display Toggle for Content */
         .content { 
-            padding: 0 24px; 
-            max-height: 0; 
-            overflow: hidden; 
-            transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1); 
+            padding: 24px; 
+            display: none; 
             background-color: var(--bg-card); 
             border-radius: 0 0 var(--radius) var(--radius); 
             margin-bottom: 20px; 
             border: 1px solid var(--border-color);
             border-top: none;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .content.open {
+            display: block;
         }
 
         /* Nested Sub-Collapsible Styles */
@@ -138,25 +141,27 @@
         .sub-collapsible:hover { background-color: rgba(31, 41, 55, 0.8); border-color: var(--border-glow); }
         
         .sub-content { 
-            padding: 0 20px; 
-            max-height: 0; 
-            overflow: hidden; 
-            transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1); 
+            padding: 20px; 
+            display: none; 
             background-color: rgba(7, 10, 18, 0.9); 
             border-radius: 0 0 10px 10px; 
             border: 1px solid var(--border-color);
             border-top: none;
         }
+
+        .sub-content.open {
+            display: block;
+        }
         
-        /* Portfolio Sub-Tabs */
-        .portfolio-tabs {
+        /* Portfolio Sub-Tabs & AI Analysis Tabs */
+        .portfolio-tabs, .ai-tabs {
             display: flex;
             gap: 10px;
             margin-top: 24px;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 0;
         }
-        .portfolio-tab {
+        .portfolio-tab, .ai-tab {
             padding: 10px 22px;
             background: rgba(255, 255, 255, 0.02);
             color: var(--text-secondary);
@@ -167,19 +172,19 @@
             border-radius: 8px 8px 0 0;
             transition: all 0.2s ease;
         }
-        .portfolio-tab:hover { color: var(--text-primary); background: rgba(255, 255, 255, 0.05); }
-        .portfolio-tab.active {
+        .portfolio-tab:hover, .ai-tab:hover { color: var(--text-primary); background: rgba(255, 255, 255, 0.05); }
+        .portfolio-tab.active, .ai-tab.active {
             background: var(--bg-card);
             color: #818cf8;
             border-color: var(--border-color);
             border-bottom-color: var(--bg-card);
             box-shadow: 0 -2px 10px rgba(99, 102, 241, 0.15);
         }
-        .portfolio-pane {
+        .portfolio-pane, .ai-pane {
             display: none;
             padding: 24px 0;
         }
-        .portfolio-pane.active {
+        .portfolio-pane.active, .ai-pane.active {
             display: block;
         }
 
@@ -435,7 +440,10 @@
             <div id="pane-value" class="portfolio-pane">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
                     <h3 style="margin: 0; color: #fff; font-size: 16px; font-weight: 600;">Portfolio Valuation</h3>
-                    <button class="btn-run" onclick="loadValuationTab(true)">Run</button>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <span id="last-run-timestamp" style="font-size: 12px; color: var(--text-secondary);"></span>
+                        <button class="btn-run" onclick="loadValuationTab(true)">Run</button>
+                    </div>
                 </div>
                 
                 <div style="background-color: rgba(245, 158, 11, 0.08); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.25); padding: 14px 18px; border-radius: 8px; margin-bottom: 24px; font-size: 13px; font-weight: 500;">
@@ -502,6 +510,41 @@
 
     </div>
 
+    <!-- New Parent Collapsible: AI Analysis -->
+    <button class="collapsible" id="btn-main-ai">AI Analysis</button>
+    <div class="content" id="content-main-ai">
+        <!-- AI Analysis Sub-Tabs -->
+        <div class="ai-tabs">
+            <button class="ai-tab active" data-pane="pane-ai-new" onclick="switchAiTab(event, 'pane-ai-new')">New Tickers</button>
+            <button class="ai-tab" data-pane="pane-ai-portfolio" onclick="switchAiTab(event, 'pane-ai-portfolio')">Portfolio</button>
+            <button class="ai-tab" data-pane="pane-ai-combined" onclick="switchAiTab(event, 'pane-ai-combined')">New Tickers + Portfolio</button>
+        </div>
+
+        <!-- NEW TICKERS AI PANE -->
+        <div id="pane-ai-new" class="ai-pane active">
+            <p style="font-size: 13px; color: var(--text-secondary); margin-top: 0; margin-bottom: 16px;">AI-driven breakdown and strategic evaluation for your newly inputted tickers.</p>
+            <div style="background: rgba(15, 23, 42, 0.5); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; color: var(--text-secondary); font-size: 13px;">
+                AI analysis output for New Tickers will appear here.
+            </div>
+        </div>
+
+        <!-- PORTFOLIO AI PANE -->
+        <div id="pane-ai-portfolio" class="ai-pane">
+            <p style="font-size: 13px; color: var(--text-secondary); margin-top: 0; margin-bottom: 16px;">Comprehensive portfolio risk analysis, allocation critique, and recommendations.</p>
+            <div style="background: rgba(15, 23, 42, 0.5); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; color: var(--text-secondary); font-size: 13px;">
+                AI analysis output for Portfolio holdings will appear here.
+            </div>
+        </div>
+
+        <!-- NEW TICKERS + PORTFOLIO AI PANE -->
+        <div id="pane-ai-combined" class="ai-pane">
+            <p style="font-size: 13px; color: var(--text-secondary); margin-top: 0; margin-bottom: 16px;">Holistic evaluation combining new ticker additions with existing portfolio synergy.</p>
+            <div style="background: rgba(15, 23, 42, 0.5); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; color: var(--text-secondary); font-size: 13px;">
+                Combined AI analysis output will appear here.
+            </div>
+        </div>
+    </div>
+
     <!-- Footer Disclaimer -->
     <footer style="text-align: center; margin-top: 40px; padding: 20px 0; border-top: 1px solid var(--border-color); color: var(--text-secondary); font-size: 11px; letter-spacing: 0.02em;">
         Disclaimer: InvestmentAI is for informational and portfolio-tracking purposes only and does not constitute financial or investment advice.
@@ -519,45 +562,57 @@
             restoreState();
         }
 
-        // Main Accordion functionality with state persistence
+        // Main Accordion functionality (Input Tickers)
         var mainColl = document.getElementById("btn-main-input");
         mainColl.addEventListener("click", function() {
-            this.classList.toggle("active");
-            var content = this.nextElementSibling;
-            let isOpen = this.classList.contains("active");
-            localStorage.setItem("dash_main_open", isOpen);
-            if (content.style.maxHeight){
-                content.style.maxHeight = null;
+            let isActive = this.classList.toggle("active");
+            var content = document.getElementById("content-main-input");
+            localStorage.setItem("dash_main_open", isActive);
+            
+            if (!isActive) {
+                content.classList.remove("open");
             } else {
-                content.style.maxHeight = content.scrollHeight + 6000 + "px";
+                content.classList.add("open");
             }
         });
 
-        // Nested Sub-Accordion functionality with state persistence
-        setupSubAccordion("btn-sub-new", "dash_sub_new_open");
-        setupSubAccordion("btn-sub-portfolio", "dash_sub_portfolio_open");
+        // Main Accordion functionality (AI Analysis)
+        var aiColl = document.getElementById("btn-main-ai");
+        aiColl.addEventListener("click", function() {
+            let isActive = this.classList.toggle("active");
+            var content = document.getElementById("content-main-ai");
+            localStorage.setItem("dash_ai_open", isActive);
+            
+            if (!isActive) {
+                content.classList.remove("open");
+            } else {
+                content.classList.add("open");
+            }
+        });
 
-        function setupSubAccordion(btnId, storageKey) {
+        // Explicit ID-based Sub-Accordions setup
+        setupSubAccordion("btn-sub-new", "content-sub-new", "dash_sub_new_open");
+        setupSubAccordion("btn-sub-portfolio", "content-sub-portfolio", "dash_sub_portfolio_open");
+
+        function setupSubAccordion(btnId, contentId, storageKey) {
             let btn = document.getElementById(btnId);
+            let content = document.getElementById(contentId);
+            if (!btn || !content) return; 
+            
             btn.addEventListener("click", function(e) {
                 e.stopPropagation();
-                this.classList.toggle("active");
-                var content = this.nextElementSibling;
-                let isOpen = this.classList.contains("active");
-                localStorage.setItem(storageKey, isOpen);
-                if (content.style.maxHeight){
-                    content.style.maxHeight = null;
+                let isActive = this.classList.toggle("active");
+                localStorage.setItem(storageKey, isActive);
+                
+                if (!isActive){
+                    content.classList.remove("open");
                 } else {
-                    content.style.maxHeight = content.scrollHeight + 3000 + "px";
-                    let parentContent = this.closest('.content');
-                    if(parentContent) {
-                        parentContent.style.maxHeight = (parseInt(parentContent.style.maxHeight || 0) + content.scrollHeight + 3000) + "px";
-                    }
+                    content.classList.add("open");
                 }
             });
         }
 
-        // Portfolio Sub-Tab Switching with state persistence
+        // Portfolio Sub-Tab Switching 
         function switchPortfolioTab(evt, paneId) {
             const panes = document.getElementsByClassName("portfolio-pane");
             for (let pane of panes) pane.classList.remove("active");
@@ -583,32 +638,72 @@
                     } catch(e) {}
                 }
             }
-
-            let parentSubContent = document.getElementById("content-sub-portfolio");
-            let parentMainContent = document.getElementById("content-main-input");
-            if(parentSubContent) parentSubContent.style.maxHeight = parentSubContent.scrollHeight + 1000 + "px";
-            if(parentMainContent) parentMainContent.style.maxHeight = parentMainContent.scrollHeight + 1000 + "px";
         }
 
-        // Restore UI state after refresh
+        // AI Analysis Tab Switching
+        function switchAiTab(evt, paneId) {
+            const panes = document.getElementsByClassName("ai-pane");
+            for (let pane of panes) pane.classList.remove("active");
+
+            const tabs = document.getElementsByClassName("ai-tab");
+            for (let tab of tabs) tab.classList.remove("active");
+
+            document.getElementById(paneId).classList.add("active");
+            if (evt && evt.currentTarget) {
+                evt.currentTarget.classList.add("active");
+            } else {
+                let tabBtn = document.querySelector(`.ai-tab[data-pane="${paneId}"]`);
+                if(tabBtn) tabBtn.classList.add("active");
+            }
+
+            localStorage.setItem("dash_ai_active_pane", paneId);
+        }
+
+        // Restore UI state safely without crashing
         function restoreState() {
             if (localStorage.getItem("dash_main_open") === "true") {
-                mainColl.classList.add("active");
-                let content = document.getElementById("content-main-input");
-                content.style.maxHeight = "6000px";
+                if (mainColl) mainColl.classList.add("active");
+                let mainContent = document.getElementById("content-main-input");
+                if (mainContent) mainContent.classList.add("open");
+            } else {
+                if (mainColl) mainColl.classList.remove("active");
+                let mainContent = document.getElementById("content-main-input");
+                if (mainContent) mainContent.classList.remove("open");
             }
+
+            if (localStorage.getItem("dash_ai_open") === "true") {
+                if (aiColl) aiColl.classList.add("active");
+                let aiContent = document.getElementById("content-main-ai");
+                if (aiContent) aiContent.classList.add("open");
+            } else {
+                if (aiColl) aiColl.classList.remove("active");
+                let aiContent = document.getElementById("content-main-ai");
+                if (aiContent) aiContent.classList.remove("open");
+            }
+
             if (localStorage.getItem("dash_sub_new_open") === "true") {
                 let btn = document.getElementById("btn-sub-new");
-                btn.classList.add("active");
-                btn.nextElementSibling.style.maxHeight = "3000px";
+                let content = document.getElementById("content-sub-new");
+                if (btn && content) {
+                    btn.classList.add("active");
+                    content.classList.add("open");
+                }
             }
+
             if (localStorage.getItem("dash_sub_portfolio_open") === "true") {
                 let btn = document.getElementById("btn-sub-portfolio");
-                btn.classList.add("active");
-                btn.nextElementSibling.style.maxHeight = "3000px";
+                let content = document.getElementById("content-sub-portfolio");
+                if (btn && content) {
+                    btn.classList.add("active");
+                    content.classList.add("open");
+                }
             }
+
             let savedPane = localStorage.getItem("dash_active_pane") || "pane-stocks";
             switchPortfolioTab(null, savedPane);
+
+            let savedAiPane = localStorage.getItem("dash_ai_active_pane") || "pane-ai-new";
+            switchAiTab(null, savedAiPane);
 
             let cached = localStorage.getItem(`dash_valuation_cache_${currentUser}`);
             if (cached) {
@@ -932,6 +1027,7 @@
                 const data = await response.json();
 
                 if (data.status === "success") {
+                    data.last_run = new Date().toLocaleString();
                     localStorage.setItem(`dash_valuation_cache_${currentUser}`, JSON.stringify(data));
                     renderValuationData(data);
                 }
@@ -942,6 +1038,10 @@
         }
 
         function renderValuationData(data) {
+            if (data.last_run) {
+                document.getElementById("last-run-timestamp").innerText = `Last Run: ${data.last_run}`;
+            }
+
             const holdingsTbody = document.querySelector("#val-holdings-table tbody");
             const watchlistTbody = document.querySelector("#val-watchlist-table tbody");
 

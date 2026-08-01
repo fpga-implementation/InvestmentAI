@@ -2,11 +2,19 @@ import json
 import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 import requests
 import yfinance as yf
 
+# Import the authentication router from auth.py
+from .auth import router as auth_router
+from .database import engine, Base
+
 app = FastAPI(title="InvestmentAI Backend")
+# Initialize the SQLite database tables
+Base.metadata.create_all(bind=engine)
 
 app.add_middleware(
     CORSMiddleware,
@@ -16,8 +24,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-DB_FILE = "database.json"
+# Connect the auth endpoints with the /auth prefix
+app.include_router(auth_router, prefix="/auth")
 
+DB_FILE = "database.json"
 
 def load_db():
   if not os.path.exists(DB_FILE):
@@ -28,18 +38,15 @@ def load_db():
   except Exception:
     return {}
 
-
 def save_db(data):
   with open(DB_FILE, "w") as f:
     json.dump(data, f, indent=4)
-
 
 # Pydantic Models
 class TickerItem(BaseModel):
   symbol: str
   shares: float = 0.0
   buy_price: float = 0.0
-
 
 class StockItem(BaseModel):
   symbol: str
@@ -48,14 +55,12 @@ class StockItem(BaseModel):
   target_price: float = 0.0
   notes: str = ""
 
-
 class CryptoItem(BaseModel):
   symbol: str
   units: float = 0.0
   avg_cost: float = 0.0
   target_price: float = 0.0
   notes: str = ""
-
 
 class OptionItem(BaseModel):
   symbol: str
@@ -69,37 +74,30 @@ class OptionItem(BaseModel):
   target: float = 0.0
   notes: str = ""
 
-
 class WatchlistItem(BaseModel):
   symbol: str
   target_price: float = 0.0
   notes: str = ""
 
-
 class PortfolioPayload(BaseModel):
   username: str
   tickers: list[TickerItem] = []
-
 
 class StocksPayload(BaseModel):
   username: str
   items: list[StockItem] = []
 
-
 class CryptoPayload(BaseModel):
   username: str
   items: list[CryptoItem] = []
-
 
 class OptionsPayload(BaseModel):
   username: str
   items: list[OptionItem] = []
 
-
 class WatchlistPayload(BaseModel):
   username: str
   items: list[WatchlistItem] = []
-
 
 # Configure requests Session with User-Agent for yfinance
 session = requests.Session()
@@ -110,12 +108,6 @@ session.headers.update({
     )
 })
 
-
-@app.get("/")
-def read_root():
-  return {"status": "success", "message": "InvestmentAI Backend is running."}
-
-
 # --- NEW TICKERS ---
 @app.get("/portfolio/{username}/new-tickers")
 def get_new_tickers(username: str):
@@ -124,7 +116,6 @@ def get_new_tickers(username: str):
       "status": "success",
       "tickers": db.get(username, {}).get("new_tickers", []),
   }
-
 
 @app.post("/portfolio/validate-and-save")
 def validate_and_save_new(payload: PortfolioPayload):
@@ -159,7 +150,6 @@ def validate_and_save_new(payload: PortfolioPayload):
   save_db(db)
   return {"status": "success", "message": "New tickers saved successfully."}
 
-
 @app.delete("/portfolio/{username}/clear-new-tickers")
 def clear_new_tickers(username: str):
   db = load_db()
@@ -168,13 +158,11 @@ def clear_new_tickers(username: str):
     save_db(db)
   return {"status": "success", "message": "Cleared successfully."}
 
-
 # --- STOCKS ---
 @app.get("/portfolio/{username}/stocks")
 def get_stocks(username: str):
   db = load_db()
   return {"status": "success", "items": db.get(username, {}).get("stocks", [])}
-
 
 @app.post("/portfolio/stocks/save")
 def save_stocks(payload: StocksPayload):
@@ -204,7 +192,6 @@ def save_stocks(payload: StocksPayload):
   save_db(db)
   return {"status": "success", "message": "Stocks saved successfully."}
 
-
 @app.delete("/portfolio/{username}/stocks")
 def clear_stocks(username: str):
   db = load_db()
@@ -213,13 +200,11 @@ def clear_stocks(username: str):
     save_db(db)
   return {"status": "success", "message": "Stocks cleared."}
 
-
 # --- CRYPTO ---
 @app.get("/portfolio/{username}/crypto")
 def get_crypto(username: str):
   db = load_db()
   return {"status": "success", "items": db.get(username, {}).get("crypto", [])}
-
 
 @app.post("/portfolio/crypto/save")
 def save_crypto(payload: CryptoPayload):
@@ -254,7 +239,6 @@ def save_crypto(payload: CryptoPayload):
   save_db(db)
   return {"status": "success", "message": "Crypto saved successfully."}
 
-
 @app.delete("/portfolio/{username}/crypto")
 def clear_crypto(username: str):
   db = load_db()
@@ -263,13 +247,11 @@ def clear_crypto(username: str):
     save_db(db)
   return {"status": "success", "message": "Crypto cleared."}
 
-
 # --- OPTIONS ---
 @app.get("/portfolio/{username}/options")
 def get_options(username: str):
   db = load_db()
   return {"status": "success", "items": db.get(username, {}).get("options", [])}
-
 
 @app.post("/portfolio/options/save")
 def save_options(payload: OptionsPayload):
@@ -281,7 +263,6 @@ def save_options(payload: OptionsPayload):
   save_db(db)
   return {"status": "success", "message": "Options saved successfully."}
 
-
 @app.delete("/portfolio/{username}/options")
 def clear_options(username: str):
   db = load_db()
@@ -289,7 +270,6 @@ def clear_options(username: str):
     db[username]["options"] = []
     save_db(db)
   return {"status": "success", "message": "Options cleared."}
-
 
 # --- WATCHLIST ---
 @app.get("/portfolio/{username}/watchlist")
@@ -299,7 +279,6 @@ def get_watchlist(username: str):
       "status": "success",
       "items": db.get(username, {}).get("watchlist", []),
   }
-
 
 @app.post("/portfolio/watchlist/save")
 def save_watchlist(payload: WatchlistPayload):
@@ -331,7 +310,6 @@ def save_watchlist(payload: WatchlistPayload):
   save_db(db)
   return {"status": "success", "message": "Watchlist saved successfully."}
 
-
 @app.delete("/portfolio/{username}/watchlist")
 def clear_watchlist(username: str):
   db = load_db()
@@ -342,7 +320,6 @@ def clear_watchlist(username: str):
     db[username]["watchlist"] = []
     save_db(db)
   return {"status": "success", "message": "Watchlist cleared."}
-
 
 # --- VALUATION TAB API ---
 @app.get("/portfolio/{username}/valuation")
@@ -498,7 +475,20 @@ def get_valuation(username: str):
   }
 
 
+# --- FRONTEND ROUTING & STATIC MOUNT ---
+@app.get("/")
+def read_root():
+    # Construct an absolute path to ensure cross-OS compatibility
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    index_path = os.path.join(base_dir, "frontend", "index.html")
+    return FileResponse(index_path)
+
+# Mount the entire frontend directory to serve other static files
+base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+frontend_dir = os.path.join(base_dir, "frontend")
+app.mount("/", StaticFiles(directory=frontend_dir), name="frontend")
+
+
 if __name__ == "__main__":
   import uvicorn
-
   uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
