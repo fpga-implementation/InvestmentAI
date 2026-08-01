@@ -623,7 +623,7 @@
         <!-- PORTFOLIO AI PANE -->
         <div id="pane-ai-portfolio" class="ai-pane">
             <div id="ai-output-portfolio" style="background: rgba(15, 23, 42, 0.5); border: 1px solid var(--border-color); border-radius: 8px; padding: 30px; color: var(--text-secondary); font-size: 13px; text-align: center;">
-                Click <strong>'Run'</strong> above to generate portfolio beta, concentration, and risk assessments.
+                Click <strong>'Run'</strong> above to generate terminal report cards and macro risk assessments for your Portfolio holdings.
             </div>
         </div>
 
@@ -728,6 +728,7 @@
             document.getElementById("ai-last-run-timestamp").innerText = `Last Run: ${timestamp}`;
             localStorage.setItem(`dash_ai_last_run_${currentUser}`, timestamp);
 
+            // 1. New Tickers Analysis
             let newSymbols = document.getElementsByClassName('ticker-symbol');
             let newPrices = document.getElementsByClassName('ticker-price');
             let tickersToAnalyze = [];
@@ -739,7 +740,6 @@
             }
 
             const aiNewContainer = document.getElementById("ai-output-new");
-
             if(tickersToAnalyze.length === 0) {
                 const errMsg = `<div style="background-color: rgba(244, 63, 94, 0.12); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.25); padding: 14px; border-radius: 8px;">No tickers found. Please enter at least one symbol in the New Tickers section above.</div>`;
                 aiNewContainer.innerHTML = errMsg;
@@ -758,34 +758,68 @@
                 localStorage.setItem(`dash_ai_cache_new_${currentUser}`, newHtml);
             }
 
-            const portfolioHtml = `
-            <div class="terminal-card">
-                <div class="terminal-header" onclick="toggleTerminalCard(this)">
-                    <div class="terminal-title-area">
-                        <span class="terminal-ticker">Portfolio Macro Risk & Concentration</span>
-                        <span class="terminal-score-badge">8.2/10</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 15px;">
-                        <span class="terminal-verdict verdict-hold">MODERATE RISK</span>
-                        <span class="terminal-toggle-icon" style="font-weight: 700; color: var(--accent-primary); font-size: 16px;">−</span>
-                    </div>
-                </div>
-                <div class="terminal-body">
-                    <div class="assessment-box">
-                        <strong>Portfolio Review:</strong> Aggregate portfolio beta sits at ~1.15, exhibiting balanced sensitivity to benchmark movements. While cash flow generation across core holdings remains exceptionally robust, high sector concentration requires disciplined rebalancing during interest rate inflection points.
-                    </div>
-                    <div class="metrics-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
-                        <div class="hud-item" style="background:rgba(17,24,39,0.8); padding:12px; border-radius:8px;"><span class="hud-label">Estimated Beta</span><span class="hud-val" style="font-size:16px;">1.15</span></div>
-                        <div class="hud-item" style="background:rgba(17,24,39,0.8); padding:12px; border-radius:8px;"><span class="hud-label">Top Concentration</span><span class="hud-val" style="font-size:16px;">Technology (42%)</span></div>
-                        <div class="hud-item" style="background:rgba(17,24,39,0.8); padding:12px; border-radius:8px;"><span class="hud-label">Est. Dividend Yield</span><span class="hud-val" style="font-size:16px;">1.40%</span></div>
-                    </div>
-                </div>
-            </div>`;
-            const aiPortContainer = document.getElementById("ai-output-portfolio");
-            aiPortContainer.style.background = 'transparent'; aiPortContainer.style.border = 'none'; aiPortContainer.style.padding = '0';
-            aiPortContainer.innerHTML = portfolioHtml;
-            localStorage.setItem(`dash_ai_cache_portfolio_${currentUser}`, portfolioHtml);
+            // 2. Portfolio Analysis (Macro Risk Summary + Terminal Reports for Portfolio Stocks & Crypto)
+            let stockSyms = document.getElementsByClassName('stocks-symbol');
+            let stockCosts = document.getElementsByClassName('stocks-cost');
+            let cryptoSyms = document.getElementsByClassName('crypto-symbol');
+            let cryptoCosts = document.getElementsByClassName('crypto-cost');
+            let portfolioTickersToAnalyze = [];
 
+            for(let i=0; i<stockSyms.length; i++) {
+                let sym = stockSyms[i].value.toUpperCase().trim();
+                let price = parseFloat(stockCosts[i].value) || 0;
+                if(sym !== "") { portfolioTickersToAnalyze.push({ symbol: sym, price: price }); }
+            }
+            for(let i=0; i<cryptoSyms.length; i++) {
+                let sym = cryptoSyms[i].value.toUpperCase().trim();
+                let price = parseFloat(cryptoCosts[i].value) || 0;
+                if(sym !== "") { portfolioTickersToAnalyze.push({ symbol: sym, price: price }); }
+            }
+
+            const aiPortContainer = document.getElementById("ai-output-portfolio");
+            if(portfolioTickersToAnalyze.length === 0) {
+                const errPortMsg = `<div style="background-color: rgba(244, 63, 94, 0.12); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.25); padding: 14px; border-radius: 8px;">No portfolio stocks or crypto found. Please populate your Portfolio tab above.</div>`;
+                aiPortContainer.innerHTML = errPortMsg;
+                aiPortContainer.style.background = 'transparent';
+                aiPortContainer.style.border = 'none';
+            } else {
+                aiPortContainer.style.background = 'transparent';
+                aiPortContainer.style.border = 'none';
+                aiPortContainer.style.padding = '0';
+
+                let portfolioHtml = `
+                <div class="terminal-card">
+                    <div class="terminal-header" onclick="toggleTerminalCard(this)">
+                        <div class="terminal-title-area">
+                            <span class="terminal-ticker">Portfolio Macro Risk & Concentration</span>
+                            <span class="terminal-score-badge">8.2/10</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <span class="terminal-verdict verdict-hold">MODERATE RISK</span>
+                            <span class="terminal-toggle-icon" style="font-weight: 700; color: var(--accent-primary); font-size: 16px;">+</span>
+                        </div>
+                    </div>
+                    <div class="terminal-body" style="display: none;">
+                        <div class="assessment-box">
+                            <strong>Portfolio Review:</strong> Aggregate portfolio beta sits at ~1.15, exhibiting balanced sensitivity to benchmark movements. While cash flow generation across core holdings remains exceptionally robust, high sector concentration requires disciplined rebalancing during interest rate inflection points.
+                        </div>
+                        <div class="metrics-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+                            <div class="hud-item" style="background:rgba(17,24,39,0.8); padding:12px; border-radius:8px;"><span class="hud-label">Estimated Beta</span><span class="hud-val" style="font-size:16px;">1.15</span></div>
+                            <div class="hud-item" style="background:rgba(17,24,39,0.8); padding:12px; border-radius:8px;"><span class="hud-label">Top Concentration</span><span class="hud-val" style="font-size:16px;">Technology (42%)</span></div>
+                            <div class="hud-item" style="background:rgba(17,24,39,0.8); padding:12px; border-radius:8px;"><span class="hud-label">Est. Dividend Yield</span><span class="hud-val" style="font-size:16px;">1.40%</span></div>
+                        </div>
+                    </div>
+                </div>`;
+
+                portfolioTickersToAnalyze.forEach(t => {
+                    portfolioHtml += generateComprehensiveTerminalReport(t.symbol, t.price);
+                });
+
+                aiPortContainer.innerHTML = portfolioHtml;
+                localStorage.setItem(`dash_ai_cache_portfolio_${currentUser}`, portfolioHtml);
+            }
+
+            // 3. Combined Analysis
             const combinedHtml = `
             <div class="terminal-card">
                 <div class="terminal-header" onclick="toggleTerminalCard(this)">
@@ -795,10 +829,10 @@
                     </div>
                     <div style="display: flex; align-items: center; gap: 15px;">
                         <span class="terminal-verdict verdict-buy">OPTIMIZED</span>
-                        <span class="terminal-toggle-icon" style="font-weight: 700; color: var(--accent-primary); font-size: 16px;">−</span>
+                        <span class="terminal-toggle-icon" style="font-weight: 700; color: var(--accent-primary); font-size: 16px;">+</span>
                     </div>
                 </div>
-                <div class="terminal-body">
+                <div class="terminal-body" style="display: none;">
                     <div class="assessment-box" style="border-left-color: var(--accent-green); background: rgba(16, 185, 129, 0.04);">
                         <strong>Synergy Execution:</strong> Adding the validated "New Tickers" to your current portfolio effectively hedges high-beta exposure by introducing stable Free Cash Flow yields and diversifying revenue streams. Recommended tranche sizing: Max 5% per new position.
                     </div>
@@ -870,11 +904,11 @@
                         </div>
                         <div style="display: flex; align-items: center; gap: 15px;">
                             <span class="terminal-verdict ${verdictClass}">${verdict}</span>
-                            <span class="terminal-toggle-icon" style="font-weight: 700; color: var(--accent-primary); font-size: 16px;">−</span>
+                            <span class="terminal-toggle-icon" style="font-weight: 700; color: var(--accent-primary); font-size: 16px;">+</span>
                         </div>
                     </div>
 
-                    <div class="terminal-body">
+                    <div class="terminal-body" style="display: none;">
                         <!-- Row 1: Core Fundamentals & Price Targets (SMA 200 removed) -->
                         <div class="metrics-hud">
                             <div class="hud-item"><span class="hud-label">PEG Ratio</span><span class="hud-val" style="color:${pegColor};">${peg}</span></div>
@@ -961,11 +995,11 @@
                         </div>
                         <div style="display: flex; align-items: center; gap: 15px;">
                             <span class="terminal-verdict ${verdictClass}">${verdict}</span>
-                            <span class="terminal-toggle-icon" style="font-weight: 700; color: var(--accent-primary); font-size: 16px;">−</span>
+                            <span class="terminal-toggle-icon" style="font-weight: 700; color: var(--accent-primary); font-size: 16px;">+</span>
                         </div>
                     </div>
 
-                    <div class="terminal-body">
+                    <div class="terminal-body" style="display: none;">
                         <!-- Row 1: Core Growth Metrics & Targets (SMA 200 removed) -->
                         <div class="metrics-hud" style="grid-template-columns: repeat(7, 1fr);">
                             <div class="hud-item"><span class="hud-label">EV / Sales</span><span class="hud-val">${evSales}x</span></div>
