@@ -1409,7 +1409,7 @@
                 <div class="terminal-card" style="margin-bottom:0;">
                     <div class="terminal-body" style="display: block;">
                         <div class="assessment-box" style="margin-bottom: 16px;">
-                            <strong>Market News Intelligence:</strong> Consolidated real-time headlines across active user tickers (New Tickers, Portfolio, Watchlist), Magnificent 7 leaders, Top Non-Mag 7 titans, and Federal Reserve macroeconomic catalysts. Each asset features 2 top non-duplicate news analyses.
+                            <strong>Market News Intelligence:</strong> Consolidated real-time headlines across active user tickers (New Tickers, Portfolio, Watchlist), Magnificent 7 leaders, Top Non-Mag 7 titans, and Federal Reserve macroeconomic catalysts. Each asset features 2 top non-duplicate news analyses sorted alphabetically by ticker.
                         </div>
 
                         <div class="news-ticker-card" style="border-color: rgba(251, 191, 36, 0.4); background: rgba(251, 191, 36, 0.05);">
@@ -1439,8 +1439,10 @@
 
                 let renderNewsSection = (list, categoryName) => {
                     if (list.length === 0) return "";
-                    let sectionHtml = `<h4 style="color: #fde047; margin-top: 18px; margin-bottom: 12px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em;">📌 ${categoryName} News (${list.length})</h4>`;
-                    list.forEach(sym => {
+                    // Sort tickers alphabetically within each group
+                    let sortedList = [...list].sort();
+                    let sectionHtml = `<h4 style="color: #fde047; margin-top: 18px; margin-bottom: 12px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em;">📌 ${categoryName} News (${sortedList.length})</h4>`;
+                    sortedList.forEach(sym => {
                         sectionHtml += getUniqueNewsForTicker(sym, categoryName);
                     });
                     return sectionHtml;
