@@ -1005,24 +1005,21 @@
         }
 
         function loadMarketEvents() {
-            const earningsContainer = document.getElementById("ai-output-earnings");
-            const macroContainer = document.getElementById("ai-output-macro");
-            const newsContainer = document.getElementById("ai-output-news");
-            if (!earningsContainer || !macroContainer) return;
-
-            earningsContainer.style.background = 'transparent';
-            earningsContainer.style.border = 'none';
-            earningsContainer.style.padding = '0';
-
-            macroContainer.style.background = 'transparent';
-            macroContainer.style.border = 'none';
-            macroContainer.style.padding = '0';
-
-            if (newsContainer) {
-                newsContainer.style.background = 'transparent';
-                newsContainer.style.border = 'none';
-                newsContainer.style.padding = '0';
+            const container = document.getElementById("ai-output-events");
+            
+            // Allow this function to work whether targeting the single container (old) 
+            // or the tabbed panes (new)
+            let earningsContainer = document.getElementById("ai-output-earnings");
+            let macroContainer = document.getElementById("ai-output-macro");
+            let newsContainer = document.getElementById("ai-output-news");
+            
+            // If the old single container exists, use it for both Earnings and Macro
+            if (container && !earningsContainer) {
+                earningsContainer = container;
+                macroContainer = container;
             }
+
+            if (!earningsContainer) return;
 
             let showNew = true;
             let showPortfolio = true;
@@ -1073,6 +1070,7 @@
             }
             watchlistSymbols.forEach(s => watchlistTickersSet.add(s));
 
+            // Deduplicate
             watchlistTickersSet.forEach(s => {
                 if (newTickersSet.has(s) || portfolioTickersSet.has(s)) {
                     watchlistTickersSet.delete(s);
@@ -1087,8 +1085,6 @@
             let newTickersArr = Array.from(newTickersSet);
             let portfolioTickersArr = Array.from(portfolioTickersSet);
             let watchlistTickersArr = Array.from(watchlistTickersSet);
-
-            let combinedEarningsRows = "";
 
             let generatePastEarningsHtml = (sym) => {
                 let hash = 0;
@@ -1105,44 +1101,75 @@
                 return html;
             };
 
-            let generateRowsForList = (list, categoryName) => {
-                if (list.length === 0) return;
-
-                let itemsWithDates = list.map(sym => {
-                    let hash = 0;
-                    for (let i = 0; i < sym.length; i++) { hash = sym.charCodeAt(i) + ((hash << 5) - hash); }
-                    let months = ["Aug 18, 2026", "Aug 26, 2026", "Sep 02, 2026", "Sep 15, 2026", "Oct 22, 2026"];
-                    let dateStr = months[Math.abs(hash) % months.length];
-                    return {
-                        symbol: sym,
-                        date: dateStr,
-                        pastEarningsHtml: generatePastEarningsHtml(sym)
-                    };
-                });
-
-                // Sort items within this group by date (soonest first)
-                itemsWithDates.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-                combinedEarningsRows += `
-                    <tr style="background: rgba(251, 191, 36, 0.1); border-top: 1px solid rgba(251, 191, 36, 0.25);">
-                        <td colspan="5" style="font-weight: 700; color: #fde047; text-transform: uppercase; letter-spacing: 0.06em; padding: 10px 12px;">📌 ${categoryName} (${list.length})</td>
-                    </tr>`;
+            let renderEarningsGroupCard = (list, categoryName, isObjectList = false) => {
+                if (!list || list.length === 0) return "";
                 
-                itemsWithDates.forEach(item => {
-                    combinedEarningsRows += `
-                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
-                            <td style="padding: 10px; font-weight: 800; color: #fde047;">${item.symbol}</td>
-                            <td style="padding: 10px; color: var(--text-primary); font-weight: 600;">${categoryName}</td>
-                            <td style="padding: 10px; color: var(--text-primary);">${item.date}</td>
-                            <td style="padding: 10px;">${item.pastEarningsHtml}</td>
-                            <td style="padding: 10px;"><span class="terminal-verdict verdict-buy" style="font-size: 10px; padding: 2px 8px;">CONFIRMED</span></td>
-                        </tr>`;
-                });
+                let rowsHtml = "";
+                if (!isObjectList) {
+                    let itemsWithDates = list.map(sym => {
+                        let hash = 0;
+                        for (let i = 0; i < sym.length; i++) { hash = sym.charCodeAt(i) + ((hash << 5) - hash); }
+                        let months = ["Aug 18, 2026", "Aug 26, 2026", "Sep 02, 2026", "Sep 15, 2026", "Oct 22, 2026"];
+                        return { symbol: sym, date: months[Math.abs(hash) % months.length], pastEarningsHtml: generatePastEarningsHtml(sym), status: "CONFIRMED" };
+                    });
+                    itemsWithDates.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+                    itemsWithDates.forEach(item => {
+                        rowsHtml += `
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+                                <td style="padding: 10px; font-weight: 800; color: #fde047;">${item.symbol}</td>
+                                <td style="padding: 10px; color: var(--text-primary); font-weight: 600;">${categoryName}</td>
+                                <td style="padding: 10px; color: var(--text-primary);">${item.date}</td>
+                                <td style="padding: 10px;">${item.pastEarningsHtml}</td>
+                                <td style="padding: 10px;"><span class="terminal-verdict verdict-buy" style="font-size: 10px; padding: 2px 8px;">${item.status}</span></td>
+                            </tr>`;
+                    });
+                } else {
+                    list.forEach(item => {
+                        let displayName = item.name ? `${item.symbol} <span style="font-weight: 400; font-size: 11px; color: var(--text-secondary);">(${item.name})</span>` : item.symbol;
+                        rowsHtml += `
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+                                <td style="padding: 10px; font-weight: 800; color: #fde047;">${displayName}</td>
+                                <td style="padding: 10px; color: var(--text-secondary); font-weight: 600;">${categoryName}</td>
+                                <td style="padding: 10px; color: var(--text-primary);">${item.date}</td>
+                                <td style="padding: 10px;">${generatePastEarningsHtml(item.symbol)}</td>
+                                <td style="padding: 10px;"><span class="terminal-verdict ${item.status === 'Confirmed' ? 'verdict-buy' : 'verdict-hold'}" style="font-size: 10px; padding: 2px 8px;">${item.status.toUpperCase()}</span></td>
+                            </tr>`;
+                    });
+                }
+
+                return `
+                <div class="terminal-card" style="margin-bottom: 14px;">
+                    <div class="terminal-header" onclick="toggleTerminalCard(this)" style="margin-bottom: 0; padding-bottom: 0; border-bottom: none; cursor: pointer;">
+                        <div class="terminal-title-area">
+                            <span class="terminal-ticker" style="font-size: 16px; color: #fde047;">📌 ${categoryName} Schedule</span>
+                            <span class="terminal-score-badge">${list.length} Tickers</span>
+                        </div>
+                        <span style="color: var(--accent-primary); font-size: 12px; font-weight: 700;">▼ Toggle</span>
+                    </div>
+                    <div class="terminal-body" style="display: none; margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 12px;">
+                        <div class="table-container">
+                            <table style="width: 100%; border-collapse: collapse; min-width: 650px;">
+                                <thead>
+                                    <tr style="border-bottom: 1px solid var(--border-color);">
+                                        <th style="padding: 10px; color: var(--text-secondary); font-size: 11px;">Ticker / Company</th>
+                                        <th style="padding: 10px; color: var(--text-secondary); font-size: 11px;">Category</th>
+                                        <th style="padding: 10px; color: var(--text-secondary); font-size: 11px;">Est. / Confirmed Date</th>
+                                        <th style="padding: 10px; color: var(--text-secondary); font-size: 11px;">Past 5 Earnings (Est / Act)</th>
+                                        <th style="padding: 10px; color: var(--text-secondary); font-size: 11px;">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>${rowsHtml}</tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>`;
             };
 
-            if (showNew) generateRowsForList(newTickersArr, "New Ticker");
-            if (showPortfolio) generateRowsForList(portfolioTickersArr, "Portfolio");
-            if (showWatchlist) generateRowsForList(watchlistTickersArr, "Watchlist");
+            let combinedEarningsCardsHtml = "";
+            if (showNew) combinedEarningsCardsHtml += renderEarningsGroupCard(newTickersArr, "New Ticker", false);
+            if (showPortfolio) combinedEarningsCardsHtml += renderEarningsGroupCard(portfolioTickersArr, "Portfolio", false);
+            if (showWatchlist) combinedEarningsCardsHtml += renderEarningsGroupCard(watchlistTickersArr, "Watchlist", false);
 
             if (showMag7) {
                 const mag7 = [
@@ -1154,24 +1181,8 @@
                     { symbol: "META", date: "Oct 28, 2026", status: "Estimated" },
                     { symbol: "TSLA", date: "Oct 21, 2026", status: "Estimated" }
                 ];
-                // Sort Mag 7 by date soonest first
                 mag7.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-                combinedEarningsRows += `
-                    <tr style="background: rgba(251, 191, 36, 0.1); border-top: 1px solid rgba(251, 191, 36, 0.25);">
-                        <td colspan="5" style="font-weight: 700; color: #fde047; text-transform: uppercase; letter-spacing: 0.06em; padding: 10px 12px;">🌟 Magnificent 7</td>
-                    </tr>`;
-                mag7.forEach(m => {
-                    let pastEarningsHtml = generatePastEarningsHtml(m.symbol);
-                    combinedEarningsRows += `
-                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
-                            <td style="padding: 10px; font-weight: 800; color: #fde047;">${m.symbol}</td>
-                            <td style="padding: 10px; color: var(--text-secondary); font-weight: 600;">Magnificent 7</td>
-                            <td style="padding: 10px; color: var(--text-primary);">${m.date}</td>
-                            <td style="padding: 10px;">${pastEarningsHtml}</td>
-                            <td style="padding: 10px;"><span class="terminal-verdict ${m.status === 'Confirmed' ? 'verdict-buy' : 'verdict-hold'}" style="font-size: 10px; padding: 2px 8px;">${m.status.toUpperCase()}</span></td>
-                        </tr>`;
-                });
+                combinedEarningsCardsHtml += renderEarningsGroupCard(mag7, "Magnificent 7", true);
             }
 
             if (showNonMag7) {
@@ -1182,102 +1193,29 @@
                     { symbol: "JPM", name: "JPMorgan Chase", date: "Oct 14, 2026", status: "Estimated" },
                     { symbol: "WMT", name: "Walmart Inc", date: "Nov 17, 2026", status: "Estimated" }
                 ];
-                // Sort Top 5 Non-Mag 7 by date soonest first
                 top5NonMag7.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-                combinedEarningsRows += `
-                    <tr style="background: rgba(251, 191, 36, 0.1); border-top: 1px solid rgba(251, 191, 36, 0.25);">
-                        <td colspan="5" style="font-weight: 700; color: #fde047; text-transform: uppercase; letter-spacing: 0.06em; padding: 10px 12px;">🏛️ Top 5 Non-Mag 7</td>
-                    </tr>`;
-                top5NonMag7.forEach(t => {
-                    let pastEarningsHtml = generatePastEarningsHtml(t.symbol);
-                    combinedEarningsRows += `
-                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
-                            <td style="padding: 10px; font-weight: 800; color: #fde047;">${t.symbol} <span style="font-weight: 400; font-size: 11px; color: var(--text-secondary);">(${t.name})</span></td>
-                            <td style="padding: 10px; color: var(--text-secondary); font-weight: 600;">Top 5 Non-Mag 7</td>
-                            <td style="padding: 10px; color: var(--text-primary);">${t.date}</td>
-                            <td style="padding: 10px;">${pastEarningsHtml}</td>
-                            <td style="padding: 10px;"><span class="terminal-verdict ${t.status === 'Confirmed' ? 'verdict-buy' : 'verdict-hold'}" style="font-size: 10px; padding: 2px 8px;">${t.status.toUpperCase()}</span></td>
-                        </tr>`;
-                });
+                combinedEarningsCardsHtml += renderEarningsGroupCard(top5NonMag7, "Top 5 Non-Mag 7", true);
             }
 
-            let combinedEarningsHtml = `
-            <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 14px; background: rgba(39,39,42,0.5); padding: 10px 16px; border-radius: 8px; font-size: 12px; border: 1px solid rgba(255,255,255,0.05); flex-wrap: wrap;">
+            let sourceFilterBar = `
+            <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 14px; background: rgba(39,39,42,0.5); padding: 10px 16px; border-radius: 8px; font-size: 12px; border: 1px solid rgba(255,255,255,0.05); flex-wrap: wrap;">
                 <span style="font-weight: 700; color: #fde047; text-transform: uppercase; letter-spacing: 0.05em;">Source Filters:</span>
                 <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--text-primary); font-weight: 600;"><input type="checkbox" id="filter-new-ticker" ${showNew ? 'checked' : ''} onchange="loadMarketEvents()"> New Ticker</label>
                 <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--text-primary); font-weight: 600;"><input type="checkbox" id="filter-portfolio" ${showPortfolio ? 'checked' : ''} onchange="loadMarketEvents()"> Portfolio</label>
                 <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--text-primary); font-weight: 600;"><input type="checkbox" id="filter-watchlist" ${showWatchlist ? 'checked' : ''} onchange="loadMarketEvents()"> Watchlist</label>
-                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--text-primary); font-weight: 600;"><input type="checkbox" id="filter-mag7" ${showMag7 ? 'checked' : ''} onchange="loadMarketEvents()"> Mag7</label>
-                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--text-primary); font-weight: 600;"><input type="checkbox" id="filter-nonmag7" ${showNonMag7 ? 'checked' : ''} onchange="loadMarketEvents()"> Top non-Mag7</label>
-            </div>
-            <div class="table-container">
-                <table style="width: 100%; border-collapse: collapse; min-width: 650px;">
-                    <thead>
-                        <tr style="border-bottom: 1px solid var(--border-color);">
-                            <th style="padding: 10px; color: var(--text-secondary); font-size: 11px;">Ticker / Company</th>
-                            <th style="padding: 10px; color: var(--text-secondary); font-size: 11px;">Category</th>
-                            <th style="padding: 10px; color: var(--text-secondary); font-size: 11px;">Est. / Confirmed Date</th>
-                            <th style="padding: 10px; color: var(--text-secondary); font-size: 11px;">Past 5 Earnings (Est / Act)</th>
-                            <th style="padding: 10px; color: var(--text-secondary); font-size: 11px;">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>${combinedEarningsRows}</tbody>
-                </table>
+                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--text-primary); font-weight: 600;"><input type="checkbox" id="filter-mag7" ${showMag7 ? 'checked' : ''} onchange="loadMarketEvents()"> Mag 7</label>
+                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--text-primary); font-weight: 600;"><input type="checkbox" id="filter-nonmag7" ${showNonMag7 ? 'checked' : ''} onchange="loadMarketEvents()"> Non-Mag 7</label>
             </div>`;
 
             const macroEvents = [
-                { 
-                    event: "FOMC Rate Decision & Press Conference", 
-                    date: "Sep 16, 2026", 
-                    type: "Fed Meeting", 
-                    impact: "High Volatility", 
-                    reason: "Triggers aggressive intraday repricing across equity multiples, Treasury yields, and bond rates based on the updated dot plot, terminal rate path, and Powell's tone.",
-                    forecast: "Expected 25 bps Cut" 
-                },
-                { 
-                    event: "U.S. Consumer Price Index (CPI) YoY", 
-                    date: "Aug 12, 2026", 
-                    type: "Economic Data", 
-                    impact: "High Volatility", 
-                    reason: "Directly shapes inflation expectations and immediate Fed rate-cut probabilities, causing sharp sector rotations between growth tech and defensive cash-flow assets.",
-                    forecast: "2.8% Est." 
-                },
-                { 
-                    event: "Nonfarm Payrolls (Jobs Report)", 
-                    date: "Sep 04, 2026", 
-                    type: "Labor Market", 
-                    impact: "High Volatility", 
-                    reason: "Serves as the primary health gauge of the U.S. economy; unexpected job growth or contraction instantly alters hard-landing vs. soft-landing recession fears.",
-                    forecast: "165K Est." 
-                },
-                { 
-                    event: "FOMC Rate Decision & Press Conference", 
-                    date: "Nov 04, 2026", 
-                    type: "Fed Meeting", 
-                    impact: "High Volatility", 
-                    reason: "Evaluates post-summer economic resilience and adjusts quantitative easing or tightening velocity heading into the year-end holiday consumption quarter.",
-                    forecast: "Rate Path Review" 
-                },
-                { 
-                    event: "Advance U.S. Q3 GDP Growth Rate", 
-                    date: "Oct 29, 2026", 
-                    type: "Macro Growth", 
-                    impact: "Medium Volatility", 
-                    reason: "Measures overall macroeconomic expansion velocity, dictating sector cyclicality earnings revisions and institutional risk-appetite allocations.",
-                    forecast: "2.3% Est." 
-                },
-                { 
-                    event: "FOMC Rate Decision (Final 2026)", 
-                    date: "Dec 16, 2026", 
-                    type: "Fed Meeting", 
-                    impact: "High Volatility", 
-                    reason: "Finalizes monetary policy baseline for the upcoming year, driving massive institutional portfolio rebalancing and window-dressing positioning.",
-                    forecast: "Year-End Outlook" 
-                }
+                { event: "FOMC Rate Decision & Press Conference", date: "Sep 16, 2026", type: "Fed Meeting", impact: "High Volatility", reason: "Triggers aggressive intraday repricing across equity multiples, Treasury yields, and bond rates based on the updated dot plot, terminal rate path, and Powell's tone.", forecast: "Expected 25 bps Cut" },
+                { event: "U.S. Consumer Price Index (CPI) YoY", date: "Aug 12, 2026", type: "Economic Data", impact: "High Volatility", reason: "Directly shapes inflation expectations and immediate Fed rate-cut probabilities, causing sharp sector rotations between growth tech and defensive cash-flow assets.", forecast: "2.8% Est." },
+                { event: "Nonfarm Payrolls (Jobs Report)", date: "Sep 04, 2026", type: "Labor Market", impact: "High Volatility", reason: "Serves as the primary health gauge of the U.S. economy; unexpected job growth or contraction instantly alters hard-landing vs. soft-landing recession fears.", forecast: "165K Est." },
+                { event: "FOMC Rate Decision & Press Conference", date: "Nov 04, 2026", type: "Fed Meeting", impact: "High Volatility", reason: "Evaluates post-summer economic resilience and adjusts quantitative easing or tightening velocity heading into the year-end holiday consumption quarter.", forecast: "Rate Path Review" },
+                { event: "Advance U.S. Q3 GDP Growth Rate", date: "Oct 29, 2026", type: "Macro Growth", impact: "Medium Volatility", reason: "Measures overall macroeconomic expansion velocity, dictating sector cyclicality earnings revisions and institutional risk-appetite allocations.", forecast: "2.3% Est." },
+                { event: "FOMC Rate Decision (Final 2026)", date: "Dec 16, 2026", type: "Fed Meeting", impact: "High Volatility", reason: "Finalizes monetary policy baseline for the upcoming year, driving massive institutional portfolio rebalancing and window-dressing positioning.", forecast: "Year-End Outlook" }
             ];
 
-            // Sort Economic Calendar events chronologically (soonest first)
             macroEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
 
             let macroRows = "";
@@ -1294,6 +1232,7 @@
                         <td style="padding: 10px; color: var(--text-primary); font-size: 12px;">${m.forecast}</td>
                     </tr>`;
             });
+            
             let macroHtml = `
             <div class="table-container">
                 <table style="width: 100%; border-collapse: collapse; min-width: 650px;">
@@ -1310,159 +1249,217 @@
                 </table>
             </div>`;
 
-            earningsContainer.innerHTML = `
-                <div class="terminal-card" style="margin-bottom:0;">
-                    <div class="terminal-body" style="display: block;">
-                        <div class="assessment-box" style="margin-bottom: 12px;">
-                            <strong>Unified Earnings Schedule:</strong> Consolidated upcoming earnings dates, filterable source inputs, and past 5 quarters of Estimate vs. Actual EPS performance (Green = Beat, Red = Miss).
-                        </div>
-                        ${combinedEarningsHtml}
-                    </div>
-                </div>
-            `;
+            // If we are using the new tabbed layout
+            if (document.getElementById("pane-events-earnings")) {
+                earningsContainer.style.background = 'transparent';
+                earningsContainer.style.border = 'none';
+                earningsContainer.style.padding = '0';
+                macroContainer.style.background = 'transparent';
+                macroContainer.style.border = 'none';
+                macroContainer.style.padding = '0';
 
-            macroContainer.innerHTML = `
-                <div class="terminal-card" style="margin-bottom:0;">
-                    <div class="terminal-body" style="display: block;">
-                        <div class="assessment-box" style="margin-bottom: 12px;">
-                            <strong>Macroeconomic Catalyst Schedule:</strong> Federal Reserve FOMC rate decisions, press conferences, CPI inflation reports, GDP prints, and labor market releases complete with causal market impact analyses.
-                        </div>
-                        ${macroHtml}
-                    </div>
-                </div>
-            `;
-
-            /* --- MARKET NEWS GENERATION LOGIC --- */
-            if (newsContainer) {
-                let seenHeadlines = new Set();
-
-                let getUniqueNewsForTicker = (symbol, category) => {
-                    let hash = 0;
-                    for (let i = 0; i < symbol.length; i++) { hash = symbol.charCodeAt(i) + ((hash << 5) - hash); }
-
-                    const headlinePoolA = [
-                        `${symbol} Rebounds as Institutional Inflows Accelerate Post-Analyst Upgrades`,
-                        `Wall Street Raises Price Target on ${symbol} Citing High Margin Expansion Momentum`,
-                        `${symbol} Unveils Next-Gen AI Infrastructure Capabilities to Expand Enterprise Dominance`,
-                        `${symbol} Secures Multi-Billion Dollar Strategic Contract Expansion`,
-                        `Options Trading Volume Surges for ${symbol} as Traders Position for Earnings Volatility`
-                    ];
-
-                    const headlinePoolB = [
-                        `${symbol} Faces Short-Term Margin Pressure Amid Supply Chain Rebalancing`,
-                        `Brokers Adjust Near-Term Valuation Multiples on ${symbol} Following Sector Rotation`,
-                        `${symbol} Capital Allocation Plan Highlights Increased Dividend Coverage & Share Buybacks`,
-                        `Macroeconomic Headwinds Impacting ${symbol} Sector Multiples in Risk-Off Session`,
-                        `Institutional Portfolio Managers Increase Allocation Weights in ${symbol}`
-                    ];
-
-                    let item1Index = Math.abs(hash) % headlinePoolA.length;
-                    let item2Index = Math.abs(hash + 3) % headlinePoolB.length;
-
-                    let head1 = headlinePoolA[item1Index];
-                    let head2 = headlinePoolB[item2Index];
-
-                    while (seenHeadlines.has(head1)) {
-                        item1Index = (item1Index + 1) % headlinePoolA.length;
-                        head1 = headlinePoolA[item1Index];
-                    }
-                    seenHeadlines.add(head1);
-
-                    while (seenHeadlines.has(head2) || head2 === head1) {
-                        item2Index = (item2Index + 1) % headlinePoolB.length;
-                        head2 = headlinePoolB[item2Index];
-                    }
-                    seenHeadlines.add(head2);
-
-                    const sources = ["Bloomberg", "Reuters", "Wall Street Journal", "Financial Times", "CNBC MarketWatch"];
-                    let src1 = sources[Math.abs(hash) % sources.length];
-                    let src2 = sources[Math.abs(hash + 2) % sources.length];
-
-                    return `
-                    <div class="news-ticker-card">
-                        <div class="news-ticker-header">
-                            <span class="news-ticker-title">${symbol}</span>
-                            <span class="terminal-score-badge" style="font-size: 10px;">${category}</span>
-                        </div>
-                        <div class="news-item">
-                            <div class="news-headline">${head1}</div>
-                            <div class="news-meta">
-                                <span>📰 ${src1}</span>
-                                <span>• 2 hours ago</span>
-                                <span class="badge-bullish">BULLISH</span>
+                earningsContainer.innerHTML = `
+                    <div class="terminal-card" style="margin-bottom:0;">
+                        <div class="terminal-body" style="display: block;">
+                            <div class="assessment-box" style="margin-bottom: 12px;">
+                                <strong>Unified Earnings Schedule:</strong> Click any category header below to toggle its respective table open or closed.
                             </div>
-                            <div class="news-summary">Analysts highlight strong free cash flow resilience and accelerating enterprise demand driving institutional accumulation ahead of upcoming macro catalysts.</div>
+                            ${sourceFilterBar}
+                            ${combinedEarningsCardsHtml}
                         </div>
-                        <div class="news-item">
-                            <div class="news-headline">${head2}</div>
-                            <div class="news-meta">
-                                <span>📰 ${src2}</span>
-                                <span>• 5 hours ago</span>
-                                <span class="badge-neutral">NEUTRAL</span>
-                            </div>
-                            <div class="news-summary">Trading activity reflects balanced sentiment as macro rate decision uncertainty continues to cap valuation multiples near major moving average resistances.</div>
-                        </div>
-                    </div>`;
-                };
-
-                let newsHtml = `
-                <div class="terminal-card" style="margin-bottom:0;">
-                    <div class="terminal-body" style="display: block;">
-                        <div class="assessment-box" style="margin-bottom: 16px;">
-                            <strong>Market News Intelligence:</strong> Consolidated real-time headlines across active user tickers (New Tickers, Portfolio, Watchlist), Magnificent 7 leaders, Top Non-Mag 7 titans, and Federal Reserve macroeconomic catalysts. Each asset features 2 top non-duplicate news analyses sorted alphabetically by ticker.
-                        </div>
-
-                        <div class="news-ticker-card" style="border-color: rgba(251, 191, 36, 0.4); background: rgba(251, 191, 36, 0.05);">
-                            <div class="news-ticker-header">
-                                <span class="news-ticker-title" style="color: #fde047;">🏛️ Federal Reserve & Macroeconomic Market Impact News</span>
-                                <span class="terminal-score-badge">MACRO CRITICAL</span>
-                            </div>
-                            <div class="news-item">
-                                <div class="news-headline">Fed Signals Imminent Policy Shift as Core Inflation Metrics Cool Towards Target</div>
-                                <div class="news-meta">
-                                    <span>📰 Federal Reserve / Bloomberg</span>
-                                    <span>• 1 hour ago</span>
-                                    <span class="badge-bullish">HIGH VOLATILITY</span>
-                                </div>
-                                <div class="news-summary">Federal Reserve officials emphasize rate cut flexibilities entering upcoming FOMC meetings. Equity futures repriced higher while 10-year Treasury yields pulled back sharply across morning trading sessions.</div>
-                            </div>
-                            <div class="news-item">
-                                <div class="news-headline">Labor Market Data and GDP Revision Support Soft-Landing Scenario for U.S. Equities</div>
-                                <div class="news-meta">
-                                    <span>📰 Reuters Financials</span>
-                                    <span>• 3 hours ago</span>
-                                    <span class="badge-bullish">BULLISH MACRO</span>
-                                </div>
-                                <div class="news-summary">Macro economic releases show durable consumer spending alongside stable nonfarm payroll growth, alleviating hard-landing recession anxieties across growth tech sectors.</div>
-                            </div>
-                        </div>`;
-
-                let renderNewsSection = (list, categoryName) => {
-                    if (list.length === 0) return "";
-                    // Sort tickers alphabetically within each group
-                    let sortedList = [...list].sort();
-                    let sectionHtml = `<h4 style="color: #fde047; margin-top: 18px; margin-bottom: 12px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em;">📌 ${categoryName} News (${sortedList.length})</h4>`;
-                    sortedList.forEach(sym => {
-                        sectionHtml += getUniqueNewsForTicker(sym, categoryName);
-                    });
-                    return sectionHtml;
-                };
-
-                newsHtml += renderNewsSection(newTickersArr, "New Tickers");
-                newsHtml += renderNewsSection(portfolioTickersArr, "Portfolio");
-                newsHtml += renderNewsSection(watchlistTickersArr, "Watchlist");
-
-                const mag7Symbols = ["NVDA", "AAPL", "MSFT", "GOOGL", "AMZN", "META", "TSLA"];
-                newsHtml += renderNewsSection(mag7Symbols, "Magnificent 7");
-
-                const topNonMag7Symbols = ["LLY", "AVGO", "BRK.B", "JPM", "WMT"];
-                newsHtml += renderNewsSection(topNonMag7Symbols, "Top Non-Mag 7");
-
-                newsHtml += `
                     </div>
                 `;
 
-                newsContainer.innerHTML = newsHtml;
+                macroContainer.innerHTML = `
+                    <div class="terminal-card" style="margin-bottom:0;">
+                        <div class="terminal-body" style="display: block;">
+                            <div class="assessment-box" style="margin-bottom: 12px;">
+                                <strong>Macroeconomic Catalyst Schedule:</strong> Federal Reserve FOMC rate decisions, press conferences, CPI inflation reports, GDP prints, and labor market releases complete with causal market impact analyses.
+                            </div>
+                            ${macroHtml}
+                        </div>
+                    </div>
+                `;
+
+                /* --- MARKET NEWS GENERATION LOGIC --- */
+                if (newsContainer) {
+                    newsContainer.style.background = 'transparent';
+                    newsContainer.style.border = 'none';
+                    newsContainer.style.padding = '0';
+
+                    let seenHeadlines = new Set();
+
+                    let getUniqueNewsForTicker = (symbol, category) => {
+                        let hash = 0;
+                        for (let i = 0; i < symbol.length; i++) { hash = symbol.charCodeAt(i) + ((hash << 5) - hash); }
+
+                        const headlinePoolA = [
+                            `${symbol} Rebounds as Institutional Inflows Accelerate Post-Analyst Upgrades`,
+                            `Wall Street Raises Price Target on ${symbol} Citing High Margin Expansion Momentum`,
+                            `${symbol} Unveils Next-Gen AI Infrastructure Capabilities to Expand Enterprise Dominance`,
+                            `${symbol} Secures Multi-Billion Dollar Strategic Contract Expansion`,
+                            `Options Trading Volume Surges for ${symbol} as Traders Position for Earnings Volatility`
+                        ];
+
+                        const headlinePoolB = [
+                            `${symbol} Faces Short-Term Margin Pressure Amid Supply Chain Rebalancing`,
+                            `Brokers Adjust Near-Term Valuation Multiples on ${symbol} Following Sector Rotation`,
+                            `${symbol} Capital Allocation Plan Highlights Increased Dividend Coverage & Share Buybacks`,
+                            `Macroeconomic Headwinds Impacting ${symbol} Sector Multiples in Risk-Off Session`,
+                            `Institutional Portfolio Managers Increase Allocation Weights in ${symbol}`
+                        ];
+
+                        let item1Index = Math.abs(hash) % headlinePoolA.length;
+                        let item2Index = Math.abs(hash + 3) % headlinePoolB.length;
+
+                        let head1 = headlinePoolA[item1Index];
+                        let head2 = headlinePoolB[item2Index];
+
+                        while (seenHeadlines.has(head1)) {
+                            item1Index = (item1Index + 1) % headlinePoolA.length;
+                            head1 = headlinePoolA[item1Index];
+                        }
+                        seenHeadlines.add(head1);
+
+                        while (seenHeadlines.has(head2) || head2 === head1) {
+                            item2Index = (item2Index + 1) % headlinePoolB.length;
+                            head2 = headlinePoolB[item2Index];
+                        }
+                        seenHeadlines.add(head2);
+
+                        const sources = ["Bloomberg", "Reuters", "Wall Street Journal", "Financial Times", "CNBC MarketWatch"];
+                        let src1 = sources[Math.abs(hash) % sources.length];
+                        let src2 = sources[Math.abs(hash + 2) % sources.length];
+
+                        return `
+                        <div class="news-ticker-card">
+                            <div class="news-ticker-header">
+                                <span class="news-ticker-title">${symbol}</span>
+                                <span class="terminal-score-badge" style="font-size: 10px;">${category}</span>
+                            </div>
+                            <div class="news-item">
+                                <div class="news-headline">${head1}</div>
+                                <div class="news-meta">
+                                    <span>📰 ${src1}</span>
+                                    <span>• 2 hours ago</span>
+                                    <span class="badge-bullish">BULLISH</span>
+                                </div>
+                                <div class="news-summary">Analysts highlight strong free cash flow resilience and accelerating enterprise demand driving institutional accumulation ahead of upcoming macro catalysts.</div>
+                            </div>
+                            <div class="news-item">
+                                <div class="news-headline">${head2}</div>
+                                <div class="news-meta">
+                                    <span>📰 ${src2}</span>
+                                    <span>• 5 hours ago</span>
+                                    <span class="badge-neutral">NEUTRAL</span>
+                                </div>
+                                <div class="news-summary">Trading activity reflects balanced sentiment as macro rate decision uncertainty continues to cap valuation multiples near major moving average resistances.</div>
+                            </div>
+                        </div>`;
+                    };
+
+                    let newsHtml = `
+                    <div class="terminal-card" style="margin-bottom:0;">
+                        <div class="terminal-body" style="display: block;">
+                            <div class="assessment-box" style="margin-bottom: 16px;">
+                                <strong>Market News Intelligence:</strong> Consolidated real-time headlines across active user tickers (New Tickers, Portfolio, Watchlist), Magnificent 7 leaders, Top Non-Mag 7 titans, and Federal Reserve macroeconomic catalysts. Each asset features 2 top non-duplicate news analyses sorted alphabetically by ticker.
+                            </div>
+
+                            <div class="news-ticker-card" style="border-color: rgba(251, 191, 36, 0.4); background: rgba(251, 191, 36, 0.05);">
+                                <div class="news-ticker-header">
+                                    <span class="news-ticker-title" style="color: #fde047;">🏛️ Federal Reserve & Macroeconomic Market Impact News</span>
+                                    <span class="terminal-score-badge">MACRO CRITICAL</span>
+                                </div>
+                                <div class="news-item">
+                                    <div class="news-headline">Fed Signals Imminent Policy Shift as Core Inflation Metrics Cool Towards Target</div>
+                                    <div class="news-meta">
+                                        <span>📰 Federal Reserve / Bloomberg</span>
+                                        <span>• 1 hour ago</span>
+                                        <span class="badge-bullish">HIGH VOLATILITY</span>
+                                    </div>
+                                    <div class="news-summary">Federal Reserve officials emphasize rate cut flexibilities entering upcoming FOMC meetings. Equity futures repriced higher while 10-year Treasury yields pulled back sharply across morning trading sessions.</div>
+                                </div>
+                                <div class="news-item">
+                                    <div class="news-headline">Labor Market Data and GDP Revision Support Soft-Landing Scenario for U.S. Equities</div>
+                                    <div class="news-meta">
+                                        <span>📰 Reuters Financials</span>
+                                        <span>• 3 hours ago</span>
+                                        <span class="badge-bullish">BULLISH MACRO</span>
+                                    </div>
+                                    <div class="news-summary">Macro economic releases show durable consumer spending alongside stable nonfarm payroll growth, alleviating hard-landing recession anxieties across growth tech sectors.</div>
+                                </div>
+                            </div>`;
+
+                    let renderNewsSection = (list, categoryName) => {
+                        if (list.length === 0) return "";
+                        let sortedList = [...list].sort();
+                        let sectionHtml = `<div class="terminal-card" style="margin-top: 18px; margin-bottom: 14px; background: rgba(12,10,9,0.5); padding: 15px;">
+                            <div class="terminal-header" onclick="toggleTerminalCard(this)" style="margin-bottom: 0; padding-bottom: 0; border-bottom: none;">
+                                <div class="terminal-title-area">
+                                    <span class="terminal-ticker" style="font-size: 15px; color: #fde047;">📌 ${categoryName} News</span>
+                                    <span class="terminal-score-badge">${sortedList.length}</span>
+                                </div>
+                                <span style="color: var(--accent-primary); font-size: 12px; font-weight: 700;">▼ Toggle</span>
+                            </div>
+                            <div class="terminal-body" style="display: none; margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 12px;">`;
+                        
+                        sortedList.forEach(sym => {
+                            sectionHtml += getUniqueNewsForTicker(sym, categoryName);
+                        });
+                        sectionHtml += `</div></div>`;
+                        return sectionHtml;
+                    };
+
+                    newsHtml += renderNewsSection(newTickersArr, "New Tickers");
+                    newsHtml += renderNewsSection(portfolioTickersArr, "Portfolio");
+                    newsHtml += renderNewsSection(watchlistTickersArr, "Watchlist");
+
+                    const mag7Symbols = ["NVDA", "AAPL", "MSFT", "GOOGL", "AMZN", "META", "TSLA"];
+                    newsHtml += renderNewsSection(mag7Symbols, "Magnificent 7");
+
+                    const topNonMag7Symbols = ["LLY", "AVGO", "BRK.B", "JPM", "WMT"];
+                    newsHtml += renderNewsSection(topNonMag7Symbols, "Top Non-Mag 7");
+
+                    newsHtml += `
+                        </div>
+                    `;
+
+                    newsContainer.innerHTML = newsHtml;
+                }
+            } else {
+                // Fallback for old single-container layout (just in case)
+                earningsContainer.innerHTML = `
+                    <div class="terminal-card">
+                        <div class="terminal-header" onclick="toggleTerminalCard(this)">
+                            <div class="terminal-title-area">
+                                <span class="terminal-ticker">1. Combined Earnings Calendar</span>
+                                <span class="terminal-score-badge">Collapsible Categories</span>
+                            </div>
+                        </div>
+                        <div class="terminal-body" style="display: block;">
+                            <div class="assessment-box" style="margin-bottom: 12px;">
+                                <strong>Unified Earnings Schedule:</strong> Click any category header below to toggle its respective table open or closed.
+                            </div>
+                            ${sourceFilterBar}
+                            ${combinedEarningsCardsHtml}
+                        </div>
+                    </div>
+
+                    <div class="terminal-card">
+                        <div class="terminal-header" onclick="toggleTerminalCard(this)">
+                            <div class="terminal-title-area">
+                                <span class="terminal-ticker">2. Economic Events & Fed Meetings Calendar</span>
+                                <span class="terminal-score-badge">FOMC & Macro Data</span>
+                            </div>
+                        </div>
+                        <div class="terminal-body" style="display: block;">
+                            <div class="assessment-box" style="margin-bottom: 12px;">
+                                <strong>Macroeconomic Catalyst Schedule:</strong> Federal Reserve FOMC rate decisions, press conferences, CPI inflation reports, GDP prints, and labor market releases complete with causal market impact analyses.
+                            </div>
+                            ${macroHtml}
+                        </div>
+                    </div>
+                `;
             }
         }
 
