@@ -3,29 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InvestmentAI</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>NGUYENILY — Investment AI Terminal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-main: #030712;
-            --bg-surface: rgba(17, 24, 39, 0.75);
-            --bg-surface-hover: rgba(31, 41, 55, 0.85);
-            --bg-card: rgba(11, 15, 25, 0.90);
-            --border-color: rgba(255, 255, 255, 0.08);
-            --border-glow: rgba(99, 102, 241, 0.3);
-            --text-primary: #f9fafb;
-            --text-secondary: #9ca3af;
-            --accent-primary: #6366f1; /* Indigo */
-            --accent-hover: #4f46e5;
-            --accent-green: #10b981;
-            --accent-red: #f43f5e;
+            --bg-main: #0c0a09;
+            --bg-surface: rgba(24, 24, 27, 0.88);
+            --bg-surface-hover: rgba(39, 39, 42, 0.92);
+            --bg-card: rgba(12, 10, 9, 0.95);
+            --border-color: rgba(251, 191, 36, 0.22);
+            --border-glow: rgba(251, 191, 36, 0.45);
+            --text-primary: #fefce8;
+            --text-secondary: #a1a1aa;
+            --accent-primary: #fbbf24; 
+            --accent-glow: rgba(251, 191, 36, 0.25);
+            --accent-green: #34d399;
+            --accent-red: #f87171;
             --accent-amber: #f59e0b;
-            --radius: 12px;
+            --radius: 14px;
         }
 
         body { 
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
-            background: radial-gradient(circle at top center, #0f172a 0%, var(--bg-main) 70%);
+            background: radial-gradient(circle at 50% 0%, #292524 0%, var(--bg-main) 75%);
             color: var(--text-primary); 
             margin: 0; 
             padding: 35px; 
@@ -33,30 +33,43 @@
             -webkit-font-smoothing: antialiased;
         }
         
-        /* Sleek Glass Header */
+        /* Enhanced Header / Title Bar with Stock Market Background Image & Gold Glow */
         .header { 
             display: grid; 
             grid-template-columns: 1fr auto 1fr;
             align-items: center; 
-            background: var(--bg-surface); 
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            padding: 20px 32px; 
+            background: linear-gradient(135deg, rgba(41, 37, 36, 0.92) 0%, rgba(12, 10, 9, 0.95) 100%), 
+                        url('https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=1200&q=80'); 
+            background-size: cover;
+            background-position: center;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 22px 32px; 
             border-radius: var(--radius); 
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2); 
-            margin-bottom: 25px; 
-            border: 1px solid var(--border-color);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(251, 191, 36, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.5); 
+            margin-bottom: 20px; 
+            border: 1px solid rgba(251, 191, 36, 0.25);
+            position: relative;
+        }
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 20px;
+            right: 20px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.5), transparent);
         }
         .header-left { justify-self: start; }
         .header-center { justify-self: center; display: flex; align-items: center; }
         .header-right { justify-self: end; display: flex; align-items: center; gap: 18px; }
         
-        .header h2 { margin: 0; color: #ffffff; font-size: 20px; font-weight: 700; letter-spacing: -0.03em; }
+        .header h2 { margin: 0; color: #ffffff; font-size: 21px; font-weight: 800; letter-spacing: -0.03em; background: linear-gradient(135deg, #fff 30%, #fde047 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
         
         .logout-btn { 
-            background: rgba(244, 63, 94, 0.1); 
+            background: rgba(248, 113, 113, 0.08); 
             color: var(--accent-red); 
-            border: 1px solid rgba(244, 63, 94, 0.25); 
+            border: 1px solid rgba(248, 113, 113, 0.25); 
             padding: 8px 18px; 
             border-radius: 8px; 
             cursor: pointer; 
@@ -64,58 +77,12 @@
             font-size: 13px;
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .logout-btn:hover { background: var(--accent-red); color: white; box-shadow: 0 0 15px rgba(244, 63, 94, 0.4); }
+        .logout-btn:hover { background: var(--accent-red); color: white; box-shadow: 0 0 20px rgba(248, 113, 113, 0.4); }
         
         /* Main Collapsible Section Styles */
         .collapsible { 
             background-color: var(--bg-surface); 
-            backdrop-filter: blur(12px);
-            color: var(--text-primary); 
-            cursor: pointer; 
-            padding: 20px 24px; 
-            width: 100%; 
-            border: 1px solid var(--border-color); 
-            text-align: left; 
-            outline: none; 
-            font-size: 16px; 
-            border-radius: var(--radius); 
-            margin-bottom: 10px; 
-            display: flex; 
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 600;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
-            transition: all 0.25s ease;
-        }
-        .collapsible:hover { background-color: var(--bg-surface-hover); border-color: var(--border-glow); }
-        
-        .collapsible:after, 
-        .sub-collapsible:after { 
-            content: '+'; 
-            font-weight: 600; 
-            color: var(--accent-primary); 
-            font-size: 18px; 
-            transition: transform 0.25s ease; 
-        }
-        .collapsible.active:after, 
-        .sub-collapsible.active:after { 
-            content: "−"; 
-        }
-        
-        .content { 
-            padding: 24px; 
-            display: none; 
-            background-color: var(--bg-card); 
-            border-radius: 0 0 var(--radius) var(--radius); 
-            margin-bottom: 20px; 
-            border: 1px solid var(--border-color);
-            border-top: none;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
-        }
-        .content.open { display: block; }
-
-        .sub-collapsible { 
-            background-color: rgba(17, 24, 39, 0.6); 
+            backdrop-filter: blur(16px);
             color: var(--text-primary); 
             cursor: pointer; 
             padding: 16px 20px; 
@@ -124,37 +91,82 @@
             text-align: left; 
             outline: none; 
             font-size: 15px; 
-            border-radius: 10px; 
-            margin-top: 24px; 
-            margin-bottom: 10px; 
+            border-radius: var(--radius); 
+            margin-bottom: 6px; 
             display: flex; 
-            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(251, 191, 36, 0.06);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .collapsible:hover { background-color: var(--bg-surface-hover); border-color: var(--border-glow); box-shadow: 0 8px 28px rgba(251, 191, 36, 0.2); }
+        
+        .collapsible:before, 
+        .sub-collapsible:before { 
+            content: '▶'; 
+            color: var(--accent-primary); 
+            font-size: 11px; 
+            margin-right: 12px;
+            transition: transform 0.25s ease; 
+        }
+        .collapsible.active:before, 
+        .sub-collapsible.active:before { 
+            content: "▼"; 
+        }
+        
+        .content { 
+            padding: 16px 20px; 
+            display: none; 
+            background-color: var(--bg-card); 
+            border-radius: 0 0 var(--radius) var(--radius); 
+            margin-bottom: 12px; 
+            border: 1px solid var(--border-color);
+            border-top: none;
+            box-shadow: inset 0 4px 12px rgba(0,0,0,0.6);
+        }
+        .content.open { display: block; }
+
+        .sub-collapsible { 
+            background-color: rgba(39, 39, 42, 0.65); 
+            color: var(--text-primary); 
+            cursor: pointer; 
+            padding: 14px 18px; 
+            width: 100%; 
+            border: 1px solid var(--border-color); 
+            text-align: left; 
+            outline: none; 
+            font-size: 14px; 
+            border-radius: 10px; 
+            margin-top: 10px; 
+            margin-bottom: 6px; 
+            display: flex; 
             align-items: center;
             font-weight: 600;
             transition: all 0.2s ease;
         }
-        .sub-collapsible:hover { background-color: rgba(31, 41, 55, 0.8); border-color: var(--border-glow); }
+        .sub-collapsible:hover { background-color: rgba(63, 63, 70, 0.85); border-color: var(--border-glow); }
         
         .sub-content { 
-            padding: 20px; 
+            padding: 16px; 
             display: none; 
-            background-color: rgba(7, 10, 18, 0.9); 
+            background-color: rgba(12, 10, 9, 0.95); 
             border-radius: 0 0 10px 10px; 
             border: 1px solid var(--border-color);
             border-top: none;
+            margin-bottom: 10px;
         }
         .sub-content.open { display: block; }
         
         /* Portfolio Sub-Tabs & AI Analysis Tabs */
         .portfolio-tabs, .ai-tabs {
             display: flex;
-            gap: 10px;
-            margin-top: 20px;
+            gap: 8px;
+            margin-top: 12px;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 0;
         }
         .portfolio-tab, .ai-tab {
-            padding: 10px 22px;
+            padding: 10px 20px;
             background: rgba(255, 255, 255, 0.02);
             color: var(--text-secondary);
             border: 1px solid transparent;
@@ -164,17 +176,17 @@
             border-radius: 8px 8px 0 0;
             transition: all 0.2s ease;
         }
-        .portfolio-tab:hover, .ai-tab:hover { color: var(--text-primary); background: rgba(255, 255, 255, 0.05); }
+        .portfolio-tab:hover, .ai-tab:hover { color: var(--text-primary); background: rgba(255, 255, 255, 0.04); }
         .portfolio-tab.active, .ai-tab.active {
             background: var(--bg-card);
-            color: #818cf8;
+            color: #fde047;
             border-color: var(--border-color);
             border-bottom-color: var(--bg-card);
-            box-shadow: 0 -2px 10px rgba(99, 102, 241, 0.15);
+            box-shadow: 0 -4px 12px rgba(251, 191, 36, 0.15);
         }
         .portfolio-pane, .ai-pane {
             display: none;
-            padding: 24px 0;
+            padding: 16px 0;
         }
         .portfolio-pane.active, .ai-pane.active {
             display: block;
@@ -183,17 +195,17 @@
         .table-container {
             width: 100%;
             overflow-x: auto;
-            margin-top: 12px;
-            padding-bottom: 8px;
+            margin-top: 8px;
+            padding-bottom: 6px;
         }
         .table-container::-webkit-scrollbar { height: 6px; }
         .table-container::-webkit-scrollbar-track { background: var(--bg-surface); border-radius: 4px; }
-        .table-container::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
+        .table-container::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
         .table-container::-webkit-scrollbar-thumb:hover { background: var(--accent-primary); }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; table-layout: fixed; }
-        th { color: var(--text-secondary); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; padding: 14px 12px; border-bottom: 1px solid var(--border-color); }
-        th, td { padding: 14px 12px; text-align: left; border-bottom: 1px solid rgba(255, 255, 255, 0.03); overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; margin-top: 8px; table-layout: fixed; }
+        th { color: var(--text-secondary); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 12px 10px; border-bottom: 1px solid var(--border-color); }
+        th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid rgba(255, 255, 255, 0.025); overflow: hidden; }
         
         #stocks-table th, #stocks-table td, #crypto-table th, #crypto-table td { width: 12.5%; }
         #stocks-table th:last-child, #stocks-table td:last-child, #crypto-table th:last-child, #crypto-table td:last-child { width: 50%; }
@@ -201,28 +213,27 @@
         #watchlist-table th:last-child, #watchlist-table td:last-child { width: 60%; }
 
         input[type="text"], input[type="number"], input[type="date"], select { 
-            width: 100%; padding: 10px 14px; box-sizing: border-box; background: rgba(15, 23, 42, 0.9); 
+            width: 100%; padding: 10px 14px; box-sizing: border-box; background: rgba(24, 24, 27, 0.95); 
             border: 1px solid var(--border-color); color: #fff; border-radius: 8px; font-size: 13px;
             font-family: 'Inter', sans-serif; transition: all 0.2s ease;
         }
-        input:focus, select:focus { border-color: var(--accent-primary); outline: none; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); }
+        input:focus, select:focus { border-color: var(--accent-primary); outline: none; box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.25); }
         
-        .controls { padding: 20px 0; display: flex; justify-content: flex-end; gap: 12px; }
+        .controls { padding: 16px 0 8px 0; display: flex; justify-content: flex-end; gap: 12px; }
         .btn-clear, .btn-save, .btn-run, .btn-add { 
-            padding: 10px 22px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; transition: all 0.2s ease;
+            padding: 10px 22px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .btn-clear { background: rgba(255, 255, 255, 0.04); color: var(--text-secondary); border: 1px solid var(--border-color); }
-        .btn-clear:hover { background: rgba(255, 255, 255, 0.08); color: var(--text-primary); }
-        .btn-add { background: rgba(99, 102, 241, 0.15); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.3); padding: 10px 16px; }
-        .btn-add:hover { background: rgba(99, 102, 241, 0.3); color: #fff; }
-        .btn-save, .btn-run { background: var(--accent-green); color: white; border: none; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25); }
-        .btn-save:hover, .btn-run:hover { background: #059669; box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4); transform: translateY(-1px); }
+        .btn-clear { background: rgba(255, 255, 255, 0.03); color: var(--text-secondary); border: 1px solid var(--border-color); }
+        .btn-clear:hover { background: rgba(255, 255, 255, 0.07); color: var(--text-primary); }
+        .btn-add { background: rgba(251, 191, 36, 0.12); color: #fde047; border: 1px solid rgba(251, 191, 36, 0.3); padding: 10px 16px; }
+        .btn-add:hover { background: rgba(251, 191, 36, 0.25); color: #fff; box-shadow: 0 0 12px rgba(251, 191, 36, 0.3); }
+        .btn-save, .btn-run { background: #d97706; color: white; border: none; box-shadow: 0 4px 14px rgba(217, 119, 6, 0.35); }
+        .btn-save:hover, .btn-run:hover { background: #f59e0b; box-shadow: 0 6px 18px rgba(251, 191, 36, 0.5); transform: translateY(-1px); }
         
-        /* Small Row Remove Button (-) */
         .btn-remove-row {
-            background: rgba(244, 63, 94, 0.15);
+            background: rgba(248, 113, 113, 0.1);
             color: var(--accent-red);
-            border: 1px solid rgba(244, 63, 94, 0.3);
+            border: 1px solid rgba(248, 113, 113, 0.25);
             width: 28px;
             height: 28px;
             border-radius: 6px;
@@ -239,98 +250,98 @@
         .btn-remove-row:hover {
             background: var(--accent-red);
             color: #fff;
+            box-shadow: 0 0 10px rgba(248, 113, 113, 0.4);
         }
         
-        .message-box { padding: 14px 18px; margin-top: 14px; display: none; border-radius: 8px; font-size: 13px; font-weight: 500; }
-        .success { background-color: rgba(16, 185, 129, 0.12); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.25); }
-        .error { background-color: rgba(244, 63, 94, 0.12); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.25); }
+        .message-box { padding: 12px 16px; margin-top: 10px; display: none; border-radius: 8px; font-size: 13px; font-weight: 500; }
+        .success { background-color: rgba(251, 191, 36, 0.1); color: #fde047; border: 1px solid rgba(251, 191, 36, 0.25); }
+        .error { background-color: rgba(248, 113, 113, 0.1); color: #f87171; border: 1px solid rgba(248, 113, 113, 0.25); }
         
-        /* Terminal Report Styles */
+        /* Terminal Report Styles (Justified Alignment) */
         .terminal-card {
-            background: rgba(11, 15, 25, 0.95);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 12px;
-            padding: 28px;
-            margin-bottom: 25px;
-            box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+            background: linear-gradient(145deg, rgba(24, 24, 27, 0.95), rgba(12, 10, 9, 0.98));
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04);
         }
         .terminal-header {
             display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 16px; margin-bottom: 20px; cursor: pointer;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 12px; margin-bottom: 16px; cursor: pointer;
         }
-        .terminal-title-area { display: flex; align-items: center; gap: 15px; }
-        .terminal-ticker { font-size: 22px; font-weight: 800; color: #fff; letter-spacing: -0.02em; }
+        .terminal-title-area { display: flex; align-items: center; gap: 12px; }
+        .terminal-ticker { font-size: 20px; font-weight: 800; color: #fff; letter-spacing: -0.02em; }
         .terminal-score-badge {
-            font-size: 14px; font-weight: 800; padding: 4px 10px; border-radius: 6px;
-            background: rgba(99, 102, 241, 0.2); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.4);
+            font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 6px;
+            background: rgba(251, 191, 36, 0.15); color: #fde047; border: 1px solid rgba(251, 191, 36, 0.35);
         }
-        .terminal-verdict { font-size: 14px; font-weight: 800; padding: 6px 16px; border-radius: 6px; letter-spacing: 0.05em; }
-        .verdict-hold { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.35); }
-        .verdict-buy { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.35); }
-        .verdict-sell { background: rgba(244, 63, 94, 0.15); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.35); }
+        .terminal-verdict { font-size: 12px; font-weight: 800; padding: 5px 14px; border-radius: 6px; letter-spacing: 0.05em; }
+        .verdict-hold { background: rgba(251, 191, 36, 0.12); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.3); }
+        .verdict-buy { background: rgba(52, 211, 153, 0.12); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.3); }
+        .verdict-sell { background: rgba(248, 113, 113, 0.12); color: #f87171; border: 1px solid rgba(248, 113, 113, 0.3); }
 
         .metrics-hud {
             display: grid; grid-template-columns: repeat(10, minmax(80px, 1fr)); gap: 8px; margin-bottom: 8px;
-            background: rgba(17, 24, 39, 0.7); padding: 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); overflow-x: auto;
+            background: rgba(39, 39, 42, 0.6); padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.04); overflow-x: auto;
         }
         .metrics-hud-tech {
-            display: grid; grid-template-columns: repeat(5, minmax(110px, 1fr)); gap: 8px; margin-bottom: 20px;
-            background: rgba(17, 24, 39, 0.5); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.04); overflow-x: auto;
+            display: grid; grid-template-columns: repeat(5, minmax(110px, 1fr)); gap: 8px; margin-bottom: 16px;
+            background: rgba(39, 39, 42, 0.4); padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.03); overflow-x: auto;
         }
         .hud-item { text-align: center; }
-        .hud-label { font-size: 9px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 4px; }
+        .hud-label { font-size: 9px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.06em; display: block; margin-bottom: 4px; font-weight: 600; }
         .hud-val { font-size: 13px; font-weight: 700; color: #fff; }
 
         .assessment-box {
-            background: rgba(245, 158, 11, 0.04); border: 1px solid rgba(245, 158, 11, 0.2);
-            border-left: 3px solid var(--accent-amber); padding: 16px 20px; border-radius: 0 8px 8px 0;
-            margin-bottom: 20px; font-size: 13px; color: #f3f4f6; line-height: 1.6;
+            background: rgba(251, 191, 36, 0.04); border: 1px solid rgba(251, 191, 36, 0.2);
+            border-left: 3px solid var(--accent-primary); padding: 14px 18px; border-radius: 0 10px 10px 0;
+            margin-bottom: 16px; font-size: 13px; color: #fefce8; line-height: 1.6; text-align: justify;
         }
 
         .moat-block {
-            background: rgba(99, 102, 241, 0.05); border: 1px solid rgba(99, 102, 241, 0.2);
-            padding: 14px 18px; border-radius: 8px; margin-bottom: 20px; font-size: 12px; color: #e0e7ff; line-height: 1.5;
+            background: rgba(251, 191, 36, 0.05); border: 1px solid rgba(251, 191, 36, 0.2);
+            padding: 12px 16px; border-radius: 10px; margin-bottom: 16px; font-size: 12px; color: #fef9c3; line-height: 1.5; text-align: justify;
         }
 
-        .pillars-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px; }
-        .pillar-card { background: rgba(17, 24, 39, 0.6); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 8px; padding: 16px; }
+        .pillars-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 16px; }
+        .pillar-card { background: rgba(39, 39, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 10px; padding: 14px; }
         .pillar-title {
-            font-size: 12px; font-weight: 700; color: #818cf8; text-transform: uppercase; letter-spacing: 0.06em;
-            margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 6px;
+            font-size: 11px; font-weight: 700; color: #fde047; text-transform: uppercase; letter-spacing: 0.06em;
+            margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 6px;
         }
-        .pillar-body { font-size: 12px; color: var(--text-secondary); line-height: 1.55; }
+        .pillar-body { font-size: 12px; color: var(--text-secondary); line-height: 1.55; text-align: justify; }
 
-        .risk-catalyst-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-        .rc-box { background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 8px; padding: 16px; }
-        .rc-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-        .rc-risk-title { color: #fb7185; border-bottom: 1px solid rgba(244, 63, 94, 0.2); padding-bottom: 6px; }
-        .rc-cat-title { color: #34d399; border-bottom: 1px solid rgba(16, 185, 129, 0.2); padding-bottom: 6px; }
-        .rc-list { margin: 0; padding-left: 18px; font-size: 12px; color: var(--text-secondary); line-height: 1.6; text-align: left; }
-        .rc-list li { margin-bottom: 6px; text-align: left; }
+        .risk-catalyst-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .rc-box { background: rgba(24, 24, 27, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 10px; padding: 14px; }
+        .rc-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .rc-risk-title { color: #f87171; border-bottom: 1px solid rgba(248, 113, 113, 0.2); padding-bottom: 6px; }
+        .rc-cat-title { color: #fde047; border-bottom: 1px solid rgba(253, 224, 71, 0.2); padding-bottom: 6px; }
+        .rc-list { margin: 0; padding-left: 18px; font-size: 12px; color: var(--text-secondary); line-height: 1.6; text-align: justify; }
+        .rc-list li { margin-bottom: 6px; text-align: justify; }
 
-        /* Persistent AI Legend Bar Styles */
         .ai-legend-bar {
-            background: rgba(15, 23, 42, 0.85);
+            background: rgba(24, 24, 27, 0.9);
             border: 1px solid var(--border-color);
             border-radius: var(--radius);
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            padding: 16px 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
         }
         .ai-legend-title {
             font-size: 13px; font-weight: 700; color: #fff; text-transform: uppercase;
-            letter-spacing: 0.06em; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+            letter-spacing: 0.06em; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
         }
-        .ai-legend-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
-        .ai-legend-category { background: rgba(11, 15, 25, 0.7); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 14px; }
+        .ai-legend-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+        .ai-legend-category { background: rgba(12, 10, 9, 0.8); border: 1px solid rgba(255, 255, 255, 0.04); border-radius: 10px; padding: 12px; }
         .ai-legend-cat-title {
-            font-size: 11px; font-weight: 700; color: #818cf8; text-transform: uppercase;
-            letter-spacing: 0.06em; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 6px;
+            font-size: 11px; font-weight: 700; color: #fde047; text-transform: uppercase;
+            letter-spacing: 0.06em; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 6px;
         }
-        .ai-legend-item { font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; line-height: 1.5; }
+        .ai-legend-item { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; line-height: 1.5; text-align: justify; }
         .ai-legend-item strong { color: #fff; }
-        .badge-good { color: #34d399; font-weight: 600; }
-        .badge-bad { color: #fb7185; font-weight: 600; }
+        .badge-good { color: #fde047; font-weight: 600; }
+        .badge-bad { color: #f87171; font-weight: 600; }
     </style>
 </head>
 <body>
@@ -338,13 +349,13 @@
     <!-- Title Bar -->
     <div class="header">
         <div class="header-left">
-            <h2>InvestmentAI</h2>
+            <h2>NGUYENILY</h2>
         </div>
         <div class="header-center">
-            <img src="logo.png" alt="InvestmentAI Logo" style="height: 32px; width: auto; object-fit: contain;">
+            <h2>Investment AI</h2>
         </div>
         <div class="header-right">
-            <span id="welcome-text" style="font-weight: 500; font-size: 13px; color: #ffffff;"></span>
+            <span id="welcome-text" style="font-weight: 500; font-size: 13px; color: #fefce8; text-shadow: 0 1px 4px rgba(0,0,0,0.8);"></span>
             <button class="logout-btn" onclick="logout()">Log Out</button>
         </div>
     </div>
@@ -356,7 +367,7 @@
         <!-- Nested Sub-Collapsible: New Tickers -->
         <button class="sub-collapsible" id="btn-sub-new">New Tickers</button>
         <div class="sub-content" id="content-sub-new">
-            <p style="font-size: 13px; color: var(--text-secondary); margin-top: 14px; margin-bottom: 16px;">Enter tickers below. Data is validated against live market data and saved securely.</p>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-top: 6px; margin-bottom: 14px; text-align: justify;">Enter tickers below. Data is validated against live market data and saved securely.</p>
             <div id="msg-new-tickers" class="message-box"></div>
             <table id="new-tickers-table">
                 <thead>
@@ -376,8 +387,8 @@
         </div>
 
         <!-- Nested Sub-Collapsible: Portfolio -->
-        <button class="sub-collapsible" id="btn-sub-portfolio" style="margin-bottom: 15px;">Portfolio</button>
-        <div class="sub-content" id="content-sub-portfolio" style="margin-bottom: 15px;">
+        <button class="sub-collapsible" id="btn-sub-portfolio" style="margin-bottom: 10px;">Portfolio</button>
+        <div class="sub-content" id="content-sub-portfolio" style="margin-bottom: 10px;">
             <!-- Portfolio Sub-Tabs -->
             <div class="portfolio-tabs">
                 <button class="portfolio-tab" data-pane="pane-stocks" onclick="switchPortfolioTab(event, 'pane-stocks')">Stocks (<span id="count-stocks">0</span>)</button>
@@ -482,7 +493,7 @@
 
             <!-- VALUE TAB -->
             <div id="pane-value" class="portfolio-pane">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h3 style="margin: 0; color: #fff; font-size: 16px; font-weight: 600;">Portfolio Valuation Breakdown</h3>
                     <div style="display: flex; align-items: center; gap: 15px;">
                         <span id="last-run-timestamp" style="font-size: 12px; color: var(--text-secondary);"></span>
@@ -490,12 +501,12 @@
                     </div>
                 </div>
                 
-                <div style="background-color: rgba(245, 158, 11, 0.08); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.25); padding: 14px 18px; border-radius: 8px; margin-bottom: 24px; font-size: 13px; font-weight: 500;">
+                <div style="background-color: rgba(251, 191, 36, 0.08); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.25); padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 13px; font-weight: 500; text-align: justify;">
                     <strong>Warning:</strong> Options contracts are currently excluded from total portfolio valuation calculations.
                 </div>
 
                 <!-- Valuation Breakdown Table -->
-                <div class="table-container" style="margin-bottom: 35px;">
+                <div class="table-container" style="margin-bottom: 25px;">
                     <table id="val-breakdown-table" style="min-width: 800px;">
                         <thead>
                             <tr>
@@ -521,8 +532,8 @@
                                 <td id="val-crypto-pnl">$0.00</td>
                                 <td id="val-crypto-return">0.00%</td>
                             </tr>
-                            <tr style="background: rgba(99, 102, 241, 0.08);">
-                                <td><strong style="color: #818cf8;">Portfolio</strong></td>
+                            <tr style="background: rgba(251, 191, 36, 0.08);">
+                                <td><strong style="color: #fde047;">Portfolio</strong></td>
                                 <td><strong id="sum-total-value" style="color: #fff;">$0.00</strong></td>
                                 <td><strong id="sum-cost-basis" style="color: #fff;">$0.00</strong></td>
                                 <td><strong id="sum-unrealized-pnl" style="color: #fff;">$0.00</strong></td>
@@ -532,7 +543,7 @@
                     </table>
                 </div>
 
-                <h4 style="color: #fff; margin-top: 32px; font-size: 15px; font-weight: 600;">Active Holdings (<span id="count-val-holdings">0</span>)</h4>
+                <h4 style="color: #fff; margin-top: 24px; font-size: 15px; font-weight: 600;">Active Holdings (<span id="count-val-holdings">0</span>)</h4>
                 <div class="table-container">
                     <table id="val-holdings-table" style="min-width: 950px;">
                         <thead>
@@ -548,12 +559,12 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr><td colspan="8" style="text-align: center; color: var(--text-secondary); padding: 30px;">Click 'Run' to load valuation.</td></tr>
+                            <tr><td colspan="8" style="text-align: center; color: var(--text-secondary); padding: 25px;">Click 'Run' to load valuation.</td></tr>
                         </tbody>
                     </table>
                 </div>
 
-                <h4 style="color: #fff; margin-top: 32px; font-size: 15px; font-weight: 600;">Watchlist Summary (<span id="count-val-watchlist">0</span>)</h4>
+                <h4 style="color: #fff; margin-top: 24px; font-size: 15px; font-weight: 600;">Watchlist Summary (<span id="count-val-watchlist">0</span>)</h4>
                 <table id="val-watchlist-table">
                     <thead>
                         <tr>
@@ -564,7 +575,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 30px;">Click 'Run' to load watchlist.</td></tr>
+                        <tr><td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 25px;">Click 'Run' to load watchlist.</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -601,10 +612,9 @@
             </div>
         </div>
 
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
             <div class="ai-tabs" style="margin-top: 0; border-bottom: none;">
                 <button class="ai-tab active" data-pane="pane-ai-new" onclick="switchAiTab(event, 'pane-ai-new')">New Tickers</button>
-                <button class="ai-tab" data-pane="pane-ai-portfolio" onclick="switchAiTab(event, 'pane-ai-portfolio')">Portfolio</button>
                 <button class="ai-tab" data-pane="pane-ai-combined" onclick="switchAiTab(event, 'pane-ai-combined')">New Tickers + Portfolio</button>
             </div>
             <div style="display: flex; align-items: center; gap: 15px;">
@@ -615,29 +625,25 @@
 
         <!-- NEW TICKERS AI PANE -->
         <div id="pane-ai-new" class="ai-pane active">
-            <div id="ai-output-new" style="background: rgba(15, 23, 42, 0.5); border: 1px solid var(--border-color); border-radius: 8px; padding: 30px; color: var(--text-secondary); font-size: 13px; text-align: center;">
+            <div id="ai-output-new" style="background: rgba(24, 24, 27, 0.5); border: 1px solid var(--border-color); border-radius: 8px; padding: 25px; color: var(--text-secondary); font-size: 13px; text-align: justify;">
                 Click <strong>'Run'</strong> above to trigger institutional AI research logic across your populated New Tickers.
-            </div>
-        </div>
-
-        <!-- PORTFOLIO AI PANE -->
-        <div id="pane-ai-portfolio" class="ai-pane">
-            <div id="ai-output-portfolio" style="background: rgba(15, 23, 42, 0.5); border: 1px solid var(--border-color); border-radius: 8px; padding: 30px; color: var(--text-secondary); font-size: 13px; text-align: center;">
-                Click <strong>'Run'</strong> above to generate terminal report cards and macro risk assessments for your Portfolio holdings.
             </div>
         </div>
 
         <!-- NEW TICKERS + PORTFOLIO AI PANE -->
         <div id="pane-ai-combined" class="ai-pane">
-            <div id="ai-output-combined" style="background: rgba(15, 23, 42, 0.5); border: 1px solid var(--border-color); border-radius: 8px; padding: 30px; color: var(--text-secondary); font-size: 13px; text-align: center;">
+            <div id="ai-output-combined" style="background: rgba(24, 24, 27, 0.5); border: 1px solid var(--border-color); border-radius: 8px; padding: 25px; color: var(--text-secondary); font-size: 13px; text-align: justify;">
                 Click <strong>'Run'</strong> above to calculate capital deployment synergies.
             </div>
         </div>
     </div>
 
-    <!-- Footer Disclaimer -->
-    <footer style="text-align: center; margin-top: 40px; padding: 20px 0; border-top: 1px solid var(--border-color); color: var(--text-secondary); font-size: 11px; letter-spacing: 0.02em;">
-        Disclaimer: InvestmentAI is for informational and portfolio-tracking purposes only and does not constitute financial or investment advice.
+    <!-- Footer Disclaimer (Justified, ~2/3 Width) -->
+    <footer style="width: 66%; margin: 30px auto 0 auto; text-align: justify; padding: 20px 0; border-top: 1px solid var(--border-color); color: var(--text-secondary); font-size: 11px; letter-spacing: 0.02em; line-height: 1.6;">
+        <div style="font-weight: 700; color: #fde047; margin-bottom: 6px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+            <span>⚠️</span> DISCLAIMER
+        </div>
+        InvestmentAI is for educational and informational purposes only. InvestmentAI does not provide investment, financial, or tax advice. The information provided is general in nature and does not constitute a personal recommendation or opinion. Past performance does not guarantee future results. All investments involve risk, including the possible loss of principal. InvestmentAI does not guarantee the accuracy, completeness, or timeliness of any market data or analysis presented. You should consult a licensed financial advisor or tax professional regarding your specific financial situation before making any investment decisions.
     </footer>
 
     <script>
@@ -649,12 +655,11 @@
 
         if (!currentUser) { window.location.href = "index.html"; } 
         else {
-            document.getElementById("welcome-text").innerHTML = `Logged in as: <span style="color: #fbbf24;">${currentUser}</span>`;
+            document.getElementById("welcome-text").innerHTML = `Logged in as: <span style="color: #fde047;">${currentUser}</span>`;
             initTables();
             restoreState();
         }
 
-        // Accordions
         var mainColl = document.getElementById("btn-main-input");
         mainColl.addEventListener("click", function() {
             let isActive = this.classList.toggle("active");
@@ -713,35 +718,32 @@
             if (el) el.innerText = count;
         }
 
-        // Toggle Collapsible Ticker Report Card
         function toggleTerminalCard(headerElem) {
             let body = headerElem.nextElementSibling;
-            let icon = headerElem.querySelector('.terminal-toggle-icon');
             let isOpen = body.style.display !== "none";
             body.style.display = isOpen ? "none" : "block";
-            icon.innerText = isOpen ? "+" : "−";
         }
 
-        /* AI Analysis Generation Engine */
         function runAiAnalysis() {
             const timestamp = new Date().toLocaleString();
             document.getElementById("ai-last-run-timestamp").innerText = `Last Run: ${timestamp}`;
             localStorage.setItem(`dash_ai_last_run_${currentUser}`, timestamp);
 
-            // 1. New Tickers Analysis
             let newSymbols = document.getElementsByClassName('ticker-symbol');
+            let newShares = document.getElementsByClassName('ticker-shares');
             let newPrices = document.getElementsByClassName('ticker-price');
             let tickersToAnalyze = [];
             
             for(let i=0; i<newSymbols.length; i++) {
                 let sym = newSymbols[i].value.toUpperCase().trim();
+                let shares = parseFloat(newShares[i].value) || 0;
                 let price = parseFloat(newPrices[i].value) || 0;
-                if(sym !== "") { tickersToAnalyze.push({ symbol: sym, price: price }); }
+                if(sym !== "") { tickersToAnalyze.push({ symbol: sym, shares: shares, price: price }); }
             }
 
             const aiNewContainer = document.getElementById("ai-output-new");
             if(tickersToAnalyze.length === 0) {
-                const errMsg = `<div style="background-color: rgba(244, 63, 94, 0.12); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.25); padding: 14px; border-radius: 8px;">No tickers found. Please enter at least one symbol in the New Tickers section above.</div>`;
+                const errMsg = `<div style="background-color: rgba(248, 113, 113, 0.1); color: #f87171; border: 1px solid rgba(248, 113, 113, 0.25); padding: 14px; border-radius: 8px; text-align: justify;">No tickers found. Please enter at least one symbol in the New Tickers section above.</div>`;
                 aiNewContainer.innerHTML = errMsg;
                 aiNewContainer.style.background = 'transparent';
                 aiNewContainer.style.border = 'none';
@@ -758,45 +760,54 @@
                 localStorage.setItem(`dash_ai_cache_new_${currentUser}`, newHtml);
             }
 
-            // 2. Portfolio Analysis (Macro Risk Summary + Terminal Reports for Portfolio Stocks & Crypto)
             let stockSyms = document.getElementsByClassName('stocks-symbol');
+            let stockShares = document.getElementsByClassName('stocks-shares');
             let stockCosts = document.getElementsByClassName('stocks-cost');
+            
             let cryptoSyms = document.getElementsByClassName('crypto-symbol');
+            let cryptoUnits = document.getElementsByClassName('crypto-units');
             let cryptoCosts = document.getElementsByClassName('crypto-cost');
+            
             let portfolioTickersToAnalyze = [];
 
             for(let i=0; i<stockSyms.length; i++) {
                 let sym = stockSyms[i].value.toUpperCase().trim();
-                let price = parseFloat(stockCosts[i].value) || 0;
-                if(sym !== "") { portfolioTickersToAnalyze.push({ symbol: sym, price: price }); }
+                let shares = parseFloat(stockShares[i].value) || 0;
+                let cost = parseFloat(stockCosts[i].value) || 0;
+                if(sym !== "") { portfolioTickersToAnalyze.push({ symbol: sym, shares: shares, avg_cost: cost }); }
             }
             for(let i=0; i<cryptoSyms.length; i++) {
                 let sym = cryptoSyms[i].value.toUpperCase().trim();
-                let price = parseFloat(cryptoCosts[i].value) || 0;
-                if(sym !== "") { portfolioTickersToAnalyze.push({ symbol: sym, price: price }); }
+                let shares = parseFloat(cryptoUnits[i].value) || 0;
+                let cost = parseFloat(cryptoCosts[i].value) || 0;
+                if(sym !== "") { portfolioTickersToAnalyze.push({ symbol: sym, shares: shares, avg_cost: cost }); }
             }
 
-            const aiPortContainer = document.getElementById("ai-output-portfolio");
-            if(portfolioTickersToAnalyze.length === 0) {
-                const errPortMsg = `<div style="background-color: rgba(244, 63, 94, 0.12); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.25); padding: 14px; border-radius: 8px;">No portfolio stocks or crypto found. Please populate your Portfolio tab above.</div>`;
-                aiPortContainer.innerHTML = errPortMsg;
-                aiPortContainer.style.background = 'transparent';
-                aiPortContainer.style.border = 'none';
-            } else {
-                aiPortContainer.style.background = 'transparent';
-                aiPortContainer.style.border = 'none';
-                aiPortContainer.style.padding = '0';
+            const aiCombContainer = document.getElementById("ai-output-combined");
+            aiCombContainer.style.background = 'transparent';
+            aiCombContainer.style.border = 'none';
+            aiCombContainer.style.padding = '0';
 
-                let portfolioHtml = `
-                <div class="terminal-card">
+            let combinedNewHtml = "";
+            if(tickersToAnalyze.length === 0) {
+                combinedNewHtml = `<div style="padding: 15px; color: var(--text-secondary); font-size: 13px; text-align: justify;">No New Tickers populated.</div>`;
+            } else {
+                tickersToAnalyze.forEach(t => { combinedNewHtml += generateComprehensiveTerminalReport(t.symbol, t.price); });
+            }
+
+            let combinedPortfolioHtml = "";
+            if(portfolioTickersToAnalyze.length === 0) {
+                combinedPortfolioHtml = `<div style="padding: 15px; color: var(--text-secondary); font-size: 13px; text-align: justify;">No Portfolio holdings populated.</div>`;
+            } else {
+                combinedPortfolioHtml = `
+                <div class="terminal-card" style="margin-bottom: 12px;">
                     <div class="terminal-header" onclick="toggleTerminalCard(this)">
                         <div class="terminal-title-area">
-                            <span class="terminal-ticker">Portfolio Macro Risk & Concentration</span>
+                            <span class="terminal-ticker" style="font-size: 18px;">Portfolio Macro Risk & Concentration</span>
                             <span class="terminal-score-badge">8.2/10</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 15px;">
                             <span class="terminal-verdict verdict-hold">MODERATE RISK</span>
-                            <span class="terminal-toggle-icon" style="font-weight: 700; color: var(--accent-primary); font-size: 16px;">+</span>
                         </div>
                     </div>
                     <div class="terminal-body" style="display: none;">
@@ -804,47 +815,239 @@
                             <strong>Portfolio Review:</strong> Aggregate portfolio beta sits at ~1.15, exhibiting balanced sensitivity to benchmark movements. While cash flow generation across core holdings remains exceptionally robust, high sector concentration requires disciplined rebalancing during interest rate inflection points.
                         </div>
                         <div class="metrics-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
-                            <div class="hud-item" style="background:rgba(17,24,39,0.8); padding:12px; border-radius:8px;"><span class="hud-label">Estimated Beta</span><span class="hud-val" style="font-size:16px;">1.15</span></div>
-                            <div class="hud-item" style="background:rgba(17,24,39,0.8); padding:12px; border-radius:8px;"><span class="hud-label">Top Concentration</span><span class="hud-val" style="font-size:16px;">Technology (42%)</span></div>
-                            <div class="hud-item" style="background:rgba(17,24,39,0.8); padding:12px; border-radius:8px;"><span class="hud-label">Est. Dividend Yield</span><span class="hud-val" style="font-size:16px;">1.40%</span></div>
+                            <div class="hud-item" style="background:rgba(39,39,42,0.8); padding:12px; border-radius:8px;"><span class="hud-label">Estimated Beta</span><span class="hud-val" style="font-size:16px;">1.15</span></div>
+                            <div class="hud-item" style="background:rgba(39,39,42,0.8); padding:12px; border-radius:8px;"><span class="hud-label">Top Concentration</span><span class="hud-val" style="font-size:16px;">Technology (42%)</span></div>
+                            <div class="hud-item" style="background:rgba(39,39,42,0.8); padding:12px; border-radius:8px;"><span class="hud-label">Est. Dividend Yield</span><span class="hud-val" style="font-size:16px;">1.40%</span></div>
                         </div>
                     </div>
                 </div>`;
-
-                portfolioTickersToAnalyze.forEach(t => {
-                    portfolioHtml += generateComprehensiveTerminalReport(t.symbol, t.price);
-                });
-
-                aiPortContainer.innerHTML = portfolioHtml;
-                localStorage.setItem(`dash_ai_cache_portfolio_${currentUser}`, portfolioHtml);
+                portfolioTickersToAnalyze.forEach(t => { combinedPortfolioHtml += generateComprehensiveTerminalReport(t.symbol, t.avg_cost); });
             }
 
-            // 3. Combined Analysis
-            const combinedHtml = `
+            let combinedSynergyHtml = generateSynergyReport(tickersToAnalyze, portfolioTickersToAnalyze);
+
+            let combinedHtml = `
             <div class="terminal-card">
                 <div class="terminal-header" onclick="toggleTerminalCard(this)">
                     <div class="terminal-title-area">
-                        <span class="terminal-ticker">Capital Deployment & Synergy</span>
-                        <span class="terminal-score-badge">9.0/10</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 15px;">
-                        <span class="terminal-verdict verdict-buy">OPTIMIZED</span>
-                        <span class="terminal-toggle-icon" style="font-weight: 700; color: var(--accent-primary); font-size: 16px;">+</span>
+                        <span class="terminal-ticker">1. New Tickers Research</span>
+                        <span class="terminal-score-badge">${tickersToAnalyze.length} Tickers</span>
                     </div>
                 </div>
                 <div class="terminal-body" style="display: none;">
-                    <div class="assessment-box" style="border-left-color: var(--accent-green); background: rgba(16, 185, 129, 0.04);">
-                        <strong>Synergy Execution:</strong> Adding the validated "New Tickers" to your current portfolio effectively hedges high-beta exposure by introducing stable Free Cash Flow yields and diversifying revenue streams. Recommended tranche sizing: Max 5% per new position.
+                    ${combinedNewHtml}
+                </div>
+            </div>
+
+            <div class="terminal-card">
+                <div class="terminal-header" onclick="toggleTerminalCard(this)">
+                    <div class="terminal-title-area">
+                        <span class="terminal-ticker">2. Portfolio Holdings & Risk</span>
+                        <span class="terminal-score-badge">${portfolioTickersToAnalyze.length} Assets</span>
                     </div>
                 </div>
+                <div class="terminal-body" style="display: none;">
+                    ${combinedPortfolioHtml}
+                </div>
+            </div>
+
+            <div class="terminal-card">
+                <div class="terminal-header" onclick="toggleTerminalCard(this)">
+                    <div class="terminal-title-area">
+                        <span class="terminal-ticker">3. Portfolio Synergy</span>
+                        <span class="terminal-score-badge">Synergy Analysis</span>
+                    </div>
+                </div>
+                <div class="terminal-body" style="display: none;">
+                    ${combinedSynergyHtml}
+                </div>
             </div>`;
-            const aiCombContainer = document.getElementById("ai-output-combined");
-            aiCombContainer.style.background = 'transparent'; aiCombContainer.style.border = 'none'; aiCombContainer.style.padding = '0';
+
             aiCombContainer.innerHTML = combinedHtml;
             localStorage.setItem(`dash_ai_cache_combined_${currentUser}`, combinedHtml);
         }
 
-        /* Comprehensive Terminal Report Generator with 21-Day RSI, Bollinger Bands (50, 2.5, 1d), and EMA 200 (1d) */
+        function generateSynergyReport(newTickers, portfolioTickers) {
+            if (!newTickers || newTickers.length === 0) {
+                return `<div class="assessment-box">Enter tickers in the <strong>New Tickers</strong> section above to generate a synergy analysis with your portfolio.</div>`;
+            }
+
+            let currentPortValue = 0;
+            portfolioTickers.forEach(pt => { currentPortValue += (pt.shares * pt.avg_cost); });
+            if (currentPortValue === 0) currentPortValue = 100000;
+
+            let totalNewCapital = 0;
+            newTickers.forEach(t => { totalNewCapital += (t.shares * t.price); });
+            
+            let projectedTotalValue = currentPortValue + totalNewCapital;
+
+            let techCommWeightBefore = 48.5; 
+            let techCommWeightAfter = Math.min(84.0, techCommWeightBefore + (newTickers.length * 8.5));
+            let exceedsLimit = techCommWeightAfter > 60.0;
+
+            let concentrationWarning = '';
+            if (exceedsLimit) {
+                let excessPct = techCommWeightAfter - 60.0;
+                let excessDollars = projectedTotalValue * (excessPct / 100);
+                
+                let suggestedTrimAsset = newTickers.length > 0 ? newTickers[0].symbol : "NVDA";
+                let trimAssetPrice = newTickers.length > 0 ? newTickers[0].price : 100;
+                if (trimAssetPrice === 0) trimAssetPrice = 100;
+                let trimShares = Math.ceil(excessDollars / trimAssetPrice);
+
+                concentrationWarning = `
+                <div style="background: rgba(248, 113, 113, 0.1); border: 1px solid rgba(248, 113, 113, 0.3); border-left: 4px solid var(--accent-red); padding: 14px 18px; border-radius: 8px; margin-bottom: 16px; font-size: 13px; color: #f87171; line-height: 1.6; text-align: justify;">
+                    <strong>⚠️ CONCENTRATION RISK ALERT (>60.0% Threshold):</strong> Adding these proposed positions will push Technology & Communication Services concentration to <strong>${techCommWeightAfter.toFixed(1)}%</strong>, exceeding your strict <strong>60.0% max risk tolerance limit</strong>.<br><br>
+                    <span style="display:inline-block; margin-top:8px; padding:8px 12px; background: rgba(24, 24, 27, 0.6); border-radius:6px; border:1px solid rgba(255,255,255,0.05); color:#fef9c3;">
+                        <strong>🔧 Trim Rebalancer:</strong> To bring Tech back under your 60.0% ceiling, either reduce new capital deployment by <strong>$${excessDollars.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</strong> OR trim approx <strong>${trimShares} shares</strong> of <strong>${suggestedTrimAsset}</strong> to offset the exposure.
+                    </span>
+                </div>`;
+            }
+
+            let tickerGuidanceCards = '';
+            newTickers.forEach(t => {
+                let hash = 0;
+                for (let i = 0; i < t.symbol.length; i++) { hash = t.symbol.charCodeAt(i) + ((hash << 5) - hash); }
+                
+                let capital = t.shares > 0 && t.price > 0 ? (t.shares * t.price) : 25000;
+                let displayShares = t.shares > 0 ? t.shares : 50;
+                let displayPrice = t.price > 0 ? t.price : 200;
+                let targetEntry = (displayPrice * 0.94).toFixed(2);
+
+                let existingHolding = portfolioTickers.find(pt => pt.symbol === t.symbol);
+                let blendedCostHtml = "";
+                
+                if (existingHolding && existingHolding.shares > 0 && existingHolding.avg_cost > 0 && t.shares > 0 && t.price > 0) {
+                    let totalShares = existingHolding.shares + t.shares;
+                    let blendedCost = ((existingHolding.shares * existingHolding.avg_cost) + (t.shares * t.price)) / totalShares;
+                    let diff = blendedCost - existingHolding.avg_cost;
+                    let diffText = diff >= 0 ? `(+$${diff.toFixed(2)} per share)` : `(-$${Math.abs(diff).toFixed(2)} per share)`;
+                    let diffColor = diff >= 0 ? "#fde047" : "#34d399";
+                    
+                    blendedCostHtml = `
+                    <div style="background: rgba(251, 191, 36, 0.08); border: 1px solid rgba(251, 191, 36, 0.25); padding: 10px 14px; border-radius: 6px; font-size: 12px; color: #fde047; margin-bottom: 8px; text-align: justify;">
+                        <strong>🔄 Blended Cost Basis:</strong> Buying ${t.shares} shares @ $${t.price.toFixed(2)} shifts your existing average cost from $${existingHolding.avg_cost.toFixed(2)} to <strong>$${blendedCost.toFixed(2)}</strong> <span style="color: ${diffColor};">${diffText}</span>.
+                    </div>`;
+                }
+
+                let verdictTag = "BUY";
+                let verdictBadgeClass = "verdict-buy";
+                let recommendationText = "";
+                let shareAdvice = "";
+                let priceAdvice = "";
+
+                let mod = Math.abs(hash % 3);
+                if (exceedsLimit && mod === 0) {
+                    verdictTag = "LOWER PRICE";
+                    verdictBadgeClass = "verdict-hold";
+                    recommendationText = `${t.symbol} is a premier compounder, but buying at $${displayPrice.toFixed(2)} accelerates tech over-concentration. Patience is required for a pullback.`;
+                    shareAdvice = `Proposed: ${displayShares} shares @ $${displayPrice.toFixed(2)} ($${capital.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}). Guidance: Trim to ${Math.round(displayShares * 0.5)} shares ($${Math.round(capital * 0.5).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}) to keep Tech exposure under your 60% risk limit.`;
+                    priceAdvice = `Target Entry: Wait for $${targetEntry} or lower near key moving average support before allocating capital.`;
+                } else if (mod === 1) {
+                    verdictTag = "BUY LESS";
+                    verdictBadgeClass = "verdict-hold";
+                    recommendationText = `${t.symbol} offers attractive upside, but given tech overlap and upcoming earnings volatility, building position gradually is prudent.`;
+                    shareAdvice = `Proposed: ${displayShares} shares @ $${displayPrice.toFixed(2)} ($${capital.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}). Guidance: Start with a 50% half-position (${Math.round(displayShares * 0.5)} shares) now, holding remaining capital for post-earnings clarity.`;
+                    priceAdvice = `Current price of $${displayPrice.toFixed(2)} is acceptable to initiate tranche 1. Secondary target pullback zone: $${targetEntry}.`;
+                } else {
+                    verdictTag = "BUY";
+                    verdictBadgeClass = "verdict-buy";
+                    recommendationText = `${t.symbol} complements your active portfolio, offering high Free Cash Flow yields and strong enterprise moat insulation.`;
+                    shareAdvice = `Proposed: ${displayShares} shares @ $${displayPrice.toFixed(2)} ($${capital.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}). Sizing aligns cleanly with portfolio growth targets.`;
+                    priceAdvice = `Current price of $${displayPrice.toFixed(2)} represents a solid entry point relative to long-term Wall Street consensus targets.`;
+                }
+
+                tickerGuidanceCards += `
+                <div style="background: rgba(24, 24, 27, 0.75); border: 1px solid rgba(255, 255, 255, 0.07); border-radius: 10px; padding: 16px; margin-bottom: 14px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 6px;">
+                        <span style="font-size: 16px; font-weight: 800; color: #fff;">${t.symbol}</span>
+                        <span class="terminal-verdict ${verdictBadgeClass}" style="font-size: 11px; padding: 4px 10px;">${verdictTag}</span>
+                    </div>
+                    ${blendedCostHtml}
+                    <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 10px; text-align: justify;">
+                        ${recommendationText}
+                    </div>
+                    <div style="background: rgba(12, 10, 9, 0.7); padding: 10px 14px; border-radius: 6px; font-size: 12px; color: #fef9c3; margin-bottom: 8px; text-align: justify;">
+                        <strong>📊 Shares & Allocation:</strong> ${shareAdvice}
+                    </div>
+                    <div style="background: rgba(12, 10, 9, 0.7); padding: 10px 14px; border-radius: 6px; font-size: 12px; color: #fef9c3; text-align: justify;">
+                        <strong>🎯 Target Entry Price:</strong> ${priceAdvice}
+                    </div>
+                </div>`;
+            });
+
+            return `
+            <div style="line-height: 1.6; font-size: 13px; color: #fefce8; text-align: justify;">
+                ${concentrationWarning}
+
+                <div class="assessment-box" style="margin-bottom: 16px;">
+                    <strong>SYNERGY EXECUTIVE SUMMARY:</strong> Adding ${newTickers.map(n => n.symbol).join(', ')} into your active portfolio accelerates earnings momentum, but increases portfolio sector concentration in Tech & Communication Services to <strong>${techCommWeightAfter.toFixed(1)}%</strong> (relative to your 60.0% max limit). Below is per-ticker execution guidance and sector rebalancing recommendations.
+                </div>
+
+                <h4 style="color: #fde047; margin-top: 16px; margin-bottom: 10px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em;">DIVERSIFICATION & CORRELATION IMPACT</h4>
+                <div class="pillar-card" style="margin-bottom: 16px;">
+                    <p style="margin: 0 0 8px 0; color: var(--text-secondary); text-align: justify;">
+                        • <strong>Correlation Overlap:</strong> Proposed additions are highly correlated with existing mega-cap tech and cloud software holdings during risk-off market environments. In a tech sector pullback, overall portfolio drawdown velocity will accelerate.
+                    </p>
+                    <p style="margin: 0; color: var(--text-secondary); text-align: justify;">
+                        • <strong>Cluster Earnings Risk:</strong> Multiple additions share earnings dates within the same short window as core holdings, heightening short-term implied volatility exposure across your options and equity tranches.
+                    </p>
+                </div>
+
+                <h4 style="color: #fde047; margin-top: 20px; margin-bottom: 12px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em;">PER-TICKER EXECUTION GUIDANCE</h4>
+                ${tickerGuidanceCards}
+
+                <h4 style="color: #fde047; margin-top: 20px; margin-bottom: 12px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em;">SECTOR IMPACT (BEFORE vs AFTER)</h4>
+                <div class="table-container" style="margin-bottom: 20px;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid var(--border-color); text-align: left;">
+                                <th style="padding: 10px; color: var(--text-secondary); font-size: 11px;">Sector</th>
+                                <th style="padding: 10px; color: var(--text-secondary); font-size: 11px;">Current Weight</th>
+                                <th style="padding: 10px; color: var(--text-secondary); font-size: 11px;">Projected Weight</th>
+                                <th style="padding: 10px; color: var(--text-secondary); font-size: 11px;">Risk Assessment</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.025);">
+                                <td style="padding: 10px; font-weight: 600; color: #fff;">Technology & Communication</td>
+                                <td style="padding: 10px; color: var(--text-secondary);">${techCommWeightBefore.toFixed(1)}%</td>
+                                <td style="padding: 10px; color: ${exceedsLimit ? '#f87171' : '#fde047'}; font-weight: 700;">${techCommWeightAfter.toFixed(1)}%</td>
+                                <td style="padding: 10px; color: ${exceedsLimit ? '#f87171' : 'var(--text-secondary)'};">${exceedsLimit ? '⚠️ Exceeds 60% Risk Limit' : 'Within Risk Limits'}</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.025);">
+                                <td style="padding: 10px; font-weight: 600; color: #fff;">Healthcare / Defensive</td>
+                                <td style="padding: 10px; color: var(--text-secondary);">15.0%</td>
+                                <td style="padding: 10px; color: var(--text-secondary);">10.0%</td>
+                                <td style="padding: 10px; color: var(--text-secondary);">Diluted — consider maintaining defensive buffer</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.025);">
+                                <td style="padding: 10px; font-weight: 600; color: #fff;">Crypto & Speculative</td>
+                                <td style="padding: 10px; color: var(--text-secondary);">15.0%</td>
+                                <td style="padding: 10px; color: var(--text-secondary);">10.0%</td>
+                                <td style="padding: 10px; color: var(--text-secondary);">Exit high-drag leveraged ETPs if holding</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px; font-weight: 600; color: #fff;">Consumer / Other</td>
+                                <td style="padding: 10px; color: var(--text-secondary);">21.5%</td>
+                                <td style="padding: 10px; color: var(--text-secondary);">16.5%</td>
+                                <td style="padding: 10px; color: var(--text-secondary);">Core defensive anchor</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h4 style="color: #f87171; margin-top: 20px; margin-bottom: 10px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em;">CONSIDER AVOIDING / EXITING</h4>
+                <div class="rc-box" style="background: rgba(248, 113, 113, 0.04); border: 1px solid rgba(248, 113, 113, 0.2);">
+                    <ul class="rc-list" style="margin: 0; padding-left: 18px; color: #fefce8; text-align: justify;">
+                        <li style="margin-bottom: 6px; text-align: justify;"><strong>Chasing Overextended Breakouts:</strong> Avoid initiating full positions in new tickers trading >15% above 50-day moving averages.</li>
+                        <li style="margin-bottom: 6px; text-align: justify;"><strong>High-Decay Leveraged ETPs:</strong> Exit position drags with negative daily compounding before deploying new cash tranches.</li>
+                        <li style="text-align: justify;"><strong>Concentration Overhead:</strong> Do not add to existing tech positions that are underwater >10% without prior technical reversal confirmation.</li>
+                    </ul>
+                </div>
+            </div>`;
+        }
+
         function generateComprehensiveTerminalReport(symbol, userPrice) {
             let hash = 0;
             for (let i = 0; i < symbol.length; i++) { hash = symbol.charCodeAt(i) + ((hash << 5) - hash); }
@@ -853,24 +1056,30 @@
             const upsidePct = (Math.abs(hash % 45)) - 8; 
             const curPrice = userPrice > 0 ? userPrice : (Math.abs(hash % 250) + 35); 
             const analystPT = curPrice * (1 + (upsidePct / 100));
-            const takeProfit = curPrice * 1.28;
             const entryLow = curPrice * 0.95;
             const score = (Math.min(9.5, Math.max(5.0, 6.5 + (upsidePct / 10)))).toFixed(1);
             
-            // Locally computed technical indicators (Zero additional API calls)
-            const rsi21 = Math.abs(hash % 50) + 25; // 21-day RSI simulation (25 to 75)
-            const rsiColor = rsi21 > 70 ? "#f43f5e" : (rsi21 < 30 ? "#34d399" : "#fff");
+            const rsi21 = Math.abs(hash % 50) + 25; 
+            const rsiColor = rsi21 > 70 ? "#f87171" : (rsi21 < 30 ? "#fde047" : "#fff");
             const rsiStatus = rsi21 > 70 ? "Overbought" : (rsi21 < 30 ? "Oversold" : "Neutral");
             
-            // Bollinger Bands (Length 50, Width 2.5, 1 Day Interval)
             const bbUpper = curPrice * 1.095;
             const bbLower = curPrice * 0.905;
-            
-            // EMA 200 (1 Day Interval)
             const ema200 = curPrice * 0.925;
-
             const support1 = curPrice * 0.94;
             const resistance1 = curPrice * 1.06;
+
+            const riskAmount = Math.max(0.01, curPrice - support1);
+            const rewardAmount = Math.max(0.01, analystPT - curPrice);
+            const riskReward = (rewardAmount / riskAmount).toFixed(2);
+            
+            let rrBadge = "";
+            if (riskReward >= 3.0) { rrBadge = `<span style="color: #fde047; font-weight: 700;">${riskReward} (Asymmetric)</span>`; }
+            else if (riskReward >= 1.5) { rrBadge = `<span style="color: #34d399; font-weight: 700;">${riskReward} (Neutral)</span>`; }
+            else { rrBadge = `<span style="color: #f87171; font-weight: 700;">${riskReward} (Poor R:R)</span>`; }
+
+            const stopLoss = (curPrice * 0.92).toFixed(2);
+            const tp1 = (curPrice * 1.15).toFixed(2);
 
             let verdict = "HOLD";
             let verdictClass = "verdict-hold";
@@ -878,6 +1087,17 @@
 
             if (score >= 7.5) { verdict = "STRONG BUY"; verdictClass = "verdict-buy"; }
             else if (score < 6.0) { verdict = "AVOID / SELL"; verdictClass = "verdict-sell"; }
+
+            const executionMatrixHtml = `
+            <div style="background: rgba(24, 24, 27, 0.7); padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; border: 1px solid rgba(255, 255, 255, 0.05); text-align: justify;">
+                <div style="font-size: 11px; font-weight: 700; color: #fde047; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); padding-bottom: 6px;">Execution Matrix & Risk Limits</div>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; font-size: 12px;">
+                    <div><span style="color: var(--text-secondary); display: block; margin-bottom: 4px;">Risk/Reward Ratio</span>${rrBadge}</div>
+                    <div><span style="color: var(--text-secondary); display: block; margin-bottom: 4px;">Hard Stop Loss (-8%)</span><strong style="color: #f87171;">$${stopLoss}</strong></div>
+                    <div><span style="color: var(--text-secondary); display: block; margin-bottom: 4px;">Trim TP1 (+15%)</span><strong style="color: #fde047;">$${tp1}</strong></div>
+                    <div><span style="color: var(--text-secondary); display: block; margin-bottom: 4px;">Runner TP2</span><strong style="color: #fde047;">$${analystPT.toFixed(2)}</strong></div>
+                </div>
+            </div>`;
 
             if (!isSpeculative) {
                 const pe = Math.abs(hash % 10) + 15; 
@@ -887,11 +1107,11 @@
                 const beta = (Math.abs(hash % 4) / 10 + 0.9).toFixed(2); 
                 const ivMetric = (curPrice * 0.98).toFixed(2);
 
-                const peColor = pe <= 20 ? "#34d399" : (pe > 25 ? "#f43f5e" : "#fff");
-                const pegColor = peg < 1.2 ? "#34d399" : (peg > 1.5 ? "#f43f5e" : "#fff");
-                const evColor = evEbitda < 12 ? "#34d399" : (evEbitda > 20 ? "#f43f5e" : "#fff");
-                const fcfColor = fcf > 5 ? "#34d399" : (fcf < 0 ? "#f43f5e" : "#fff");
-                const betaColor = beta < 1.0 ? "#34d399" : (beta > 1.5 ? "#f43f5e" : "#fff");
+                const peColor = pe <= 20 ? "#fde047" : (pe > 25 ? "#f87171" : "#fff");
+                const pegColor = peg < 1.2 ? "#fde047" : (peg > 1.5 ? "#f87171" : "#fff");
+                const evColor = evEbitda < 12 ? "#fde047" : (evEbitda > 20 ? "#f87171" : "#fff");
+                const fcfColor = fcf > 5 ? "#fde047" : (fcf < 0 ? "#f87171" : "#fff");
+                const betaColor = beta < 1.0 ? "#fde047" : (beta > 1.5 ? "#f87171" : "#fff");
 
                 assessmentText = `Borderline — consider accumulating near current levels ($${curPrice.toFixed(2)}) or scaling in on minor pullbacks towards support at $${support1.toFixed(2)}. 21-Day RSI stands at ${rsi21} (${rsiStatus}), indicating balanced momentum relative to the 50-period Bollinger Band width.`;
 
@@ -904,12 +1124,10 @@
                         </div>
                         <div style="display: flex; align-items: center; gap: 15px;">
                             <span class="terminal-verdict ${verdictClass}">${verdict}</span>
-                            <span class="terminal-toggle-icon" style="font-weight: 700; color: var(--accent-primary); font-size: 16px;">+</span>
                         </div>
                     </div>
 
                     <div class="terminal-body" style="display: none;">
-                        <!-- Row 1: Core Fundamentals & Price Targets (SMA 200 removed) -->
                         <div class="metrics-hud">
                             <div class="hud-item"><span class="hud-label">PEG Ratio</span><span class="hud-val" style="color:${pegColor};">${peg}</span></div>
                             <div class="hud-item"><span class="hud-label">Fwd P/E</span><span class="hud-val" style="color:${peColor};">${pe.toFixed(1)}x</span></div>
@@ -918,12 +1136,9 @@
                             <div class="hud-item"><span class="hud-label">Beta</span><span class="hud-val" style="color:${betaColor};">${beta}</span></div>
                             <div class="hud-item"><span class="hud-label">IV (EV/EBITDA)</span><span class="hud-val">$${ivMetric}</span></div>
                             <div class="hud-item"><span class="hud-label">Entry Zone</span><span class="hud-val">$${entryLow.toFixed(2)}</span></div>
-                            <div class="hud-item"><span class="hud-label">Current Price</span><span class="hud-val" style="color:#38bdf8;">$${curPrice.toFixed(2)}</span></div>
-                            <div class="hud-item"><span class="hud-label">Analyst PT</span><span class="hud-val" style="color:#a78bfa;">$${analystPT.toFixed(2)}</span></div>
-                            <div class="hud-item"><span class="hud-label">Take Profit</span><span class="hud-val" style="color:#34d399;">$${takeProfit.toFixed(2)}</span></div>
+                            <div class="hud-item"><span class="hud-label">Current Price</span><span class="hud-val" style="color:#fde047;">$${curPrice.toFixed(2)}</span></div>
                         </div>
 
-                        <!-- Row 2: Technical & Momentum Indicators (21-Day RSI, BB 50/2.5 1d, EMA 200 1d, S1, R1) -->
                         <div class="metrics-hud-tech">
                             <div class="hud-item"><span class="hud-label">21-Day RSI</span><span class="hud-val" style="color:${rsiColor};">${rsi21} (${rsiStatus})</span></div>
                             <div class="hud-item"><span class="hud-label">Bollinger (50, 2.5, 1d)</span><span class="hud-val">$${bbLower.toFixed(2)} - $${bbUpper.toFixed(2)}</span></div>
@@ -931,6 +1146,8 @@
                             <div class="hud-item"><span class="hud-label">Support S1</span><span class="hud-val">$${support1.toFixed(2)}</span></div>
                             <div class="hud-item"><span class="hud-label">Resistance R1</span><span class="hud-val">$${resistance1.toFixed(2)}</span></div>
                         </div>
+
+                        ${executionMatrixHtml}
 
                         <div class="assessment-box">
                             <strong>📌 BUY ASSESSMENT:</strong> ${assessmentText}
@@ -981,8 +1198,8 @@
                 const runway = (Math.abs(hash % 18) + 12).toFixed(0);
                 const betaB = (Math.abs(hash % 8) / 10 + 1.2).toFixed(2); 
 
-                const r40Color = rule40 >= 40 ? "#34d399" : "#fff";
-                const betaBColor = betaB < 1.0 ? "#34d399" : (betaB > 1.5 ? "#f43f5e" : "#fff");
+                const r40Color = rule40 >= 40 ? "#fde047" : "#fff";
+                const betaBColor = betaB < 1.0 ? "#fde047" : (betaB > 1.5 ? "#f87171" : "#fff");
 
                 assessmentText = `Speculative Growth Profile — High top-line expansion offset by aggressive capital reinvestment. 21-Day RSI is currently at ${rsi21} (${rsiStatus}). Positions should be sized conservatively until GAAP profitability is demonstrated.`;
 
@@ -995,23 +1212,19 @@
                         </div>
                         <div style="display: flex; align-items: center; gap: 15px;">
                             <span class="terminal-verdict ${verdictClass}">${verdict}</span>
-                            <span class="terminal-toggle-icon" style="font-weight: 700; color: var(--accent-primary); font-size: 16px;">+</span>
                         </div>
                     </div>
 
                     <div class="terminal-body" style="display: none;">
-                        <!-- Row 1: Core Growth Metrics & Targets (SMA 200 removed) -->
-                        <div class="metrics-hud" style="grid-template-columns: repeat(7, 1fr);">
+                        <div class="metrics-hud" style="grid-template-columns: repeat(6, 1fr);">
                             <div class="hud-item"><span class="hud-label">EV / Sales</span><span class="hud-val">${evSales}x</span></div>
                             <div class="hud-item"><span class="hud-label">Rule of 40</span><span class="hud-val" style="color:${r40Color}">${rule40}%</span></div>
                             <div class="hud-item"><span class="hud-label">Runway</span><span class="hud-val">${runway} Mos</span></div>
                             <div class="hud-item"><span class="hud-label">Beta</span><span class="hud-val" style="color:${betaBColor}">${betaB}</span></div>
-                            <div class="hud-item"><span class="hud-label">Current Price</span><span class="hud-val" style="color:#38bdf8;">$${curPrice.toFixed(2)}</span></div>
-                            <div class="hud-item"><span class="hud-label">Analyst PT</span><span class="hud-val" style="color:#a78bfa;">$${analystPT.toFixed(2)}</span></div>
-                            <div class="hud-item"><span class="hud-label">Take Profit</span><span class="hud-val" style="color:#34d399;">$${takeProfit.toFixed(2)}</span></div>
+                            <div class="hud-item"><span class="hud-label">Entry Zone</span><span class="hud-val">$${entryLow.toFixed(2)}</span></div>
+                            <div class="hud-item"><span class="hud-label">Current Price</span><span class="hud-val" style="color:#fde047;">$${curPrice.toFixed(2)}</span></div>
                         </div>
 
-                        <!-- Row 2: Technical & Momentum Indicators (21-Day RSI, BB 50/2.5 1d, EMA 200 1d, S1, R1) -->
                         <div class="metrics-hud-tech">
                             <div class="hud-item"><span class="hud-label">21-Day RSI</span><span class="hud-val" style="color:${rsiColor};">${rsi21} (${rsiStatus})</span></div>
                             <div class="hud-item"><span class="hud-label">Bollinger (50, 2.5, 1d)</span><span class="hud-val">$${bbLower.toFixed(2)} - $${bbUpper.toFixed(2)}</span></div>
@@ -1019,6 +1232,8 @@
                             <div class="hud-item"><span class="hud-label">Support S1</span><span class="hud-val">$${support1.toFixed(2)}</span></div>
                             <div class="hud-item"><span class="hud-label">Resistance R1</span><span class="hud-val">$${resistance1.toFixed(2)}</span></div>
                         </div>
+
+                        ${executionMatrixHtml}
 
                         <div class="assessment-box">
                             <strong>📌 GROWTH ASSESSMENT:</strong> ${assessmentText}
@@ -1066,7 +1281,6 @@
             }
         }
 
-        // Add Row & Remove Row Functions
         function addRow(tableId, sectionKey) {
             const tbody = document.querySelector(`#${tableId} tbody`);
             const tr = document.createElement('tr');
@@ -1088,12 +1302,9 @@
 
         function removeRow(btn) {
             const tr = btn.closest('tr');
-            if (tr) {
-                tr.remove();
-            }
+            if (tr) { tr.remove(); }
         }
 
-        // Restore State logic
         function restoreState() {
             if (localStorage.getItem("dash_main_open") === "true") {
                 if (mainColl) mainColl.classList.add("active");
@@ -1141,11 +1352,6 @@
                 let cont = document.getElementById("ai-output-new");
                 cont.innerHTML = cachedNew; cont.style.background = 'transparent'; cont.style.border = 'none'; cont.style.padding = '0';
             }
-            let cachedPortfolio = localStorage.getItem(`dash_ai_cache_portfolio_${currentUser}`);
-            if (cachedPortfolio) {
-                let cont = document.getElementById("ai-output-portfolio");
-                cont.innerHTML = cachedPortfolio; cont.style.background = 'transparent'; cont.style.border = 'none'; cont.style.padding = '0';
-            }
             let cachedCombined = localStorage.getItem(`dash_ai_cache_combined_${currentUser}`);
             if (cachedCombined) {
                 let cont = document.getElementById("ai-output-combined");
@@ -1163,7 +1369,6 @@
         }
 
         async function loadAllSavedData() {
-            // New Tickers
             try {
                 const res = await fetch(`${API_URL}/portfolio/${currentUser}/new-tickers`);
                 const data = await res.json();
@@ -1183,13 +1388,11 @@
                     for(let i=0; i<5; i++) addRow('new-tickers-table', 'new-tickers');
                 }
             } catch (e) { 
-                console.error(e);
                 const tbody = document.querySelector("#new-tickers-table tbody");
                 tbody.innerHTML = "";
                 for(let i=0; i<5; i++) addRow('new-tickers-table', 'new-tickers');
             }
 
-            // Stocks
             stockSymbols.clear();
             try {
                 const res = await fetch(`${API_URL}/portfolio/${currentUser}/stocks`);
@@ -1215,14 +1418,12 @@
                     for(let i=0; i<5; i++) addRow('stocks-table', 'stocks');
                 }
             } catch (e) { 
-                console.error(e);
                 updateTabCount('stocks', 0);
                 const tbody = document.querySelector("#stocks-table tbody");
                 tbody.innerHTML = "";
                 for(let i=0; i<5; i++) addRow('stocks-table', 'stocks');
             }
 
-            // Crypto
             cryptoSymbols.clear();
             try {
                 const res = await fetch(`${API_URL}/portfolio/${currentUser}/crypto`);
@@ -1248,14 +1449,12 @@
                     for(let i=0; i<5; i++) addRow('crypto-table', 'crypto');
                 }
             } catch (e) { 
-                console.error(e);
                 updateTabCount('crypto', 0);
                 const tbody = document.querySelector("#crypto-table tbody");
                 tbody.innerHTML = "";
                 for(let i=0; i<5; i++) addRow('crypto-table', 'crypto');
             }
 
-            // Options
             try {
                 const res = await fetch(`${API_URL}/portfolio/${currentUser}/options`);
                 const data = await res.json();
@@ -1284,14 +1483,12 @@
                     for(let i=0; i<5; i++) addRow('options-table', 'options');
                 }
             } catch (e) { 
-                console.error(e);
                 updateTabCount('options', 0);
                 const tbody = document.querySelector("#options-table tbody");
                 tbody.innerHTML = "";
                 for(let i=0; i<5; i++) addRow('options-table', 'options');
             }
 
-            // Watchlist
             try {
                 const res = await fetch(`${API_URL}/portfolio/${currentUser}/watchlist`);
                 const data = await res.json();
@@ -1313,7 +1510,6 @@
                     for(let i=0; i<5; i++) addRow('watchlist-table', 'watchlist');
                 }
             } catch (e) { 
-                console.error(e);
                 updateTabCount('watchlist', 0);
                 const tbody = document.querySelector("#watchlist-table tbody");
                 tbody.innerHTML = "";
@@ -1329,9 +1525,7 @@
                 showMsg(sectionKey, "success", "Section cleared successfully.");
                 if (sectionKey === 'stocks') stockSymbols.clear();
                 if (sectionKey === 'crypto') cryptoSymbols.clear();
-                if (sectionKey !== 'new-tickers') {
-                    updateTabCount(sectionKey, 0);
-                }
+                if (sectionKey !== 'new-tickers') { updateTabCount(sectionKey, 0); }
                 if(sectionKey === 'stocks' || sectionKey === 'crypto' || sectionKey === 'watchlist') {
                     localStorage.removeItem(`dash_valuation_cache_${currentUser}`);
                 }
@@ -1360,9 +1554,7 @@
                     }
                 }
                 if(!hasInput) { showMsg('new-tickers', "error", "Please enter at least one ticker."); return; }
-                
                 tickersList.sort((a, b) => a.symbol.localeCompare(b.symbol));
-
                 endpoint = `${API_URL}/portfolio/validate-and-save`;
                 bodyData = { username: currentUser, tickers: tickersList };
             } else {
@@ -1409,9 +1601,7 @@
                     }
                 }
                 if(!hasInput) { showMsg(sectionKey, "error", "Please enter at least one symbol before saving."); return; }
-                
                 payload.items.sort((a, b) => a.symbol.localeCompare(b.symbol));
-
                 endpoint = `${API_URL}/portfolio/${sectionKey}/save`;
                 bodyData = payload;
             }
@@ -1527,8 +1717,8 @@
         async function loadValuationTab(forceRun = false) {
             const holdingsTbody = document.querySelector("#val-holdings-table tbody");
             const watchlistTbody = document.querySelector("#val-watchlist-table tbody");
-            holdingsTbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-secondary); padding: 30px;">Fetching live market data and calculating valuation...</td></tr>`;
-            watchlistTbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 30px;">Loading watchlist...</td></tr>`;
+            holdingsTbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-secondary); padding: 25px;">Fetching live market data and calculating valuation...</td></tr>`;
+            watchlistTbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 25px;">Loading watchlist...</td></tr>`;
 
             try {
                 const response = await fetch(`${API_URL}/portfolio/${currentUser}/valuation`);
@@ -1539,8 +1729,8 @@
                     renderValuationData(data);
                 }
             } catch (err) {
-                holdingsTbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--accent-red); padding: 30px;">Failed to load valuation data.</td></tr>`;
-                watchlistTbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--accent-red); padding: 30px;">Failed to load watchlist.</td></tr>`;
+                holdingsTbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--accent-red); padding: 25px;">Failed to load valuation data.</td></tr>`;
+                watchlistTbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--accent-red); padding: 25px;">Failed to load watchlist.</td></tr>`;
             }
         }
 
@@ -1557,11 +1747,8 @@
 
             data.holdings.forEach(h => {
                 let sym = h.ticker.toUpperCase();
-                if (cryptoSymbols.has(sym)) {
-                    cryptoHoldings.push(h);
-                } else {
-                    stockHoldings.push(h);
-                }
+                if (cryptoSymbols.has(sym)) { cryptoHoldings.push(h); } 
+                else { stockHoldings.push(h); }
             });
 
             let stocksValue = stockHoldings.reduce((sum, h) => sum + h.current_total_value, 0);
@@ -1605,12 +1792,12 @@
 
             holdingsTbody.innerHTML = "";
             if (data.holdings.length === 0) {
-                holdingsTbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-secondary); padding: 30px;">No active stock or crypto holdings found.</td></tr>`;
+                holdingsTbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-secondary); padding: 25px;">No active stock or crypto holdings found.</td></tr>`;
             } else {
                 if (stockHoldings.length > 0) {
                     holdingsTbody.innerHTML += `
-                        <tr style="background: rgba(99, 102, 241, 0.12); border-top: 1px solid rgba(99, 102, 241, 0.3);">
-                            <td colspan="8" style="font-weight: 700; color: #818cf8; text-transform: uppercase; letter-spacing: 0.06em; padding: 12px 14px;">📈 Stocks (${stockHoldings.length})</td>
+                        <tr style="background: rgba(251, 191, 36, 0.1); border-top: 1px solid rgba(251, 191, 36, 0.25);">
+                            <td colspan="8" style="font-weight: 700; color: #fde047; text-transform: uppercase; letter-spacing: 0.06em; padding: 10px 12px;">📈 Stocks (${stockHoldings.length})</td>
                         </tr>`;
                     stockHoldings.forEach(h => {
                         const dayColor = h.day_pnl >= 0 ? "var(--accent-green)" : "var(--accent-red)";
@@ -1631,8 +1818,8 @@
 
                 if (cryptoHoldings.length > 0) {
                     holdingsTbody.innerHTML += `
-                        <tr style="background: rgba(245, 158, 11, 0.12); border-top: 1px solid rgba(245, 158, 11, 0.3);">
-                            <td colspan="8" style="font-weight: 700; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.06em; padding: 12px 14px;">🪙 Crypto (${cryptoHoldings.length})</td>
+                        <tr style="background: rgba(251, 191, 36, 0.1); border-top: 1px solid rgba(251, 191, 36, 0.25);">
+                            <td colspan="8" style="font-weight: 700; color: #fde047; text-transform: uppercase; letter-spacing: 0.06em; padding: 10px 12px;">🪙 Crypto (${cryptoHoldings.length})</td>
                         </tr>`;
                     cryptoHoldings.forEach(h => {
                         const dayColor = h.day_pnl >= 0 ? "var(--accent-green)" : "var(--accent-red)";
@@ -1654,7 +1841,7 @@
 
             watchlistTbody.innerHTML = "";
             if (data.watchlist.length === 0) {
-                watchlistTbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 30px;">No watchlist items found.</td></tr>`;
+                watchlistTbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 25px;">No watchlist items found.</td></tr>`;
             } else {
                 data.watchlist.forEach(w => {
                     watchlistTbody.innerHTML += `
