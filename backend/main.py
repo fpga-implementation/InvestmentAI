@@ -198,6 +198,51 @@ def calculate_fundamental_scores(ticker_obj):
   except Exception:
     return {"f_score": "N/A", "z_score": "N/A", "z_zone": "N/A"}
 
+def calculate_relative_strength_and_volatility(ticker_obj, symbol):
+  """
+  Calculates Mansfield Relative Strength vs S&P 500 (^GSPC) and ATR-based volatility risk metrics.
+  """
+  try:
+    hist = ticker_obj.history(period="1y")
+    spy = yf.Ticker("^GSPC", session=session).history(period="1y")
+
+    if hist.empty or spy.empty:
+      return {"mrs": "N/A", "atr_stop": "N/A", "volatility_tier": "Normal"}
+
+    combined = pd.DataFrame({"stock": hist["Close"], "spy": spy["Close"]}).dropna()
+    if len(combined) < 50:
+      return {"mrs": "N/A", "atr_stop": "N/A", "volatility_tier": "Normal"}
+
+    ratio = combined["stock"] / combined["spy"]
+    mrs_current = float((ratio.iloc[-1] / ratio.rolling(252).mean().iloc[-1] - 1) * 100)
+
+    high_low = hist["High"] - hist["Low"]
+    high_close = np.abs(hist["High"] - hist["Close"].shift())
+    low_close = np.abs(hist["Low"] - hist["Close"].shift())
+    ranges = pd.concat([high_low, high_close, low_close], axis=1)
+    true_range = ranges.max(axis=1)
+    atr_14 = float(true_range.rolling(14).mean().iloc[-1])
+    current_price = float(hist["Close"].iloc[-1])
+
+    atr_pct = (atr_14 / current_price) * 100
+    if atr_pct > 3.5:
+      vol_tier = "High Volatility"
+      atr_stop_loss = current_price - (2.5 * atr_14)
+    elif atr_pct < 1.5:
+      vol_tier = "Low Volatility / Defensive"
+      atr_stop_loss = current_price - (1.5 * atr_14)
+    else:
+      vol_tier = "Normal Volatility"
+      atr_stop_loss = current_price - (2.0 * atr_14)
+
+    return {
+        "mrs": round(mrs_current, 2),
+        "atr_stop": round(atr_stop_loss, 2),
+        "volatility_tier": vol_tier,
+    }
+  except Exception:
+    return {"mrs": "N/A", "atr_stop": "N/A", "volatility_tier": "Normal"}
+
 # --- NEW TICKERS ---
 @app.get("/portfolio/{username}/new-tickers")
 def get_new_tickers(username: str):
@@ -547,8 +592,8 @@ def get_valuation(username: str):
 @app.get("/")
 def read_root():
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    index_path = os.path.join(base_dir, "frontend", "index.html")
-    return FileResponse(index_path)
+    dashboard_path = os.path.join(base_dir, "frontend", "dashboard.html")
+    return FileResponse(dashboard_path)
 
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 frontend_dir = os.path.join(base_dir, "frontend")
