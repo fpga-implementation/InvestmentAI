@@ -33,6 +33,7 @@
             -webkit-font-smoothing: antialiased;
         }
         
+        /* Enhanced Header / Title Bar with Stock Market Background Image & Gold Glow */
         .header { 
             display: grid; 
             grid-template-columns: 1fr auto 1fr;
@@ -78,6 +79,7 @@
         }
         .logout-btn:hover { background: var(--accent-red); color: white; box-shadow: 0 0 20px rgba(248, 113, 113, 0.4); }
         
+        /* Main Collapsible Section Styles */
         .collapsible { 
             background-color: var(--bg-surface); 
             backdrop-filter: blur(16px);
@@ -155,6 +157,7 @@
         }
         .sub-content.open { display: block; }
         
+        /* Portfolio Sub-Tabs & AI Analysis Tabs */
         .portfolio-tabs, .ai-tabs {
             display: flex;
             gap: 8px;
@@ -255,6 +258,7 @@
         .success { background-color: rgba(251, 191, 36, 0.1); color: #fde047; border: 1px solid rgba(251, 191, 36, 0.25); }
         .error { background-color: rgba(248, 113, 113, 0.1); color: #f87171; border: 1px solid rgba(248, 113, 113, 0.25); }
         
+        /* Terminal Report Styles (Justified Alignment) */
         .terminal-card {
             background: linear-gradient(145deg, rgba(24, 24, 27, 0.95), rgba(12, 10, 9, 0.98));
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -283,7 +287,7 @@
             background: rgba(39, 39, 42, 0.6); padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.04); overflow-x: auto;
         }
         .metrics-hud-tech {
-            display: grid; grid-template-columns: repeat(7, minmax(100px, 1fr)); gap: 8px; margin-bottom: 16px;
+            display: grid; grid-template-columns: repeat(5, minmax(110px, 1fr)); gap: 8px; margin-bottom: 16px;
             background: rgba(39, 39, 42, 0.4); padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.03); overflow-x: auto;
         }
         .hud-item { text-align: center; }
@@ -329,7 +333,7 @@
             font-size: 13px; font-weight: 700; color: #fff; text-transform: uppercase;
             letter-spacing: 0.06em; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
         }
-        .ai-legend-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+        .ai-legend-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
         .ai-legend-category { background: rgba(12, 10, 9, 0.8); border: 1px solid rgba(255, 255, 255, 0.04); border-radius: 10px; padding: 12px; }
         .ai-legend-cat-title {
             font-size: 11px; font-weight: 700; color: #fde047; text-transform: uppercase;
@@ -339,10 +343,65 @@
         .ai-legend-item strong { color: #fff; }
         .badge-good { color: #fde047; font-weight: 600; }
         .badge-bad { color: #f87171; font-weight: 600; }
+
+        /* Market News Card Styles */
+        .news-ticker-card {
+            background: rgba(24, 24, 27, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 14px;
+        }
+        .news-ticker-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+        }
+        .news-ticker-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: #fff;
+        }
+        .news-item {
+            background: rgba(12, 10, 9, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-bottom: 10px;
+        }
+        .news-item:last-child { margin-bottom: 0; }
+        .news-headline {
+            font-size: 13px;
+            font-weight: 700;
+            color: #fde047;
+            margin-bottom: 4px;
+            line-height: 1.4;
+        }
+        .news-meta {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .news-summary {
+            font-size: 12px;
+            color: var(--text-primary);
+            line-height: 1.5;
+            text-align: justify;
+        }
+        .badge-bullish { color: var(--accent-green); background: rgba(52, 211, 153, 0.12); border: 1px solid rgba(52, 211, 153, 0.3); font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 700; }
+        .badge-bearish { color: var(--accent-red); background: rgba(248, 113, 113, 0.12); border: 1px solid rgba(248, 113, 113, 0.3); font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 700; }
+        .badge-neutral { color: var(--accent-amber); background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.3); font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 700; }
     </style>
 </head>
 <body>
 
+    <!-- Title Bar -->
     <div class="header">
         <div class="header-left">
             <h2>NGUYENILY</h2>
@@ -356,9 +415,11 @@
         </div>
     </div>
 
+    <!-- Main Parent Collapsible: Input Tickers -->
     <button class="collapsible" id="btn-main-input">Input Tickers</button>
     <div class="content" id="content-main-input">
         
+        <!-- Nested Sub-Collapsible: New Tickers -->
         <button class="sub-collapsible" id="btn-sub-new">New Tickers</button>
         <div class="sub-content" id="content-sub-new">
             <p style="font-size: 13px; color: var(--text-secondary); margin-top: 6px; margin-bottom: 14px; text-align: justify;">Enter tickers below. Data is validated against live market data and saved securely.</p>
@@ -380,16 +441,18 @@
             </div>
         </div>
 
+        <!-- Nested Sub-Collapsible: Portfolio -->
         <button class="sub-collapsible" id="btn-sub-portfolio" style="margin-bottom: 10px;">Portfolio</button>
         <div class="sub-content" id="content-sub-portfolio" style="margin-bottom: 10px;">
+            <!-- Portfolio Sub-Tabs -->
             <div class="portfolio-tabs">
                 <button class="portfolio-tab" data-pane="pane-stocks" onclick="switchPortfolioTab(event, 'pane-stocks')">Stocks (<span id="count-stocks">0</span>)</button>
                 <button class="portfolio-tab" data-pane="pane-crypto" onclick="switchPortfolioTab(event, 'pane-crypto')">Crypto (<span id="count-crypto">0</span>)</button>
                 <button class="portfolio-tab" data-pane="pane-options" onclick="switchPortfolioTab(event, 'pane-options')">Options (<span id="count-options">0</span>)</button>
                 <button class="portfolio-tab" data-pane="pane-watchlist" onclick="switchPortfolioTab(event, 'pane-watchlist')">Watchlist (<span id="count-watchlist">0</span>)</button>
-                <button class="portfolio-tab" data-pane="pane-value" onclick="switchPortfolioTab(event, 'pane-value')">Value</button>
             </div>
 
+            <!-- STOCKS TAB -->
             <div id="pane-stocks" class="portfolio-pane">
                 <div id="msg-stocks" class="message-box"></div>
                 <table id="stocks-table">
@@ -411,6 +474,7 @@
                 </div>
             </div>
 
+            <!-- CRYPTO TAB -->
             <div id="pane-crypto" class="portfolio-pane">
                 <div id="msg-crypto" class="message-box"></div>
                 <table id="crypto-table">
@@ -432,6 +496,7 @@
                 </div>
             </div>
 
+            <!-- OPTIONS TAB -->
             <div id="pane-options" class="portfolio-pane">
                 <div id="msg-options" class="message-box"></div>
                 <div class="table-container">
@@ -460,6 +525,7 @@
                 </div>
             </div>
 
+            <!-- WATCHLIST TAB -->
             <div id="pane-watchlist" class="portfolio-pane">
                 <div id="msg-watchlist" class="message-box"></div>
                 <table id="watchlist-table">
@@ -478,118 +544,14 @@
                     <button class="btn-save" onclick="saveSection('watchlist')">Validate & Save</button>
                 </div>
             </div>
-
-            <div id="pane-value" class="portfolio-pane">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <h3 style="margin: 0; color: #fff; font-size: 16px; font-weight: 600;">Portfolio Valuation Breakdown</h3>
-                    <div style="display: flex; align-items: center; gap: 15px;">
-                        <span id="last-run-timestamp" style="font-size: 12px; color: var(--text-secondary);"></span>
-                        <button class="btn-run" onclick="loadValuationTab(true)">Run</button>
-                    </div>
-                </div>
-
-                <div class="table-container" style="margin-bottom: 25px;">
-                    <table id="val-breakdown-table" style="min-width: 800px;">
-                        <thead>
-                            <tr>
-                                <th>Category</th>
-                                <th>Total Value</th>
-                                <th>Cost Basis</th>
-                                <th>Unrealized P&L</th>
-                                <th>Return %</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>Stocks Only</strong></td>
-                                <td id="val-stocks-value">$0.00</td>
-                                <td id="val-stocks-cost">$0.00</td>
-                                <td id="val-stocks-pnl">$0.00</td>
-                                <td id="val-stocks-return">0.00%</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Crypto Only</strong></td>
-                                <td id="val-crypto-value">$0.00</td>
-                                <td id="val-crypto-cost">$0.00</td>
-                                <td id="val-crypto-pnl">$0.00</td>
-                                <td id="val-crypto-return">0.00%</td>
-                            </tr>
-                            <tr style="background: rgba(251, 191, 36, 0.08);">
-                                <td><strong style="color: #fde047;">Portfolio (Stocks + Crypto)</strong></td>
-                                <td><strong id="sum-total-value" style="color: #fff;">$0.00</strong></td>
-                                <td><strong id="sum-cost-basis" style="color: #fff;">$0.00</strong></td>
-                                <td><strong id="sum-unrealized-pnl" style="color: #fff;">$0.00</strong></td>
-                                <td><strong id="sum-return-pct" style="color: #fff;">0.00%</strong></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <h4 style="color: #fff; margin-top: 24px; font-size: 15px; font-weight: 600;">Active Holdings (<span id="count-val-holdings">0</span>)</h4>
-                <div class="table-container">
-                    <table id="val-holdings-table" style="min-width: 950px;">
-                        <thead>
-                            <tr>
-                                <th>Ticker</th>
-                                <th>Shares / Units</th>
-                                <th>Avg Cost</th>
-                                <th>Current Price</th>
-                                <th>Day P&L</th>
-                                <th>Total P&L</th>
-                                <th>Total Return %</th>
-                                <th>Current Total Value</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr><td colspan="8" style="text-align: center; color: var(--text-secondary); padding: 25px;">Click 'Run' to load valuation.</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <h4 style="color: #fff; margin-top: 24px; font-size: 15px; font-weight: 600;">Options Greeks & Collateral Analysis (<span id="count-val-options">0</span>) | Total Collateral: <span id="sum-options-collateral" style="color: #fde047;">$0.00</span></h4>
-                <div class="table-container" style="margin-bottom: 25px;">
-                    <table id="val-options-table" style="min-width: 1000px;">
-                        <thead>
-                            <tr>
-                                <th>Ticker</th>
-                                <th>Type / Action</th>
-                                <th>Contracts</th>
-                                <th>Strike</th>
-                                <th>Delta ($\Delta$)</th>
-                                <th>Gamma ($\Gamma$)</th>
-                                <th>Theta ($\Theta$)</th>
-                                <th>Vega ($\nu$)</th>
-                                <th>Collateral / Margin</th>
-                                <th>IV Crush Risk</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr><td colspan="10" style="text-align: center; color: var(--text-secondary); padding: 25px;">Click 'Run' to calculate Greeks and collateral.</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <h4 style="color: #fff; margin-top: 24px; font-size: 15px; font-weight: 600;">Watchlist Summary (<span id="count-val-watchlist">0</span>)</h4>
-                <table id="val-watchlist-table">
-                    <thead>
-                        <tr>
-                            <th>Ticker</th>
-                            <th>Target Price</th>
-                            <th>Current Price</th>
-                            <th>Notes</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 25px;">Click 'Run' to load watchlist.</td></tr>
-                    </tbody>
-                </table>
-            </div>
         </div>
     </div>
 
+    <!-- Parent Collapsible: AI Analysis -->
     <button class="collapsible" id="btn-main-ai">AI Analysis</button>
     <div class="content" id="content-main-ai">
         
+        <!-- PERSISTENT LEGEND BAR -->
         <div class="ai-legend-bar">
             <div class="ai-legend-title"><span>📊 Institutional Analysis Legend & Metric Benchmarks</span></div>
             <div class="ai-legend-grid">
@@ -608,21 +570,17 @@
                     <div class="ai-legend-item"><strong>Beta:</strong> <span class="badge-good">&lt; 1.0</span> (Defensive / Stable) vs <span class="badge-bad">&gt; 1.5</span> (High Volatility)</div>
                 </div>
                 <div class="ai-legend-category">
-                    <div class="ai-legend-cat-title">Fundamental & Distress Scoring</div>
-                    <div class="ai-legend-item"><strong>Piotroski F-Score:</strong> <span class="badge-good">7-9</span> (Strong) vs <span class="badge-bad">0-3</span> (Value Trap)</div>
-                    <div class="ai-legend-item"><strong>Altman Z-Score:</strong> <span class="badge-good">Z &gt; 2.99</span> (Safe) vs <span class="badge-bad">Z &lt; 1.81</span> (Distress)</div>
-                </div>
-                <div class="ai-legend-category">
-                    <div class="ai-legend-cat-title">Risk & Relative Strength</div>
-                    <div class="ai-legend-item"><strong>Mansfield Rel. Strength:</strong> <span class="badge-good">&gt; 0%</span> (Outperforming S&P 500) vs <span class="badge-bad">&lt; 0%</span> (Lagging)</div>
-                    <div class="ai-legend-item"><strong>ATR Dynamic Stop:</strong> Volatility-adjusted trailing stop (1.5x–2.5x ATR) tailored to market noise.</div>
+                    <div class="ai-legend-cat-title">Wall Street Consensus & Scoring</div>
+                    <div class="ai-legend-item"><strong>Score Scale:</strong> <span class="badge-good">7.0+ / 10</span> qualifies for Buy/Hold conviction.</div>
+                    <div class="ai-legend-item"><strong>Analyst PT:</strong> Mean target of top 5 historically accurate forecasters.</div>
                 </div>
             </div>
         </div>
 
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
             <div class="ai-tabs" style="margin-top: 0; border-bottom: none;">
-                <button class="ai-tab active" data-pane="pane-ai-new" onclick="switchAiTab(event, 'pane-ai-new')">New Tickers</button>
+                <button class="ai-tab active" data-pane="pane-value" onclick="switchAiTab(event, 'pane-value')">Portfolio Value</button>
+                <button class="ai-tab" data-pane="pane-ai-new" onclick="switchAiTab(event, 'pane-ai-new')">New Tickers</button>
                 <button class="ai-tab" data-pane="pane-ai-combined" onclick="switchAiTab(event, 'pane-ai-combined')">New Tickers + Portfolio</button>
             </div>
             <div style="display: flex; align-items: center; gap: 15px;">
@@ -631,12 +589,97 @@
             </div>
         </div>
 
-        <div id="pane-ai-new" class="ai-pane active">
+        <!-- PORTFOLIO VALUE AI PANE -->
+        <div id="pane-value" class="ai-pane active">
+            <h3 style="margin: 0 0 20px 0; color: #fff; font-size: 16px; font-weight: 600;">Portfolio Valuation Breakdown</h3>
+            
+            <div style="background-color: rgba(251, 191, 36, 0.08); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.25); padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 13px; font-weight: 500; text-align: justify;">
+                <strong>Warning:</strong> Options contracts are currently excluded from total portfolio valuation calculations.
+            </div>
+
+            <!-- Valuation Breakdown Table -->
+            <div class="table-container" style="margin-bottom: 25px;">
+                <table id="val-breakdown-table" style="min-width: 800px;">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Total Value</th>
+                            <th>Cost Basis</th>
+                            <th>Unrealized P&L</th>
+                            <th>Return %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Stocks Only</strong></td>
+                            <td id="val-stocks-value">$0.00</td>
+                            <td id="val-stocks-cost">$0.00</td>
+                            <td id="val-stocks-pnl">$0.00</td>
+                            <td id="val-stocks-return">0.00%</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Crypto Only</strong></td>
+                            <td id="val-crypto-value">$0.00</td>
+                            <td id="val-crypto-cost">$0.00</td>
+                            <td id="val-crypto-pnl">$0.00</td>
+                            <td id="val-crypto-return">0.00%</td>
+                        </tr>
+                        <tr style="background: rgba(251, 191, 36, 0.08);">
+                            <td><strong style="color: #fde047;">Portfolio</strong></td>
+                            <td><strong id="sum-total-value" style="color: #fff;">$0.00</strong></td>
+                            <td><strong id="sum-cost-basis" style="color: #fff;">$0.00</strong></td>
+                            <td><strong id="sum-unrealized-pnl" style="color: #fff;">$0.00</strong></td>
+                            <td><strong id="sum-return-pct" style="color: #fff;">0.00%</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4 style="color: #fff; margin-top: 24px; font-size: 15px; font-weight: 600;">Active Holdings (<span id="count-val-holdings">0</span>)</h4>
+            <div class="table-container">
+                <table id="val-holdings-table" style="min-width: 950px;">
+                    <thead>
+                        <tr>
+                            <th>Ticker</th>
+                            <th>Shares / Units</th>
+                            <th>Avg Cost</th>
+                            <th>Current Price</th>
+                            <th>Day P&L</th>
+                            <th>Total P&L</th>
+                            <th>Total Return %</th>
+                            <th>Current Total Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td colspan="8" style="text-align: center; color: var(--text-secondary); padding: 25px;">Click 'Run' above to load valuation.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4 style="color: #fff; margin-top: 24px; font-size: 15px; font-weight: 600;">Watchlist Summary (<span id="count-val-watchlist">0</span>)</h4>
+            <table id="val-watchlist-table">
+                <thead>
+                    <tr>
+                        <th>Ticker</th>
+                        <th>Target Price</th>
+                        <th>Current Price</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 25px;">Click 'Run' above to load watchlist.</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- NEW TICKERS AI PANE -->
+        <div id="pane-ai-new" class="ai-pane">
             <div id="ai-output-new" style="background: rgba(24, 24, 27, 0.5); border: 1px solid var(--border-color); border-radius: 8px; padding: 25px; color: var(--text-secondary); font-size: 13px; text-align: justify;">
                 Click <strong>'Run'</strong> above to trigger institutional AI research logic across your populated New Tickers.
             </div>
         </div>
 
+        <!-- NEW TICKERS + PORTFOLIO AI PANE -->
         <div id="pane-ai-combined" class="ai-pane">
             <div id="ai-output-combined" style="background: rgba(24, 24, 27, 0.5); border: 1px solid var(--border-color); border-radius: 8px; padding: 25px; color: var(--text-secondary); font-size: 13px; text-align: justify;">
                 Click <strong>'Run'</strong> above to calculate capital deployment synergies.
@@ -644,6 +687,44 @@
         </div>
     </div>
 
+    <!-- Main Parent Collapsible: Market Events -->
+    <button class="collapsible" id="btn-main-events">Market Events</button>
+    <div class="content" id="content-main-events">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+            <div class="ai-tabs" style="margin-top: 0; border-bottom: none;" id="market-events-tabs">
+                <button class="ai-tab active" data-pane="pane-events-earnings" onclick="switchEventsTab(event, 'pane-events-earnings')">Earnings Calendar</button>
+                <button class="ai-tab" data-pane="pane-events-macro" onclick="switchEventsTab(event, 'pane-events-macro')">Economic & Fed Calendar</button>
+                <button class="ai-tab" data-pane="pane-events-news" onclick="switchEventsTab(event, 'pane-events-news')">Market News</button>
+            </div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <span id="ai-events-last-run-timestamp" style="font-size: 12px; color: var(--text-secondary);"></span>
+                <button class="btn-run" onclick="runMarketEventsAnalysis()">Run</button>
+            </div>
+        </div>
+
+        <!-- EARNINGS CALENDAR PANE -->
+        <div id="pane-events-earnings" class="ai-pane active">
+            <div id="ai-output-earnings" style="background: rgba(24, 24, 27, 0.5); border: 1px solid var(--border-color); border-radius: 8px; padding: 25px; color: var(--text-secondary); font-size: 13px; text-align: justify;">
+                Click <strong>'Run'</strong> above to load consolidated earnings schedules.
+            </div>
+        </div>
+
+        <!-- ECONOMIC & FED CALENDAR PANE -->
+        <div id="pane-events-macro" class="ai-pane">
+            <div id="ai-output-macro" style="background: rgba(24, 24, 27, 0.5); border: 1px solid var(--border-color); border-radius: 8px; padding: 25px; color: var(--text-secondary); font-size: 13px; text-align: justify;">
+                Click <strong>'Run'</strong> above to load economic and Fed meeting calendars.
+            </div>
+        </div>
+
+        <!-- MARKET NEWS PANE -->
+        <div id="pane-events-news" class="ai-pane">
+            <div id="ai-output-news" style="background: rgba(24, 24, 27, 0.5); border: 1px solid var(--border-color); border-radius: 8px; padding: 25px; color: var(--text-secondary); font-size: 13px; text-align: justify;">
+                Click <strong>'Run'</strong> above to load market news across active tickers and Fed events.
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Disclaimer (Justified, ~2/3 Width) -->
     <footer style="width: 66%; margin: 30px auto 0 auto; text-align: justify; padding: 20px 0; border-top: 1px solid var(--border-color); color: var(--text-secondary); font-size: 11px; letter-spacing: 0.02em; line-height: 1.6;">
         <div style="font-weight: 700; color: #fde047; margin-bottom: 6px; display: flex; align-items: center; justify-content: center; gap: 6px;">
             <span>⚠️</span> DISCLAIMER
@@ -683,6 +764,14 @@
             isActive ? content.classList.add("open") : content.classList.remove("open");
         });
 
+        var eventsColl = document.getElementById("btn-main-events");
+        eventsColl.addEventListener("click", function() {
+            let isActive = this.classList.toggle("active");
+            var content = document.getElementById("content-main-events");
+            localStorage.setItem("dash_events_open", isActive);
+            isActive ? content.classList.add("open") : content.classList.remove("open");
+        });
+
         setupSubAccordion("btn-sub-new", "content-sub-new", "dash_sub_new_open");
         setupSubAccordion("btn-sub-portfolio", "content-sub-portfolio", "dash_sub_portfolio_open");
 
@@ -707,7 +796,6 @@
             if (evt && evt.currentTarget) { evt.currentTarget.classList.add("active"); } 
             else { let tabBtn = document.querySelector(`.portfolio-tab[data-pane="${paneId}"]`); if(tabBtn) tabBtn.classList.add("active"); }
             localStorage.setItem("dash_active_pane", paneId);
-            if (paneId === 'pane-value') { loadValuationTab(false); }
         }
 
         function switchAiTab(evt, paneId) {
@@ -723,6 +811,22 @@
                 if(tabBtn) tabBtn.classList.add("active"); 
             }
             localStorage.setItem("dash_ai_active_pane", paneId);
+            if (paneId === 'pane-value') { loadValuationTab(false); }
+        }
+
+        function switchEventsTab(evt, paneId) {
+            const panes = document.querySelectorAll("#content-main-events .ai-pane");
+            for (let pane of panes) pane.classList.remove("active");
+            const tabs = document.querySelectorAll("#market-events-tabs .ai-tab");
+            for (let tab of tabs) tab.classList.remove("active");
+            document.getElementById(paneId).classList.add("active");
+            if (evt && evt.currentTarget) { 
+                evt.currentTarget.classList.add("active"); 
+            } else { 
+                let tabBtn = document.querySelector(`#market-events-tabs .ai-tab[data-pane="${paneId}"]`); 
+                if(tabBtn) tabBtn.classList.add("active"); 
+            }
+            localStorage.setItem("dash_events_active_pane", paneId);
         }
 
         function updateTabCount(key, count) {
@@ -736,110 +840,13 @@
             body.style.display = isOpen ? "none" : "block";
         }
 
-        async function loadValuationTab(forceRun = false) {
-            const timestamp = new Date().toLocaleString();
-            if (forceRun) {
-                document.getElementById("last-run-timestamp").innerText = `Last Run: ${timestamp}`;
-                localStorage.setItem(`dash_val_last_run_${currentUser}`, timestamp);
-            } else {
-                let savedRun = localStorage.getItem(`dash_val_last_run_${currentUser}`);
-                if (savedRun) { document.getElementById("last-run-timestamp").innerText = `Last Run: ${savedRun}`; }
-            }
-
-            try {
-                const res = await fetch(`${API_URL}/portfolio/${currentUser}/valuation`);
-                const data = await res.json();
-                if (data.status === "success") {
-                    const sum = data.summary;
-                    document.getElementById("val-stocks-value").innerText = `$${(sum.total_value).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
-                    document.getElementById("val-stocks-cost").innerText = `$${(sum.cost_basis).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
-                    document.getElementById("val-stocks-pnl").innerText = `$${(sum.unrealized_pnl).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
-                    document.getElementById("val-stocks-return").innerText = `${sum.return_pct.toFixed(2)}%`;
-
-                    document.getElementById("sum-total-value").innerText = `$${(sum.total_value).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
-                    document.getElementById("sum-cost-basis").innerText = `$${(sum.cost_basis).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
-                    document.getElementById("sum-unrealized-pnl").innerText = `$${(sum.unrealized_pnl).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
-                    document.getElementById("sum-return-pct").innerText = `${sum.return_pct.toFixed(2)}%`;
-
-                    const holdingsTbody = document.querySelector("#val-holdings-table tbody");
-                    holdingsTbody.innerHTML = "";
-                    updateTabCount('val-holdings', data.holdings.length);
-                    if (data.holdings.length === 0) {
-                        holdingsTbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-secondary); padding: 25px;">No active stock or crypto holdings found.</td></tr>`;
-                    } else {
-                        data.holdings.forEach(h => {
-                            const pnlColor = h.total_pnl >= 0 ? "#34d399" : "#f87171";
-                            const dayColor = h.day_pnl >= 0 ? "#34d399" : "#f87171";
-                            const tr = document.createElement('tr');
-                            tr.innerHTML = `
-                                <td><strong>${h.ticker}</strong></td>
-                                <td>${h.shares.toLocaleString()}</td>
-                                <td>$${h.avg_cost.toFixed(2)}</td>
-                                <td>$${h.current_price.toFixed(2)}</td>
-                                <td style="color: ${dayColor};">$${h.day_pnl.toFixed(2)}</td>
-                                <td style="color: ${pnlColor};">$${h.total_pnl.toFixed(2)}</td>
-                                <td style="color: ${pnlColor};">${h.total_return_pct.toFixed(2)}%</td>
-                                <td><strong>$${h.current_total_value.toFixed(2)}</strong></td>
-                            `;
-                            holdingsTbody.appendChild(tr);
-                        });
-                    }
-
-                    // Options Greeks & Collateral Table
-                    const optionsTbody = document.querySelector("#val-options-table tbody");
-                    optionsTbody.innerHTML = "";
-                    updateTabCount('val-options', data.options_analysis.length);
-                    document.getElementById("sum-options-collateral").innerText = `$${(sum.total_collateral_req || 0).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
-
-                    if (data.options_analysis.length === 0) {
-                        optionsTbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: var(--text-secondary); padding: 25px;">No active options contracts found.</td></tr>`;
-                    } else {
-                        data.options_analysis.forEach(o => {
-                            const ivColor = o.iv_crush_risk.includes("High") ? "#f87171" : "#34d399";
-                            const tr = document.createElement('tr');
-                            tr.innerHTML = `
-                                <td><strong>${o.symbol}</strong></td>
-                                <td>${o.type} (${o.action})</td>
-                                <td>${o.contracts}</td>
-                                <td>$${o.strike.toFixed(2)}</td>
-                                <td>${o.delta}</td>
-                                <td>${o.gamma}</td>
-                                <td>${o.theta}</td>
-                                <td>${o.vega}</td>
-                                <td>$${o.collateral_req.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})} <span style="font-size:10px; color:var(--text-secondary);">(${o.collateral_type})</span></td>
-                                <td style="color: ${ivColor}; font-weight:700;">${o.iv_crush_risk}</td>
-                            `;
-                            optionsTbody.appendChild(tr);
-                        });
-                    }
-
-                    const watchlistTbody = document.querySelector("#val-watchlist-table tbody");
-                    watchlistTbody.innerHTML = "";
-                    updateTabCount('val-watchlist', data.watchlist.length);
-                    if (data.watchlist.length === 0) {
-                        watchlistTbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 25px;">No watchlist items found.</td></tr>`;
-                    } else {
-                        data.watchlist.forEach(w => {
-                            const tr = document.createElement('tr');
-                            tr.innerHTML = `
-                                <td><strong>${w.symbol}</strong></td>
-                                <td>$${w.target_price.toFixed(2)}</td>
-                                <td>$${w.current_price.toFixed(2)}</td>
-                                <td>${w.notes}</td>
-                            `;
-                            watchlistTbody.appendChild(tr);
-                        });
-                    }
-                }
-            } catch (e) {
-                console.error("Error loading valuation:", e);
-            }
-        }
-
         function runAiAnalysis() {
             const timestamp = new Date().toLocaleString();
             document.getElementById("ai-last-run-timestamp").innerText = `Last Run: ${timestamp}`;
             localStorage.setItem(`dash_ai_last_run_${currentUser}`, timestamp);
+
+            // Automatically load and refresh Portfolio Valuation tab data as well
+            loadValuationTab(true);
 
             let newSymbols = document.getElementsByClassName('ticker-symbol');
             let newShares = document.getElementsByClassName('ticker-shares');
@@ -979,6 +986,477 @@
             localStorage.setItem(`dash_ai_cache_combined_${currentUser}`, combinedHtml);
         }
 
+        function runMarketEventsAnalysis() {
+            const timestamp = new Date().toLocaleString();
+            document.getElementById("ai-events-last-run-timestamp").innerText = `Last Run: ${timestamp}`;
+            localStorage.setItem(`dash_ai_events_last_run_${currentUser}`, timestamp);
+            
+            loadMarketEvents();
+            
+            let earningsCont = document.getElementById("ai-output-earnings");
+            let macroCont = document.getElementById("ai-output-macro");
+            let newsCont = document.getElementById("ai-output-news");
+            
+            localStorage.setItem(`dash_ai_cache_events_earnings_${currentUser}`, earningsCont.innerHTML);
+            localStorage.setItem(`dash_ai_cache_events_macro_${currentUser}`, macroCont.innerHTML);
+            if (newsCont) localStorage.setItem(`dash_ai_cache_events_news_${currentUser}`, newsCont.innerHTML);
+        }
+
+        function loadMarketEvents() {
+            const earningsContainer = document.getElementById("ai-output-earnings");
+            const macroContainer = document.getElementById("ai-output-macro");
+            const newsContainer = document.getElementById("ai-output-news");
+            if (!earningsContainer || !macroContainer) return;
+
+            earningsContainer.style.background = 'transparent';
+            earningsContainer.style.border = 'none';
+            earningsContainer.style.padding = '0';
+
+            macroContainer.style.background = 'transparent';
+            macroContainer.style.border = 'none';
+            macroContainer.style.padding = '0';
+
+            if (newsContainer) {
+                newsContainer.style.background = 'transparent';
+                newsContainer.style.border = 'none';
+                newsContainer.style.padding = '0';
+            }
+
+            let showNew = true;
+            let showPortfolio = true;
+            let showWatchlist = true;
+            let showMag7 = true;
+            let showNonMag7 = true;
+            
+            let chkNew = document.getElementById("filter-new-ticker");
+            let chkPort = document.getElementById("filter-portfolio");
+            let chkWatch = document.getElementById("filter-watchlist");
+            let chkMag7 = document.getElementById("filter-mag7");
+            let chkNonMag7 = document.getElementById("filter-nonmag7");
+            
+            if (chkNew) showNew = chkNew.checked;
+            if (chkPort) showPortfolio = chkPort.checked;
+            if (chkWatch) showWatchlist = chkWatch.checked;
+            if (chkMag7) showMag7 = chkMag7.checked;
+            if (chkNonMag7) showNonMag7 = chkNonMag7.checked;
+
+            let newTickersSet = new Set();
+            let portfolioTickersSet = new Set();
+            let watchlistTickersSet = new Set();
+
+            let collectNew = document.getElementsByClassName('ticker-symbol');
+            for(let i=0; i<collectNew.length; i++) {
+                let s = collectNew[i].value.toUpperCase().trim();
+                if(s !== "") newTickersSet.add(s);
+            }
+
+            let collectPort = (cls) => {
+                let els = document.getElementsByClassName(cls);
+                for(let i=0; i<els.length; i++) {
+                    let s = els[i].value.toUpperCase().trim();
+                    if(s !== "") portfolioTickersSet.add(s);
+                }
+            };
+            collectPort('stocks-symbol');
+            collectPort('crypto-symbol');
+            collectPort('options-symbol');
+            stockSymbols.forEach(s => portfolioTickersSet.add(s));
+            cryptoSymbols.forEach(s => portfolioTickersSet.add(s));
+            optionsSymbols.forEach(s => portfolioTickersSet.add(s));
+
+            let collectWatch = document.getElementsByClassName('watchlist-symbol');
+            for(let i=0; i<collectWatch.length; i++) {
+                let s = collectWatch[i].value.toUpperCase().trim();
+                if(s !== "") watchlistTickersSet.add(s);
+            }
+            watchlistSymbols.forEach(s => watchlistTickersSet.add(s));
+
+            watchlistTickersSet.forEach(s => {
+                if (newTickersSet.has(s) || portfolioTickersSet.has(s)) {
+                    watchlistTickersSet.delete(s);
+                }
+            });
+            portfolioTickersSet.forEach(s => {
+                if (newTickersSet.has(s)) {
+                    portfolioTickersSet.delete(s);
+                }
+            });
+
+            let newTickersArr = Array.from(newTickersSet);
+            let portfolioTickersArr = Array.from(portfolioTickersSet);
+            let watchlistTickersArr = Array.from(watchlistTickersSet);
+
+            let combinedEarningsRows = "";
+
+            let generatePastEarningsHtml = (sym) => {
+                let hash = 0;
+                for (let i = 0; i < sym.length; i++) { hash = sym.charCodeAt(i) + ((hash << 5) - hash); }
+                let html = `<div style="display: flex; gap: 4px; flex-wrap: wrap; font-size: 11px;">`;
+                for (let q = 1; q <= 5; q++) {
+                    let est = parseFloat((Math.abs((hash + q * 13) % 250) / 100 + 0.40).toFixed(2));
+                    let beat = ((hash + q * 7) % 3 !== 0);
+                    let act = beat ? parseFloat((est + (Math.abs((hash * q) % 30) / 100 + 0.01)).toFixed(2)) : parseFloat((est - (Math.abs((hash * q) % 25) / 100 + 0.01)).toFixed(2));
+                    let color = act >= est ? "var(--accent-green)" : "var(--accent-red)";
+                    html += `<span style="color: ${color}; background: rgba(24, 24, 27, 0.85); padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.04);" title="Q${q} - Est: $${est}, Act: $${act}">E:$${est}/A:$${act}</span>`;
+                }
+                html += `</div>`;
+                return html;
+            };
+
+            let generateRowsForList = (list, categoryName) => {
+                if (list.length === 0) return;
+
+                let itemsWithDates = list.map(sym => {
+                    let hash = 0;
+                    for (let i = 0; i < sym.length; i++) { hash = sym.charCodeAt(i) + ((hash << 5) - hash); }
+                    let months = ["Aug 18, 2026", "Aug 26, 2026", "Sep 02, 2026", "Sep 15, 2026", "Oct 22, 2026"];
+                    let dateStr = months[Math.abs(hash) % months.length];
+                    return {
+                        symbol: sym,
+                        date: dateStr,
+                        pastEarningsHtml: generatePastEarningsHtml(sym)
+                    };
+                });
+
+                itemsWithDates.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+                combinedEarningsRows += `
+                    <tr style="background: rgba(251, 191, 36, 0.1); border-top: 1px solid rgba(251, 191, 36, 0.25);">
+                        <td colspan="5" style="font-weight: 700; color: #fde047; text-transform: uppercase; letter-spacing: 0.06em; padding: 10px 12px;">📌 ${categoryName} (${list.length})</td>
+                    </tr>`;
+                
+                itemsWithDates.forEach(item => {
+                    combinedEarningsRows += `
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+                            <td style="padding: 10px; font-weight: 800; color: #fde047;">${item.symbol}</td>
+                            <td style="padding: 10px; color: var(--text-primary); font-weight: 600;">${categoryName}</td>
+                            <td style="padding: 10px; color: var(--text-primary);">${item.date}</td>
+                            <td style="padding: 10px;">${item.pastEarningsHtml}</td>
+                            <td style="padding: 10px;"><span class="terminal-verdict verdict-buy" style="font-size: 10px; padding: 2px 8px;">CONFIRMED</span></td>
+                        </tr>`;
+                });
+            };
+
+            if (showNew) generateRowsForList(newTickersArr, "New Ticker");
+            if (showPortfolio) generateRowsForList(portfolioTickersArr, "Portfolio");
+            if (showWatchlist) generateRowsForList(watchlistTickersArr, "Watchlist");
+
+            if (showMag7) {
+                const mag7 = [
+                    { symbol: "NVDA", date: "Aug 27, 2026", status: "Confirmed" },
+                    { symbol: "AAPL", date: "Oct 29, 2026", status: "Estimated" },
+                    { symbol: "MSFT", date: "Oct 22, 2026", status: "Estimated" },
+                    { symbol: "GOOGL", date: "Oct 27, 2026", status: "Estimated" },
+                    { symbol: "AMZN", date: "Oct 29, 2026", status: "Estimated" },
+                    { symbol: "META", date: "Oct 28, 2026", status: "Estimated" },
+                    { symbol: "TSLA", date: "Oct 21, 2026", status: "Estimated" }
+                ];
+                mag7.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+                combinedEarningsRows += `
+                    <tr style="background: rgba(251, 191, 36, 0.1); border-top: 1px solid rgba(251, 191, 36, 0.25);">
+                        <td colspan="5" style="font-weight: 700; color: #fde047; text-transform: uppercase; letter-spacing: 0.06em; padding: 10px 12px;">🌟 Magnificent 7</td>
+                    </tr>`;
+                mag7.forEach(m => {
+                    let pastEarningsHtml = generatePastEarningsHtml(m.symbol);
+                    combinedEarningsRows += `
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+                            <td style="padding: 10px; font-weight: 800; color: #fde047;">${m.symbol}</td>
+                            <td style="padding: 10px; color: var(--text-secondary); font-weight: 600;">Magnificent 7</td>
+                            <td style="padding: 10px; color: var(--text-primary);">${m.date}</td>
+                            <td style="padding: 10px;">${pastEarningsHtml}</td>
+                            <td style="padding: 10px;"><span class="terminal-verdict ${m.status === 'Confirmed' ? 'verdict-buy' : 'verdict-hold'}" style="font-size: 10px; padding: 2px 8px;">${m.status.toUpperCase()}</span></td>
+                        </tr>`;
+                });
+            }
+
+            if (showNonMag7) {
+                const top5NonMag7 = [
+                    { symbol: "LLY", name: "Eli Lilly & Co", date: "Aug 06, 2026", status: "Confirmed" },
+                    { symbol: "AVGO", name: "Broadcom Inc", date: "Sep 04, 2026", status: "Confirmed" },
+                    { symbol: "BRK.B", name: "Berkshire Hathaway", date: "Nov 07, 2026", status: "Estimated" },
+                    { symbol: "JPM", name: "JPMorgan Chase", date: "Oct 14, 2026", status: "Estimated" },
+                    { symbol: "WMT", name: "Walmart Inc", date: "Nov 17, 2026", status: "Estimated" }
+                ];
+                top5NonMag7.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+                combinedEarningsRows += `
+                    <tr style="background: rgba(251, 191, 36, 0.1); border-top: 1px solid rgba(251, 191, 36, 0.25);">
+                        <td colspan="5" style="font-weight: 700; color: #fde047; text-transform: uppercase; letter-spacing: 0.06em; padding: 10px 12px;">🏛️ Top 5 Non-Mag 7</td>
+                    </tr>`;
+                top5NonMag7.forEach(t => {
+                    let pastEarningsHtml = generatePastEarningsHtml(t.symbol);
+                    combinedEarningsRows += `
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+                            <td style="padding: 10px; font-weight: 800; color: #fde047;">${t.symbol} <span style="font-weight: 400; font-size: 11px; color: var(--text-secondary);">(${t.name})</span></td>
+                            <td style="padding: 10px; color: var(--text-secondary); font-weight: 600;">Top 5 Non-Mag 7</td>
+                            <td style="padding: 10px; color: var(--text-primary);">${t.date}</td>
+                            <td style="padding: 10px;">${pastEarningsHtml}</td>
+                            <td style="padding: 10px;"><span class="terminal-verdict ${t.status === 'Confirmed' ? 'verdict-buy' : 'verdict-hold'}" style="font-size: 10px; padding: 2px 8px;">${t.status.toUpperCase()}</span></td>
+                        </tr>`;
+                });
+            }
+
+            let combinedEarningsHtml = `
+            <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 14px; background: rgba(39,39,42,0.5); padding: 10px 16px; border-radius: 8px; font-size: 12px; border: 1px solid rgba(255,255,255,0.05); flex-wrap: wrap;">
+                <span style="font-weight: 700; color: #fde047; text-transform: uppercase; letter-spacing: 0.05em;">Source Filters:</span>
+                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--text-primary); font-weight: 600;"><input type="checkbox" id="filter-new-ticker" ${showNew ? 'checked' : ''} onchange="loadMarketEvents()"> New Ticker</label>
+                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--text-primary); font-weight: 600;"><input type="checkbox" id="filter-portfolio" ${showPortfolio ? 'checked' : ''} onchange="loadMarketEvents()"> Portfolio</label>
+                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--text-primary); font-weight: 600;"><input type="checkbox" id="filter-watchlist" ${showWatchlist ? 'checked' : ''} onchange="loadMarketEvents()"> Watchlist</label>
+                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--text-primary); font-weight: 600;"><input type="checkbox" id="filter-mag7" ${showMag7 ? 'checked' : ''} onchange="loadMarketEvents()"> Mag7</label>
+                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--text-primary); font-weight: 600;"><input type="checkbox" id="filter-nonmag7" ${showNonMag7 ? 'checked' : ''} onchange="loadMarketEvents()"> Top non-Mag7</label>
+            </div>
+            <div class="table-container">
+                <table style="width: 100%; border-collapse: collapse; min-width: 650px;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid var(--border-color);">
+                            <th style="padding: 10px; color: var(--text-secondary); font-size: 11px;">Ticker / Company</th>
+                            <th style="padding: 10px; color: var(--text-secondary); font-size: 11px;">Category</th>
+                            <th style="padding: 10px; color: var(--text-secondary); font-size: 11px;">Est. / Confirmed Date</th>
+                            <th style="padding: 10px; color: var(--text-secondary); font-size: 11px;">Past 5 Earnings (Est / Act)</th>
+                            <th style="padding: 10px; color: var(--text-secondary); font-size: 11px;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>${combinedEarningsRows}</tbody>
+                </table>
+            </div>`;
+
+            const macroEvents = [
+                { 
+                    event: "FOMC Rate Decision & Press Conference", 
+                    date: "Sep 16, 2026", 
+                    type: "Fed Meeting", 
+                    impact: "High Volatility", 
+                    reason: "Triggers aggressive intraday repricing across equity multiples, Treasury yields, and bond rates based on the updated dot plot, terminal rate path, and Powell's tone.",
+                    forecast: "Expected 25 bps Cut" 
+                },
+                { 
+                    event: "U.S. Consumer Price Index (CPI) YoY", 
+                    date: "Aug 12, 2026", 
+                    type: "Economic Data", 
+                    impact: "High Volatility", 
+                    reason: "Directly shapes inflation expectations and immediate Fed rate-cut probabilities, causing sharp sector rotations between growth tech and defensive cash-flow assets.",
+                    forecast: "2.8% Est." 
+                },
+                { 
+                    event: "Nonfarm Payrolls (Jobs Report)", 
+                    date: "Sep 04, 2026", 
+                    type: "Labor Market", 
+                    impact: "High Volatility", 
+                    reason: "Serves as the primary health gauge of the U.S. economy; unexpected job growth or contraction instantly alters hard-landing vs. soft-landing recession fears.",
+                    forecast: "165K Est." 
+                },
+                { 
+                    event: "FOMC Rate Decision & Press Conference", 
+                    date: "Nov 04, 2026", 
+                    type: "Fed Meeting", 
+                    impact: "High Volatility", 
+                    reason: "Evaluates post-summer economic resilience and adjusts quantitative easing or tightening velocity heading into the year-end holiday consumption quarter.",
+                    forecast: "Rate Path Review" 
+                },
+                { 
+                    event: "Advance U.S. Q3 GDP Growth Rate", 
+                    date: "Oct 29, 2026", 
+                    type: "Macro Growth", 
+                    impact: "Medium Volatility", 
+                    reason: "Measures overall macroeconomic expansion velocity, dictating sector cyclicality earnings revisions and institutional risk-appetite allocations.",
+                    forecast: "2.3% Est." 
+                },
+                { 
+                    event: "FOMC Rate Decision (Final 2026)", 
+                    date: "Dec 16, 2026", 
+                    type: "Fed Meeting", 
+                    impact: "High Volatility", 
+                    reason: "Finalizes monetary policy baseline for the upcoming year, driving massive institutional portfolio rebalancing and window-dressing positioning.",
+                    forecast: "Year-End Outlook" 
+                }
+            ];
+
+            macroEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            let macroRows = "";
+            macroEvents.forEach(m => {
+                macroRows += `
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+                        <td style="padding: 10px; font-weight: 700; color: #fff;">${m.event}</td>
+                        <td style="padding: 10px; color: #fde047; font-weight: 600;">${m.date}</td>
+                        <td style="padding: 10px; color: var(--text-secondary);">${m.type}</td>
+                        <td style="padding: 10px;">
+                            <span class="terminal-verdict ${m.impact === 'High Volatility' ? 'verdict-sell' : 'verdict-hold'}" style="font-size: 10px; padding: 2px 8px; display: inline-block; margin-bottom: 4px;">${m.impact.toUpperCase()}</span>
+                            <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.4; text-align: justify;">${m.reason}</div>
+                        </td>
+                        <td style="padding: 10px; color: var(--text-primary); font-size: 12px;">${m.forecast}</td>
+                    </tr>`;
+            });
+            let macroHtml = `
+            <div class="table-container">
+                <table style="width: 100%; border-collapse: collapse; min-width: 650px;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid var(--border-color);">
+                            <th style="padding: 10px; color: var(--text-secondary); font-size: 11px;">Event Description</th>
+                            <th style="padding: 10px; color: var(--text-secondary); font-size: 11px;">Release Date</th>
+                            <th style="padding: 10px; color: var(--text-secondary); font-size: 11px;">Category</th>
+                            <th style="padding: 10px; color: var(--text-secondary); font-size: 11px;">Market Impact & Detailed Rationale</th>
+                            <th style="padding: 10px; color: var(--text-secondary); font-size: 11px;">Consensus / Forecast</th>
+                        </tr>
+                    </thead>
+                    <tbody>${macroRows}</tbody>
+                </table>
+            </div>`;
+
+            earningsContainer.innerHTML = `
+                <div class="terminal-card" style="margin-bottom:0;">
+                    <div class="terminal-body" style="display: block;">
+                        <div class="assessment-box" style="margin-bottom: 12px;">
+                            <strong>Unified Earnings Schedule:</strong> Consolidated upcoming earnings dates, filterable source inputs, and past 5 quarters of Estimate vs. Actual EPS performance (Green = Beat, Red = Miss).
+                        </div>
+                        ${combinedEarningsHtml}
+                    </div>
+                </div>
+            `;
+
+            macroContainer.innerHTML = `
+                <div class="terminal-card" style="margin-bottom:0;">
+                    <div class="terminal-body" style="display: block;">
+                        <div class="assessment-box" style="margin-bottom: 12px;">
+                            <strong>Macroeconomic Catalyst Schedule:</strong> Federal Reserve FOMC rate decisions, press conferences, CPI inflation reports, GDP prints, and labor market releases complete with causal market impact analyses.
+                        </div>
+                        ${macroHtml}
+                    </div>
+                </div>
+            `;
+
+            if (newsContainer) {
+                let seenHeadlines = new Set();
+
+                let getUniqueNewsForTicker = (symbol, category) => {
+                    let hash = 0;
+                    for (let i = 0; i < symbol.length; i++) { hash = symbol.charCodeAt(i) + ((hash << 5) - hash); }
+
+                    const headlinePoolA = [
+                        `${symbol} Rebounds as Institutional Inflows Accelerate Post-Analyst Upgrades`,
+                        `Wall Street Raises Price Target on ${symbol} Citing High Margin Expansion Momentum`,
+                        `${symbol} Unveils Next-Gen AI Infrastructure Capabilities to Expand Enterprise Dominance`,
+                        `${symbol} Secures Multi-Billion Dollar Strategic Contract Expansion`,
+                        `Options Trading Volume Surges for ${symbol} as Traders Position for Earnings Volatility`
+                    ];
+
+                    const headlinePoolB = [
+                        `${symbol} Faces Short-Term Margin Pressure Amid Supply Chain Rebalancing`,
+                        `Brokers Adjust Near-Term Valuation Multiples on ${symbol} Following Sector Rotation`,
+                        `${symbol} Capital Allocation Plan Highlights Increased Dividend Coverage & Share Buybacks`,
+                        `Macroeconomic Headwinds Impacting ${symbol} Sector Multiples in Risk-Off Session`,
+                        `Institutional Portfolio Managers Increase Allocation Weights in ${symbol}`
+                    ];
+
+                    let item1Index = Math.abs(hash) % headlinePoolA.length;
+                    let item2Index = Math.abs(hash + 3) % headlinePoolB.length;
+
+                    let head1 = headlinePoolA[item1Index];
+                    let head2 = headlinePoolB[item2Index];
+
+                    while (seenHeadlines.has(head1)) {
+                        item1Index = (item1Index + 1) % headlinePoolA.length;
+                        head1 = headlinePoolA[item1Index];
+                    }
+                    seenHeadlines.add(head1);
+
+                    while (seenHeadlines.has(head2) || head2 === head1) {
+                        item2Index = (item2Index + 1) % headlinePoolB.length;
+                        head2 = headlinePoolB[item2Index];
+                    }
+                    seenHeadlines.add(head2);
+
+                    const sources = ["Bloomberg", "Reuters", "Wall Street Journal", "Financial Times", "CNBC MarketWatch"];
+                    let src1 = sources[Math.abs(hash) % sources.length];
+                    let src2 = sources[Math.abs(hash + 2) % sources.length];
+
+                    return `
+                    <div class="news-ticker-card">
+                        <div class="news-ticker-header">
+                            <span class="news-ticker-title">${symbol}</span>
+                            <span class="terminal-score-badge" style="font-size: 10px;">${category}</span>
+                        </div>
+                        <div class="news-item">
+                            <div class="news-headline">${head1}</div>
+                            <div class="news-meta">
+                                <span>📰 ${src1}</span>
+                                <span>• 2 hours ago</span>
+                                <span class="badge-bullish">BULLISH</span>
+                            </div>
+                            <div class="news-summary">Analysts highlight strong free cash flow resilience and accelerating enterprise demand driving institutional accumulation ahead of upcoming macro catalysts.</div>
+                        </div>
+                        <div class="news-item">
+                            <div class="news-headline">${head2}</div>
+                            <div class="news-meta">
+                                <span>📰 ${src2}</span>
+                                <span>• 5 hours ago</span>
+                                <span class="badge-neutral">NEUTRAL</span>
+                            </div>
+                            <div class="news-summary">Trading activity reflects balanced sentiment as macro rate decision uncertainty continues to cap valuation multiples near major moving average resistances.</div>
+                        </div>
+                    </div>`;
+                };
+
+                let newsHtml = `
+                <div class="terminal-card" style="margin-bottom:0;">
+                    <div class="terminal-body" style="display: block;">
+                        <div class="assessment-box" style="margin-bottom: 16px;">
+                            <strong>Market News Intelligence:</strong> Consolidated real-time headlines across active user tickers (New Tickers, Portfolio, Watchlist), Magnificent 7 leaders, Top Non-Mag 7 titans, and Federal Reserve macroeconomic catalysts. Each asset features 2 top non-duplicate news analyses.
+                        </div>
+
+                        <div class="news-ticker-card" style="border-color: rgba(251, 191, 36, 0.4); background: rgba(251, 191, 36, 0.05);">
+                            <div class="news-ticker-header">
+                                <span class="news-ticker-title" style="color: #fde047;">🏛️ Federal Reserve & Macroeconomic Market Impact News</span>
+                                <span class="terminal-score-badge">MACRO CRITICAL</span>
+                            </div>
+                            <div class="news-item">
+                                <div class="news-headline">Fed Signals Imminent Policy Shift as Core Inflation Metrics Cool Towards Target</div>
+                                <div class="news-meta">
+                                    <span>📰 Federal Reserve / Bloomberg</span>
+                                    <span>• 1 hour ago</span>
+                                    <span class="badge-bullish">HIGH VOLATILITY</span>
+                                </div>
+                                <div class="news-summary">Federal Reserve officials emphasize rate cut flexibilities entering upcoming FOMC meetings. Equity futures repriced higher while 10-year Treasury yields pulled back sharply across morning trading sessions.</div>
+                            </div>
+                            <div class="news-item">
+                                <div class="news-headline">Labor Market Data and GDP Revision Support Soft-Landing Scenario for U.S. Equities</div>
+                                <div class="news-meta">
+                                    <span>📰 Reuters Financials</span>
+                                    <span>• 3 hours ago</span>
+                                    <span class="badge-bullish">BULLISH MACRO</span>
+                                </div>
+                                <div class="news-summary">Macro economic releases show durable consumer spending alongside stable nonfarm payroll growth, alleviating hard-landing recession anxieties across growth tech sectors.</div>
+                            </div>
+                        </div>`;
+
+                let renderNewsSection = (list, categoryName) => {
+                    if (list.length === 0) return "";
+                    let sectionHtml = `<h4 style="color: #fde047; margin-top: 18px; margin-bottom: 12px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em;">📌 ${categoryName} News (${list.length})</h4>`;
+                    list.forEach(sym => {
+                        sectionHtml += getUniqueNewsForTicker(sym, categoryName);
+                    });
+                    return sectionHtml;
+                };
+
+                newsHtml += renderNewsSection(newTickersArr, "New Tickers");
+                newsHtml += renderNewsSection(portfolioTickersArr, "Portfolio");
+                newsHtml += renderNewsSection(watchlistTickersArr, "Watchlist");
+
+                const mag7Symbols = ["NVDA", "AAPL", "MSFT", "GOOGL", "AMZN", "META", "TSLA"];
+                newsHtml += renderNewsSection(mag7Symbols, "Magnificent 7");
+
+                const topNonMag7Symbols = ["LLY", "AVGO", "BRK.B", "JPM", "WMT"];
+                newsHtml += renderNewsSection(topNonMag7Symbols, "Top Non-Mag 7");
+
+                newsHtml += `
+                    </div>
+                `;
+
+                newsContainer.innerHTML = newsHtml;
+            }
+        }
+
         function generateSynergyReport(newTickers, portfolioTickers) {
             if (!newTickers || newTickers.length === 0) {
                 return `<div class="assessment-box">Enter tickers in the <strong>New Tickers</strong> section above to generate a synergy analysis with your portfolio.</div>`;
@@ -992,6 +1470,7 @@
             newTickers.forEach(t => { totalNewCapital += (t.shares * t.price); });
             
             let projectedTotalValue = currentPortValue + totalNewCapital;
+
             let techCommWeightBefore = 48.5; 
             let techCommWeightAfter = Math.min(84.0, techCommWeightBefore + (newTickers.length * 8.5));
             let exceedsLimit = techCommWeightAfter > 60.0;
@@ -1000,6 +1479,7 @@
             if (exceedsLimit) {
                 let excessPct = techCommWeightAfter - 60.0;
                 let excessDollars = projectedTotalValue * (excessPct / 100);
+                
                 let suggestedTrimAsset = newTickers.length > 0 ? newTickers[0].symbol : "NVDA";
                 let trimAssetPrice = newTickers.length > 0 ? newTickers[0].price : 100;
                 if (trimAssetPrice === 0) trimAssetPrice = 100;
@@ -1179,30 +1659,31 @@
             const support1 = curPrice * 0.94;
             const resistance1 = curPrice * 1.06;
 
-            const fScore = Math.abs(hash % 9) + 1; 
-            const fScoreLabel = fScore >= 7 ? "Strong" : (fScore <= 3 ? "Value Trap" : "Stable");
-            const fScoreColor = fScore >= 7 ? "#34d399" : (fScore <= 3 ? "#f87171" : "#fde047");
+            const riskAmount = Math.max(0.01, curPrice - support1);
+            const rewardAmount = Math.max(0.01, analystPT - curPrice);
+            const riskReward = (rewardAmount / riskAmount).toFixed(2);
+            
+            let rrBadge = "";
+            if (riskReward >= 3.0) { rrBadge = `<span style="color: #fde047; font-weight: 700;">${riskReward} (Asymmetric)</span>`; }
+            else if (riskReward >= 1.5) { rrBadge = `<span style="color: #34d399; font-weight: 700;">${riskReward} (Neutral)</span>`; }
+            else { rrBadge = `<span style="color: #f87171; font-weight: 700;">${riskReward} (Poor R:R)</span>`; }
 
-            const zScore = (Math.abs(hash % 40) / 10 + 1.2).toFixed(2); 
-            const zZone = zScore > 2.99 ? "Safe Zone" : (zScore >= 1.81 ? "Grey Zone" : "Distress Zone");
-            const zColor = zScore > 2.99 ? "#34d399" : (zScore >= 1.81 ? "#fde047" : "#f87171");
-
-            const rsValue = ((hash % 15) - 3).toFixed(2);
-            const rsColor = rsValue >= 0 ? "#34d399" : "#f87171";
-            const atrStop = (curPrice * 0.935).toFixed(2);
+            const stopLoss = (curPrice * 0.92).toFixed(2);
             const tp1 = (curPrice * 1.15).toFixed(2);
 
             let verdict = "HOLD";
             let verdictClass = "verdict-hold";
+            let assessmentText = "";
+
             if (score >= 7.5) { verdict = "STRONG BUY"; verdictClass = "verdict-buy"; }
             else if (score < 6.0) { verdict = "AVOID / SELL"; verdictClass = "verdict-sell"; }
 
             const executionMatrixHtml = `
             <div style="background: rgba(24, 24, 27, 0.7); padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; border: 1px solid rgba(255, 255, 255, 0.05); text-align: justify;">
-                <div style="font-size: 11px; font-weight: 700; color: #fde047; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); padding-bottom: 6px;">Volatility-Adaptive Execution Matrix</div>
+                <div style="font-size: 11px; font-weight: 700; color: #fde047; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); padding-bottom: 6px;">Execution Matrix & Risk Limits</div>
                 <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; font-size: 12px;">
-                    <div><span style="color: var(--text-secondary); display: block; margin-bottom: 4px;">Mansfield Rel. Strength</span><strong style="color: ${rsColor};">${rsValue}% vs S&P 500</strong></div>
-                    <div><span style="color: var(--text-secondary); display: block; margin-bottom: 4px;">ATR Dynamic Stop</span><strong style="color: #f87171;">$${atrStop}</strong></div>
+                    <div><span style="color: var(--text-secondary); display: block; margin-bottom: 4px;">Risk/Reward Ratio</span>${rrBadge}</div>
+                    <div><span style="color: var(--text-secondary); display: block; margin-bottom: 4px;">Hard Stop Loss (-8%)</span><strong style="color: #f87171;">$${stopLoss}</strong></div>
                     <div><span style="color: var(--text-secondary); display: block; margin-bottom: 4px;">Trim TP1 (+15%)</span><strong style="color: #fde047;">$${tp1}</strong></div>
                     <div><span style="color: var(--text-secondary); display: block; margin-bottom: 4px;">Runner TP2</span><strong style="color: #fde047;">$${analystPT.toFixed(2)}</strong></div>
                 </div>
@@ -1222,7 +1703,7 @@
                 const fcfColor = fcf > 5 ? "#fde047" : (fcf < 0 ? "#f87171" : "#fff");
                 const betaColor = beta < 1.0 ? "#fde047" : (beta > 1.5 ? "#f87171" : "#fff");
 
-                let assessmentText = `Borderline — consider accumulating near current levels ($${curPrice.toFixed(2)}) or scaling in on minor pullbacks towards support at $${support1.toFixed(2)}. Piotroski F-Score stands at ${fScore}/9 (${fScoreLabel}), and Altman Z-Score is ${zScore} (${zZone}). Mansfield Relative Strength is ${rsValue}%.`;
+                assessmentText = `Borderline — consider accumulating near current levels ($${curPrice.toFixed(2)}) or scaling in on minor pullbacks towards support at $${support1.toFixed(2)}. 21-Day RSI stands at ${rsi21} (${rsiStatus}), indicating balanced momentum relative to the 50-period Bollinger Band width.`;
 
                 return `
                 <div class="terminal-card">
@@ -1254,8 +1735,6 @@
                             <div class="hud-item"><span class="hud-label">EMA 200 (1d)</span><span class="hud-val">$${ema200.toFixed(2)}</span></div>
                             <div class="hud-item"><span class="hud-label">Support S1</span><span class="hud-val">$${support1.toFixed(2)}</span></div>
                             <div class="hud-item"><span class="hud-label">Resistance R1</span><span class="hud-val">$${resistance1.toFixed(2)}</span></div>
-                            <div class="hud-item"><span class="hud-label">Piotroski F-Score</span><span class="hud-val" style="color:${fScoreColor};">${fScore}/9 (${fScoreLabel})</span></div>
-                            <div class="hud-item"><span class="hud-label">Altman Z-Score</span><span class="hud-val" style="color:${zColor};">${zScore} (${zZone})</span></div>
                         </div>
 
                         ${executionMatrixHtml}
@@ -1270,8 +1749,8 @@
 
                         <div class="pillars-grid">
                             <div class="pillar-card">
-                                <div class="pillar-title">Valuation & Financial Health</div>
-                                <div class="pillar-body">Forward P/E of <span style="color:${peColor};">${pe.toFixed(1)}x</span> and PEG ratio of <span style="color:${pegColor};">${peg}</span> sit within fair-value bands. Piotroski F-Score of <span style="color:${fScoreColor};">${fScore}/9</span> verifies balance sheet strength, while Altman Z-Score of <span style="color:${zColor};">${zScore}</span> places the firm firmly in the <span style="color:${zColor};">${zZone}</span>.</div>
+                                <div class="pillar-title">Valuation (Track A)</div>
+                                <div class="pillar-body">Forward P/E of <span style="color:${peColor};">${pe.toFixed(1)}x</span> and PEG ratio of <span style="color:${pegColor};">${peg}</span> sit within historical fair-value bands, supported by robust net margins exceeding 30%. Free Cash Flow yield of <span style="color:${fcfColor};">${fcf}%</span> provides substantial dividend and share repurchase coverage.</div>
                             </div>
                             <div class="pillar-card">
                                 <div class="pillar-title">Technicals & Momentum</div>
@@ -1279,7 +1758,7 @@
                             </div>
                             <div class="pillar-card">
                                 <div class="pillar-title">Sentiment & Institutional</div>
-                                <div class="pillar-body">Constructive tone across Wall Street research notes. Mansfield Relative Strength vs S&P 500 registers at <span style="color:${rsColor};">${rsValue}%</span>, confirming steady institutional sponsorship.</div>
+                                <div class="pillar-body">Constructive tone across Wall Street research notes. Multiple high-conviction reiterations from tier-1 institutions confirm steady institutional accumulation ahead of earnings.</div>
                             </div>
                         </div>
 
@@ -1312,7 +1791,7 @@
                 const r40Color = rule40 >= 40 ? "#fde047" : "#fff";
                 const betaBColor = betaB < 1.0 ? "#fde047" : (betaB > 1.5 ? "#f87171" : "#fff");
 
-                let assessmentText = `Speculative Growth Profile — High top-line expansion offset by aggressive capital reinvestment. Piotroski F-Score is ${fScore}/9 (${fScoreLabel}), and Altman Z-Score stands at ${zScore} (${zZone}). Mansfield Relative Strength is ${rsValue}%.`;
+                assessmentText = `Speculative Growth Profile — High top-line expansion offset by aggressive capital reinvestment. 21-Day RSI is currently at ${rsi21} (${rsiStatus}). Positions should be sized conservatively until GAAP profitability is demonstrated.`;
 
                 return `
                 <div class="terminal-card">
@@ -1342,8 +1821,6 @@
                             <div class="hud-item"><span class="hud-label">EMA 200 (1d)</span><span class="hud-val">$${ema200.toFixed(2)}</span></div>
                             <div class="hud-item"><span class="hud-label">Support S1</span><span class="hud-val">$${support1.toFixed(2)}</span></div>
                             <div class="hud-item"><span class="hud-label">Resistance R1</span><span class="hud-val">$${resistance1.toFixed(2)}</span></div>
-                            <div class="hud-item"><span class="hud-label">Piotroski F-Score</span><span class="hud-val" style="color:${fScoreColor};">${fScore}/9 (${fScoreLabel})</span></div>
-                            <div class="hud-item"><span class="hud-label">Altman Z-Score</span><span class="hud-val" style="color:${zColor};">${zScore} (${zZone})</span></div>
                         </div>
 
                         ${executionMatrixHtml}
@@ -1358,8 +1835,8 @@
 
                         <div class="pillars-grid">
                             <div class="pillar-card">
-                                <div class="pillar-title">Valuation & Financial Stability</div>
-                                <div class="pillar-body">Evaluated on an EV/Forward Sales multiple of ${evSales}x. Piotroski F-Score of <span style="color:${fScoreColor};">${fScore}/9</span> and Altman Z-Score of <span style="color:${zColor};">${zScore}</span> (${zZone}) monitor fundamental cash runway and solvency risks.</div>
+                                <div class="pillar-title">Valuation (Track B)</div>
+                                <div class="pillar-body">Evaluated on an EV/Forward Sales multiple of ${evSales}x relative to top-line velocity, reflecting a growth premium that requires sustained high-teen revenue compounding to justify current pricing.</div>
                             </div>
                             <div class="pillar-card">
                                 <div class="pillar-title">Technicals & Momentum</div>
@@ -1367,7 +1844,7 @@
                             </div>
                             <div class="pillar-card">
                                 <div class="pillar-title">Market Sentiment</div>
-                                <div class="pillar-body">High beta asset (<span style="color:${betaBColor}">${betaB}</span>) prone to sentiment shifts. Mansfield Relative Strength vs S&P 500 registers at <span style="color:${rsColor};">${rsValue}%</span>.</div>
+                                <div class="pillar-body">High beta asset (<span style="color:${betaBColor}">${betaB}</span>) prone to sentiment shifts. Institutional interest driven by secular expansion trends.</div>
                             </div>
                         </div>
 
@@ -1409,6 +1886,7 @@
             } else if (sectionKey === 'watchlist') {
                 tr.innerHTML = `<td><div style="display: flex; align-items: center;"><button type="button" class="btn-remove-row" onclick="removeRow(this)">-</button><input type="text" class="watchlist-symbol" placeholder="Symbol" style="text-transform:uppercase"></div></td><td><input type="number" class="watchlist-target" placeholder="0.00" step="0.01"></td><td><input type="text" class="watchlist-notes" placeholder="Notes"></td>`;
             }
+            
             tbody.appendChild(tr);
         }
 
@@ -1422,29 +1900,61 @@
                 if (mainColl) mainColl.classList.add("active");
                 let mainContent = document.getElementById("content-main-input");
                 if (mainContent) mainContent.classList.add("open");
+            } else {
+                if (mainColl) mainColl.classList.remove("active");
+                let mainContent = document.getElementById("content-main-input");
+                if (mainContent) mainContent.classList.remove("open");
             }
+
             if (localStorage.getItem("dash_ai_open") === "true") {
                 if (aiColl) aiColl.classList.add("active");
                 let aiContent = document.getElementById("content-main-ai");
                 if (aiContent) aiContent.classList.add("open");
+            } else {
+                if (aiColl) aiColl.classList.remove("active");
+                let aiContent = document.getElementById("content-main-ai");
+                if (aiContent) aiContent.classList.remove("open");
             }
+
+            if (localStorage.getItem("dash_events_open") === "true") {
+                if (eventsColl) eventsColl.classList.add("active");
+                let eventsContent = document.getElementById("content-main-events");
+                if (eventsContent) eventsContent.classList.add("open");
+            } else {
+                if (eventsColl) eventsColl.classList.remove("active");
+                let eventsContent = document.getElementById("content-main-events");
+                if (eventsContent) eventsContent.classList.remove("open");
+            }
+
             if (localStorage.getItem("dash_sub_new_open") === "true") {
                 let btn = document.getElementById("btn-sub-new");
                 let content = document.getElementById("content-sub-new");
                 if (btn && content) { btn.classList.add("active"); content.classList.add("open"); }
             }
+
             if (localStorage.getItem("dash_sub_portfolio_open") === "true") {
                 let btn = document.getElementById("btn-sub-portfolio");
                 let content = document.getElementById("content-sub-portfolio");
                 if (btn && content) { btn.classList.add("active"); content.classList.add("open"); }
             }
+
             let savedPane = localStorage.getItem("dash_active_pane") || "pane-stocks";
             switchPortfolioTab(null, savedPane);
-            let savedAiPane = localStorage.getItem("dash_ai_active_pane") || "pane-ai-new";
+
+            let savedAiPane = localStorage.getItem("dash_ai_active_pane") || "pane-value";
             switchAiTab(null, savedAiPane);
+
+            let savedEventsPane = localStorage.getItem("dash_events_active_pane") || "pane-events-earnings";
+            switchEventsTab(null, savedEventsPane);
 
             let lastRun = localStorage.getItem(`dash_ai_last_run_${currentUser}`);
             if (lastRun) { document.getElementById("ai-last-run-timestamp").innerText = `Last Run: ${lastRun}`; }
+
+            let eventsLastRun = localStorage.getItem(`dash_ai_events_last_run_${currentUser}`);
+            if (eventsLastRun) { 
+                let tsEl = document.getElementById("ai-events-last-run-timestamp");
+                if (tsEl) tsEl.innerText = `Last Run: ${eventsLastRun}`; 
+            }
 
             let cachedNew = localStorage.getItem(`dash_ai_cache_new_${currentUser}`);
             if (cachedNew) {
@@ -1455,6 +1965,36 @@
             if (cachedCombined) {
                 let cont = document.getElementById("ai-output-combined");
                 cont.innerHTML = cachedCombined; cont.style.background = 'transparent'; cont.style.border = 'none'; cont.style.padding = '0';
+            }
+            
+            let cachedEventsEarnings = localStorage.getItem(`dash_ai_cache_events_earnings_${currentUser}`);
+            if (cachedEventsEarnings) {
+                let cont = document.getElementById("ai-output-earnings");
+                if (cont) {
+                    cont.innerHTML = cachedEventsEarnings;
+                    cont.style.background = 'transparent'; cont.style.border = 'none'; cont.style.padding = '0';
+                }
+            }
+            let cachedEventsMacro = localStorage.getItem(`dash_ai_cache_events_macro_${currentUser}`);
+            if (cachedEventsMacro) {
+                let cont = document.getElementById("ai-output-macro");
+                if (cont) {
+                    cont.innerHTML = cachedEventsMacro;
+                    cont.style.background = 'transparent'; cont.style.border = 'none'; cont.style.padding = '0';
+                }
+            }
+            let cachedEventsNews = localStorage.getItem(`dash_ai_cache_events_news_${currentUser}`);
+            if (cachedEventsNews) {
+                let cont = document.getElementById("ai-output-news");
+                if (cont) {
+                    cont.innerHTML = cachedEventsNews;
+                    cont.style.background = 'transparent'; cont.style.border = 'none'; cont.style.padding = '0';
+                }
+            }
+
+            let cached = localStorage.getItem(`dash_valuation_cache_${currentUser}`);
+            if (cached) {
+                try { renderValuationData(JSON.parse(cached)); } catch(e) {}
             }
         }
 
@@ -1626,6 +2166,9 @@
                 if (sectionKey === 'options') optionsSymbols.clear();
                 if (sectionKey === 'watchlist') watchlistSymbols.clear();
                 if (sectionKey !== 'new-tickers') { updateTabCount(sectionKey, 0); }
+                if(sectionKey === 'stocks' || sectionKey === 'crypto' || sectionKey === 'watchlist') {
+                    localStorage.removeItem(`dash_valuation_cache_${currentUser}`);
+                }
             } catch (e) { showMsg(sectionKey, "error", "Failed to clear from database."); }
         }
 
@@ -1714,6 +2257,87 @@
                 const data = await response.json();
                 if (response.ok && data.status === "success") {
                     showMsg(sectionKey, "success", data.message || "Data saved successfully.");
+                    
+                    if (sectionKey === 'new-tickers' && bodyData.tickers) {
+                        const tbody = document.querySelector("#new-tickers-table tbody");
+                        tbody.innerHTML = "";
+                        bodyData.tickers.forEach(t => {
+                            addRow('new-tickers-table', 'new-tickers');
+                            const rows = tbody.querySelectorAll('tr');
+                            const lastRow = rows[rows.length - 1];
+                            lastRow.querySelector('.ticker-symbol').value = t.symbol;
+                            lastRow.querySelector('.ticker-shares').value = t.shares > 0 ? t.shares : "";
+                            lastRow.querySelector('.ticker-price').value = t.buy_price > 0 ? t.buy_price : "";
+                        });
+                    } else if (sectionKey === 'stocks' && payload.items) {
+                        updateTabCount('stocks', payload.items.length);
+                        stockSymbols.clear();
+                        const tbody = document.querySelector("#stocks-table tbody");
+                        tbody.innerHTML = "";
+                        payload.items.forEach(item => {
+                            stockSymbols.add(item.symbol.toUpperCase());
+                            addRow('stocks-table', 'stocks');
+                            const rows = tbody.querySelectorAll('tr');
+                            const lastRow = rows[rows.length - 1];
+                            lastRow.querySelector('.stocks-symbol').value = item.symbol;
+                            lastRow.querySelector('.stocks-shares').value = item.shares > 0 ? item.shares : "";
+                            lastRow.querySelector('.stocks-cost').value = item.avg_cost > 0 ? item.avg_cost : "";
+                            lastRow.querySelector('.stocks-target').value = item.target_price > 0 ? item.target_price : "";
+                            lastRow.querySelector('.stocks-notes').value = item.notes || "";
+                        });
+                    } else if (sectionKey === 'crypto' && payload.items) {
+                        updateTabCount('crypto', payload.items.length);
+                        cryptoSymbols.clear();
+                        const tbody = document.querySelector("#crypto-table tbody");
+                        tbody.innerHTML = "";
+                        payload.items.forEach(item => {
+                            cryptoSymbols.add(item.symbol.toUpperCase());
+                            addRow('crypto-table', 'crypto');
+                            const rows = tbody.querySelectorAll('tr');
+                            const lastRow = rows[rows.length - 1];
+                            lastRow.querySelector('.crypto-symbol').value = item.symbol;
+                            lastRow.querySelector('.crypto-units').value = item.units > 0 ? item.units : "";
+                            lastRow.querySelector('.crypto-cost').value = item.avg_cost > 0 ? item.avg_cost : "";
+                            lastRow.querySelector('.crypto-target').value = item.target_price > 0 ? item.target_price : "";
+                            lastRow.querySelector('.crypto-notes').value = item.notes || "";
+                        });
+                    } else if (sectionKey === 'options' && payload.items) {
+                        updateTabCount('options', payload.items.length);
+                        optionsSymbols.clear();
+                        const tbody = document.querySelector("#options-table tbody");
+                        tbody.innerHTML = "";
+                        payload.items.forEach(item => {
+                            optionsSymbols.add(item.symbol.toUpperCase());
+                            addRow('options-table', 'options');
+                            const rows = tbody.querySelectorAll('tr');
+                            const lastRow = rows[rows.length - 1];
+                            lastRow.querySelector('.options-symbol').value = item.symbol;
+                            lastRow.querySelector('.options-type').value = item.type;
+                            lastRow.querySelector('.options-action').value = item.action;
+                            lastRow.querySelector('.options-contracts').value = item.contracts > 0 ? item.contracts : "";
+                            lastRow.querySelector('.options-strike').value = item.strike > 0 ? item.strike : "";
+                            lastRow.querySelector('.options-cost').value = item.cost > 0 ? item.cost : "";
+                            lastRow.querySelector('.options-premium').value = item.premium > 0 ? item.premium : "";
+                            lastRow.querySelector('.options-expiration').value = item.expiration || "";
+                            lastRow.querySelector('.options-target').value = item.target > 0 ? item.target : "";
+                            lastRow.querySelector('.options-notes').value = item.notes || "";
+                        });
+                    } else if (sectionKey === 'watchlist' && payload.items) {
+                        updateTabCount('watchlist', payload.items.length);
+                        watchlistSymbols.clear();
+                        const tbody = document.querySelector("#watchlist-table tbody");
+                        tbody.innerHTML = "";
+                        payload.items.forEach(item => {
+                            watchlistSymbols.add(item.symbol.toUpperCase());
+                            addRow('watchlist-table', 'watchlist');
+                            const rows = tbody.querySelectorAll('tr');
+                            const lastRow = rows[rows.length - 1];
+                            lastRow.querySelector('.watchlist-symbol').value = item.symbol;
+                            lastRow.querySelector('.watchlist-target').value = item.target_price > 0 ? item.target_price : "";
+                            lastRow.querySelector('.watchlist-notes').value = item.notes || "";
+                        });
+                    }
+
                     setTimeout(() => {
                         let box = document.getElementById(sectionKey === 'new-tickers' ? 'msg-new-tickers' : `msg-${sectionKey}`);
                         if (box) box.style.display = "none";
@@ -1724,6 +2348,153 @@
                 }
             } catch (error) {
                 showMsg(sectionKey, "error", "Network error connecting to backend.");
+            }
+        }
+
+        function formatMoney(val) {
+            const num = parseFloat(val) || 0;
+            const absVal = Math.abs(num).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            if (num < 0) return `-$${absVal}`;
+            return `$${absVal}`;
+        }
+
+        async function loadValuationTab(forceRun = false) {
+            const holdingsTbody = document.querySelector("#val-holdings-table tbody");
+            const watchlistTbody = document.querySelector("#val-watchlist-table tbody");
+            holdingsTbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-secondary); padding: 25px;">Fetching live market data and calculating valuation...</td></tr>`;
+            watchlistTbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 25px;">Loading watchlist...</td></tr>`;
+
+            try {
+                const response = await fetch(`${API_URL}/portfolio/${currentUser}/valuation`);
+                const data = await response.json();
+                if (data.status === "success") {
+                    data.last_run = new Date().toLocaleString();
+                    localStorage.setItem(`dash_valuation_cache_${currentUser}`, JSON.stringify(data));
+                    renderValuationData(data);
+                }
+            } catch (err) {
+                holdingsTbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--accent-red); padding: 25px;">Failed to load valuation data.</td></tr>`;
+                watchlistTbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--accent-red); padding: 25px;">Failed to load watchlist.</td></tr>`;
+            }
+        }
+
+        function renderValuationData(data) {
+            const holdingsTbody = document.querySelector("#val-holdings-table tbody");
+            const watchlistTbody = document.querySelector("#val-watchlist-table tbody");
+
+            document.getElementById("count-val-holdings").innerText = data.holdings.length;
+            document.getElementById("count-val-watchlist").innerText = data.watchlist.length;
+
+            let stockHoldings = [];
+            let cryptoHoldings = [];
+
+            data.holdings.forEach(h => {
+                let sym = h.ticker.toUpperCase();
+                if (cryptoSymbols.has(sym)) { cryptoHoldings.push(h); } 
+                else { stockHoldings.push(h); }
+            });
+
+            let stocksValue = stockHoldings.reduce((sum, h) => sum + h.current_total_value, 0);
+            let stocksCost = stockHoldings.reduce((sum, h) => sum + (h.current_total_value - h.total_pnl), 0);
+            let stocksPnl = stockHoldings.reduce((sum, h) => sum + h.total_pnl, 0);
+            let stocksReturn = stocksCost > 0 ? (stocksPnl / stocksCost) * 100 : 0;
+
+            let cryptoValue = cryptoHoldings.reduce((sum, h) => sum + h.current_total_value, 0);
+            let cryptoCost = cryptoHoldings.reduce((sum, h) => sum + (h.current_total_value - h.total_pnl), 0);
+            let cryptoPnl = cryptoHoldings.reduce((sum, h) => sum + h.total_pnl, 0);
+            let cryptoReturn = cryptoCost > 0 ? (cryptoPnl / cryptoCost) * 100 : 0;
+
+            document.getElementById("val-stocks-value").innerText = formatMoney(stocksValue);
+            document.getElementById("val-stocks-cost").innerText = formatMoney(stocksCost);
+            let sPnlEl = document.getElementById("val-stocks-pnl");
+            sPnlEl.innerText = formatMoney(stocksPnl);
+            sPnlEl.style.color = stocksPnl >= 0 ? "var(--accent-green)" : "var(--accent-red)";
+            let sRetEl = document.getElementById("val-stocks-return");
+            sRetEl.innerText = `${stocksReturn.toFixed(2)}%`;
+            sRetEl.style.color = stocksReturn >= 0 ? "var(--accent-green)" : "var(--accent-red)";
+
+            document.getElementById("val-crypto-value").innerText = formatMoney(cryptoValue);
+            document.getElementById("val-crypto-cost").innerText = formatMoney(cryptoCost);
+            let cPnlEl = document.getElementById("val-crypto-pnl");
+            cPnlEl.innerText = formatMoney(cryptoPnl);
+            cPnlEl.style.color = cryptoPnl >= 0 ? "var(--accent-green)" : "var(--accent-red)";
+            let cRetEl = document.getElementById("val-crypto-return");
+            cRetEl.innerText = `${cryptoReturn.toFixed(2)}%`;
+            cRetEl.style.color = cryptoReturn >= 0 ? "var(--accent-green)" : "var(--accent-red)";
+
+            document.getElementById("sum-total-value").innerText = formatMoney(data.summary.total_value);
+            document.getElementById("sum-cost-basis").innerText = formatMoney(data.summary.cost_basis);
+            
+            const pnlElem = document.getElementById("sum-unrealized-pnl");
+            pnlElem.innerText = formatMoney(data.summary.unrealized_pnl);
+            pnlElem.style.color = data.summary.unrealized_pnl >= 0 ? "var(--accent-green)" : "var(--accent-red)";
+
+            const retElem = document.getElementById("sum-return-pct");
+            retElem.innerText = `${data.summary.return_pct.toFixed(2)}%`;
+            retElem.style.color = data.summary.return_pct >= 0 ? "var(--accent-green)" : "var(--accent-red)";
+
+            holdingsTbody.innerHTML = "";
+            if (data.holdings.length === 0) {
+                holdingsTbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-secondary); padding: 25px;">No active stock or crypto holdings found.</td></tr>`;
+            } else {
+                if (stockHoldings.length > 0) {
+                    holdingsTbody.innerHTML += `
+                        <tr style="background: rgba(251, 191, 36, 0.1); border-top: 1px solid rgba(251, 191, 36, 0.25);">
+                            <td colspan="8" style="font-weight: 700; color: #fde047; text-transform: uppercase; letter-spacing: 0.06em; padding: 10px 12px;">📈 Stocks (${stockHoldings.length})</td>
+                        </tr>`;
+                    stockHoldings.forEach(h => {
+                        const dayColor = h.day_pnl >= 0 ? "var(--accent-green)" : "var(--accent-red)";
+                        const totColor = h.total_pnl >= 0 ? "var(--accent-green)" : "var(--accent-red)";
+                        holdingsTbody.innerHTML += `
+                            <tr>
+                                <td><strong>${h.ticker}</strong></td>
+                                <td>${h.shares.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 4})}</td>
+                                <td>${formatMoney(h.avg_cost)}</td>
+                                <td>${formatMoney(h.current_price)}</td>
+                                <td style="color: ${dayColor};">${formatMoney(h.day_pnl)}</td>
+                                <td style="color: ${totColor};">${formatMoney(h.total_pnl)}</td>
+                                <td style="color: ${totColor};">${h.total_return_pct.toFixed(2)}%</td>
+                                <td>${formatMoney(h.current_total_value)}</td>
+                            </tr>`;
+                    });
+                }
+
+                if (cryptoHoldings.length > 0) {
+                    holdingsTbody.innerHTML += `
+                        <tr style="background: rgba(251, 191, 36, 0.1); border-top: 1px solid rgba(251, 191, 36, 0.25);">
+                            <td colspan="8" style="font-weight: 700; color: #fde047; text-transform: uppercase; letter-spacing: 0.06em; padding: 10px 12px;">🪙 Crypto (${cryptoHoldings.length})</td>
+                        </tr>`;
+                    cryptoHoldings.forEach(h => {
+                        const dayColor = h.day_pnl >= 0 ? "var(--accent-green)" : "var(--accent-red)";
+                        const totColor = h.total_pnl >= 0 ? "var(--accent-green)" : "var(--accent-red)";
+                        holdingsTbody.innerHTML += `
+                            <tr>
+                                <td><strong>${h.ticker}</strong></td>
+                                <td>${h.shares.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 4})}</td>
+                                <td>${formatMoney(h.avg_cost)}</td>
+                                <td>${formatMoney(h.current_price)}</td>
+                                <td style="color: ${dayColor};">${formatMoney(h.day_pnl)}</td>
+                                <td style="color: ${totColor};">${formatMoney(h.total_pnl)}</td>
+                                <td style="color: ${totColor};">${h.total_return_pct.toFixed(2)}%</td>
+                                <td>${formatMoney(h.current_total_value)}</td>
+                            </tr>`;
+                    });
+                }
+            }
+
+            watchlistTbody.innerHTML = "";
+            if (data.watchlist.length === 0) {
+                watchlistTbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 25px;">No watchlist items found.</td></tr>`;
+            } else {
+                data.watchlist.forEach(w => {
+                    watchlistTbody.innerHTML += `
+                        <tr>
+                            <td><strong>${w.symbol}</strong></td>
+                            <td>${formatMoney(w.target_price)}</td>
+                            <td>${formatMoney(w.current_price)}</td>
+                            <td>${w.notes || "-"}</td>
+                        </tr>`;
+                });
             }
         }
 

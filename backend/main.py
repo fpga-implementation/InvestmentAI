@@ -7,9 +7,6 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel
 import requests
 import yfinance as yf
-import pandas as pd
-import numpy as np
-from scipy.stats import norm
 
 # Import the authentication router from auth.py
 from .auth import router as auth_router
@@ -110,211 +107,6 @@ session.headers.update({
         " like Gecko) Chrome/120.0.0.0 Safari/537.36"
     )
 })
-
-def calculate_fundamental_scores(ticker_obj):
-  try:
-    bs = ticker_obj.balance_sheet
-    inc = ticker_obj.financials
-    cf = ticker_obj.cashflow
-    info = ticker_obj.info
-
-    if bs.empty or inc.empty or cf.empty or len(bs.columns) < 2:
-      return {"f_score": "N/A", "z_score": "N/A", "z_zone": "N/A"}
-
-    total_assets = bs.iloc[:, 0].get("Total Assets", 1)
-    total_liabilities = bs.iloc[:, 0].get("Total Liabilities Net Minority Interest", 1)
-    if total_liabilities == 0:
-      total_liabilities = 1
-
-    working_capital = bs.iloc[:, 0].get("Working Capital", 0)
-    retained_earnings = bs.iloc[:, 0].get("Retained Earnings", 0)
-    ebit = inc.iloc[:, 0].get("EBIT", 0)
-    sales = inc.iloc[:, 0].get("Total Revenue", 0)
-    market_cap = info.get("marketCap", total_assets)
-
-    x1 = working_capital / total_assets
-    x2 = retained_earnings / total_assets
-    x3 = ebit / total_assets
-    x4 = market_cap / total_liabilities
-    x5 = sales / total_assets
-
-    z_score = (1.2 * x1) + (1.4 * x2) + (3.3 * x3) + (0.6 * x4) + (0.999 * x5)
-    z_score_rounded = round(float(z_score), 2)
-
-    if z_score_rounded > 2.99:
-      z_zone = "Safe Zone"
-    elif 1.81 <= z_score_rounded <= 2.99:
-      z_zone = "Grey Zone"
-    else:
-      z_zone = "Distress Zone"
-
-    f_score = 0
-    cy_net_income = inc.iloc[:, 0].get("Net Income", 0)
-    cy_operating_cf = cf.iloc[:, 0].get("Operating Cash Flow", 0)
-    cy_assets = bs.iloc[:, 0].get("Total Assets", 1)
-    cy_roa = cy_net_income / cy_assets if cy_assets else 0
-
-    cy_long_term_debt = bs.iloc[:, 0].get("Long Term Debt", 0)
-    cy_current_assets = bs.iloc[:, 0].get("Current Assets", 0)
-    cy_current_liabilities = bs.iloc[:, 0].get("Current Liabilities", 1)
-    cy_current_ratio = cy_current_assets / cy_current_liabilities if cy_current_liabilities else 0
-    cy_shares = bs.iloc[:, 0].get("Ordinary Shares Number", 1)
-
-    cy_sales = inc.iloc[:, 0].get("Total Revenue", 0)
-    cy_gross_margin = (inc.iloc[:, 0].get("Gross Profit", 0) / cy_sales) if cy_sales else 0
-    cy_asset_turnover = cy_sales / cy_assets if cy_assets else 0
-
-    py_net_income = inc.iloc[:, 1].get("Net Income", 0)
-    py_assets = bs.iloc[:, 1].get("Total Assets", 1)
-    py_roa = py_net_income / py_assets if py_assets else 0
-    py_long_term_debt = bs.iloc[:, 1].get("Long Term Debt", 0)
-    py_current_assets = bs.iloc[:, 1].get("Current Assets", 0)
-    py_current_liabilities = bs.iloc[:, 1].get("Current Liabilities", 1)
-    py_current_ratio = py_current_assets / py_current_liabilities if py_current_liabilities else 0
-    py_shares = bs.iloc[:, 1].get("Ordinary Shares Number", 1)
-    py_sales = inc.iloc[:, 1].get("Total Revenue", 1)
-    py_gross_margin = (inc.iloc[:, 1].get("Gross Profit", 0) / py_sales) if py_sales else 0
-    py_asset_turnover = py_sales / py_assets if py_assets else 0
-
-    if cy_roa > 0: f_score += 1
-    if cy_operating_cf > 0: f_score += 1
-    if cy_roa > py_roa: f_score += 1
-    if cy_operating_cf > cy_net_income: f_score += 1
-    if cy_long_term_debt <= py_long_term_debt: f_score += 1
-    if cy_current_ratio > py_current_ratio: f_score += 1
-    if cy_shares <= py_shares: f_score += 1
-    if cy_gross_margin > py_gross_margin: f_score += 1
-    if cy_asset_turnover > py_asset_turnover: f_score += 1
-
-    return {
-        "f_score": int(f_score),
-        "z_score": z_score_rounded,
-        "z_zone": z_zone
-    }
-  except Exception:
-    return {"f_score": "N/A", "z_score": "N/A", "z_zone": "N/A"}
-
-def calculate_relative_strength_and_volatility(ticker_obj, symbol):
-  try:
-    hist = ticker_obj.history(period="1y")
-    spy = yf.Ticker("^GSPC", session=session).history(period="1y")
-
-    if hist.empty or spy.empty:
-      return {"mrs": "N/A", "atr_stop": "N/A", "volatility_tier": "Normal"}
-
-    combined = pd.DataFrame({"stock": hist["Close"], "spy": spy["Close"]}).dropna()
-    if len(combined) < 50:
-      return {"mrs": "N/A", "atr_stop": "N/A", "volatility_tier": "Normal"}
-
-    ratio = combined["stock"] / combined["spy"]
-    mrs_current = float((ratio.iloc[-1] / ratio.rolling(252).mean().iloc[-1] - 1) * 100)
-
-    high_low = hist["High"] - hist["Low"]
-    high_close = np.abs(hist["High"] - hist["Close"].shift())
-    low_close = np.abs(hist["Low"] - hist["Close"].shift())
-    ranges = pd.concat([high_low, high_close, low_close], axis=1)
-    true_range = ranges.max(axis=1)
-    atr_14 = float(true_range.rolling(14).mean().iloc[-1])
-    current_price = float(hist["Close"].iloc[-1])
-
-    atr_pct = (atr_14 / current_price) * 100
-    if atr_pct > 3.5:
-      vol_tier = "High Volatility"
-      atr_stop_loss = current_price - (2.5 * atr_14)
-    elif atr_pct < 1.5:
-      vol_tier = "Low Volatility / Defensive"
-      atr_stop_loss = current_price - (1.5 * atr_14)
-    else:
-      vol_tier = "Normal Volatility"
-      atr_stop_loss = current_price - (2.0 * atr_14)
-
-    return {
-        "mrs": round(mrs_current, 2),
-        "atr_stop": round(atr_stop_loss, 2),
-        "volatility_tier": vol_tier,
-    }
-  except Exception:
-    return {"mrs": "N/A", "atr_stop": "N/A", "volatility_tier": "Normal"}
-
-def calculate_option_greeks_and_collateral(option_item, current_stock_price):
-  """
-  Calculates Black-Scholes Greeks (Delta, Gamma, Theta, Vega),
-  collateral requirements, and IV crush risk.
-  """
-  try:
-    strike = float(option_item.get("strike", 0))
-    cost = float(option_item.get("cost", 0))
-    premium = float(option_item.get("premium", 0))
-    contracts = int(option_item.get("contracts", 1))
-    opt_type = option_item.get("type", "Call").lower()
-    action = option_item.get("action", "Buy").lower()
-    expiration_str = option_item.get("expiration", "")
-
-    if expiration_str:
-      exp_date = pd.to_datetime(expiration_str)
-      days_to_expiry = max(1, (exp_date - pd.Timestamp.now()).days)
-      T = days_to_expiry / 365.0
-    else:
-      days_to_expiry = 30
-      T = 30 / 365.0
-
-    S = current_stock_price if current_stock_price > 0 else 100.0
-    K = strike if strike > 0 else S
-    r = 0.045
-    sigma = 0.30
-
-    d1 = (np.log(S / K) + (r + 0.5 * sigma**2) * T) / (sigma * np.sqrt(T))
-    d2 = d1 - sigma * np.sqrt(T)
-
-    if "call" in opt_type:
-      delta = float(norm.cdf(d1))
-      theta = float(
-          -(S * norm.pdf(d1) * sigma) / (2 * np.sqrt(T))
-          - r * K * np.exp(-r * T) * norm.cdf(d2)
-      ) / 365.0
-    else:
-      delta = float(norm.cdf(d1) - 1)
-      theta = float(
-          -(S * norm.pdf(d1) * sigma) / (2 * np.sqrt(T))
-          + r * K * np.exp(-r * T) * norm.cdf(-d2)
-      ) / 365.0
-
-    gamma = float(norm.pdf(d1) / (S * sigma * np.sqrt(T)))
-    vega = float(S * norm.pdf(d1) * np.sqrt(T) / 100.0)
-
-    if "sell" in action and "put" in opt_type:
-      collateral_req = K * 100 * contracts
-      collateral_type = "Cash-Secured Put Collateral"
-    elif "sell" in action and "call" in opt_type:
-      collateral_req = S * 100 * contracts
-      collateral_type = "Short Call Margin Req."
-    else:
-      collateral_req = cost * 100 * contracts
-      collateral_type = "Capital Risk (Premium Paid)"
-
-    iv_crush_risk = "High (Earnings/Near Expiry)" if days_to_expiry <= 14 else "Normal"
-
-    return {
-        "delta": round(delta, 3),
-        "gamma": round(gamma, 4),
-        "theta": round(theta, 3),
-        "vega": round(vega, 3),
-        "collateral_req": round(collateral_req, 2),
-        "collateral_type": collateral_type,
-        "days_to_expiry": days_to_expiry,
-        "iv_crush_risk": iv_crush_risk,
-    }
-  except Exception:
-    return {
-        "delta": 0.0,
-        "gamma": 0.0,
-        "theta": 0.0,
-        "vega": 0.0,
-        "collateral_req": 0.0,
-        "collateral_type": "N/A",
-        "days_to_expiry": 0,
-        "iv_crush_risk": "N/A",
-    }
 
 # --- NEW TICKERS ---
 @app.get("/portfolio/{username}/new-tickers")
@@ -421,10 +213,12 @@ def save_crypto(payload: CryptoPayload):
     symbol = item.symbol.upper().strip()
     if not symbol:
       continue
+    # Format crypto for Yahoo Finance if needed (e.g. BTC -> BTC-USD if missing dash)
     query_sym = symbol if "-" in symbol else f"{symbol}-USD"
     try:
       ticker_obj = yf.Ticker(query_sym, session=session)
       if ticker_obj.history(period="1d").empty:
+        # fallback to raw symbol
         ticker_obj = yf.Ticker(symbol, session=session)
         if ticker_obj.history(period="1d").empty:
           raise HTTPException(
@@ -496,6 +290,7 @@ def save_watchlist(payload: WatchlistPayload):
     try:
       ticker_obj = yf.Ticker(symbol, session=session)
       if ticker_obj.history(period="1d").empty:
+        # Try crypto format fallback
         if yf.Ticker(f"{symbol}-USD", session=session).history(period="1d").empty:
           raise HTTPException(
               status_code=400, detail=f"Invalid watchlist symbol '{symbol}'."
@@ -519,30 +314,34 @@ def save_watchlist(payload: WatchlistPayload):
 def clear_watchlist(username: str):
   db = load_db()
   if username in db:
+    db[payload.username if 'payload' in locals() else username][
+        "watchlist"
+    ] = []  # safe clear
     db[username]["watchlist"] = []
     save_db(db)
   return {"status": "success", "message": "Watchlist cleared."}
 
-# --- VALUATION TAB API (Includes Options Greeks & Collateral Analysis) ---
+# --- VALUATION TAB API ---
 @app.get("/portfolio/{username}/valuation")
 def get_valuation(username: str):
   db = load_db()
   user_data = db.get(username, {})
   stocks = user_data.get("stocks", [])
   crypto = user_data.get("crypto", [])
-  options = user_data.get("options", [])
   watchlist = user_data.get("watchlist", [])
 
   holdings = []
   total_value = 0.0
   total_cost_basis = 0.0
 
+  # Process Stocks
   for s in stocks:
     sym = s.get("symbol")
     shares = float(s.get("shares", 0))
     avg_cost = float(s.get("avg_cost", 0))
     if not sym or shares <= 0:
       continue
+
     try:
       t = yf.Ticker(sym, session=session)
       hist = t.history(period="2d")
@@ -551,7 +350,11 @@ def get_valuation(username: str):
         prev_close = avg_cost
       else:
         current_price = float(hist["Close"].iloc[-1])
-        prev_close = float(hist["Close"].iloc[-2]) if len(hist) > 1 else current_price
+        prev_close = (
+            float(hist["Close"].iloc[-2])
+            if len(hist) > 1
+            else current_price
+        )
 
       cost_basis = shares * avg_cost
       curr_val = shares * current_price
@@ -575,6 +378,7 @@ def get_valuation(username: str):
     except Exception:
       pass
 
+  # Process Crypto
   for c in crypto:
     sym = c.get("symbol")
     units = float(c.get("units", 0))
@@ -595,7 +399,11 @@ def get_valuation(username: str):
         prev_close = avg_cost
       else:
         current_price = float(hist["Close"].iloc[-1])
-        prev_close = float(hist["Close"].iloc[-2]) if len(hist) > 1 else current_price
+        prev_close = (
+            float(hist["Close"].iloc[-2])
+            if len(hist) > 1
+            else current_price
+        )
 
       cost_basis = units * avg_cost
       curr_val = units * current_price
@@ -619,44 +427,19 @@ def get_valuation(username: str):
     except Exception:
       pass
 
-  # Process Options Greeks and Collateral
-  options_summary = []
-  total_collateral_req = 0.0
-  for opt in options:
-    sym = opt.get("symbol")
-    if not sym:
-      continue
-    try:
-      t = yf.Ticker(sym, session=session)
-      hist = t.history(period="1d")
-      curr_stock_price = float(hist["Close"].iloc[-1]) if not hist.empty else float(opt.get("strike", 100))
-    except Exception:
-      curr_stock_price = float(opt.get("strike", 100))
-
-    greeks_data = calculate_option_greeks_and_collateral(opt, curr_stock_price)
-    total_collateral_req += greeks_data["collateral_req"]
-
-    options_summary.append({
-        "symbol": sym,
-        "type": opt.get("type"),
-        "action": opt.get("action"),
-        "contracts": opt.get("contracts"),
-        "strike": opt.get("strike"),
-        "expiration": opt.get("expiration"),
-        **greeks_data
-    })
-
   unrealized_pnl = total_value - total_cost_basis
-  return_pct = (unrealized_pnl / total_cost_basis * 100) if total_cost_basis > 0 else 0
+  return_pct = (
+      (unrealized_pnl / total_cost_basis * 100) if total_cost_basis > 0 else 0
+  )
 
   summary = {
       "total_value": total_value,
       "cost_basis": total_cost_basis,
       "unrealized_pnl": unrealized_pnl,
       "return_pct": return_pct,
-      "total_collateral_req": total_collateral_req
   }
 
+  # Process Watchlist live prices
   watchlist_resolved = []
   for w in watchlist:
     sym = w.get("symbol")
@@ -688,19 +471,23 @@ def get_valuation(username: str):
       "status": "success",
       "summary": summary,
       "holdings": holdings,
-      "options_analysis": options_summary,
       "watchlist": watchlist_resolved,
   }
 
+
+# --- FRONTEND ROUTING & STATIC MOUNT ---
 @app.get("/")
 def read_root():
+    # Construct an absolute path to ensure cross-OS compatibility
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    dashboard_path = os.path.join(base_dir, "frontend", "dashboard.html")
-    return FileResponse(dashboard_path)
+    index_path = os.path.join(base_dir, "frontend", "index.html")
+    return FileResponse(index_path)
 
+# Mount the entire frontend directory to serve other static files
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 frontend_dir = os.path.join(base_dir, "frontend")
 app.mount("/", StaticFiles(directory=frontend_dir), name="frontend")
+
 
 if __name__ == "__main__":
   import uvicorn
