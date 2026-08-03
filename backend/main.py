@@ -9,6 +9,7 @@ import requests
 import yfinance as yf
 import pandas as pd
 import numpy as np
+from scipy.stats import norm
 
 # Import the authentication router from auth.py
 from .auth import router as auth_router
@@ -111,9 +112,6 @@ session.headers.update({
 })
 
 def calculate_fundamental_scores(ticker_obj):
-  """
-  Calculates Piotroski F-Score (0-9) and Altman Z-Score for financial health & distress prediction.
-  """
   try:
     bs = ticker_obj.balance_sheet
     inc = ticker_obj.financials
@@ -123,7 +121,6 @@ def calculate_fundamental_scores(ticker_obj):
     if bs.empty or inc.empty or cf.empty or len(bs.columns) < 2:
       return {"f_score": "N/A", "z_score": "N/A", "z_zone": "N/A"}
 
-    # --- Altman Z-Score Calculation ---
     total_assets = bs.iloc[:, 0].get("Total Assets", 1)
     total_liabilities = bs.iloc[:, 0].get("Total Liabilities Net Minority Interest", 1)
     if total_liabilities == 0:
@@ -151,7 +148,6 @@ def calculate_fundamental_scores(ticker_obj):
     else:
       z_zone = "Distress Zone"
 
-    # --- Piotroski F-Score Calculation (0-9 Range) ---
     f_score = 0
     cy_net_income = inc.iloc[:, 0].get("Net Income", 0)
     cy_operating_cf = cf.iloc[:, 0].get("Operating Cash Flow", 0)
@@ -199,9 +195,6 @@ def calculate_fundamental_scores(ticker_obj):
     return {"f_score": "N/A", "z_score": "N/A", "z_zone": "N/A"}
 
 def calculate_relative_strength_and_volatility(ticker_obj, symbol):
-  """
-  Calculates Mansfield Relative Strength vs S&P 500 (^GSPC) and ATR-based volatility risk metrics.
-  """
   try:
     hist = ticker_obj.history(period="1y")
     spy = yf.Ticker("^GSPC", session=session).history(period="1y")
@@ -242,6 +235,86 @@ def calculate_relative_strength_and_volatility(ticker_obj, symbol):
     }
   except Exception:
     return {"mrs": "N/A", "atr_stop": "N/A", "volatility_tier": "Normal"}
+
+def calculate_option_greeks_and_collateral(option_item, current_stock_price):
+  """
+  Calculates Black-Scholes Greeks (Delta, Gamma, Theta, Vega),
+  collateral requirements, and IV crush risk.
+  """
+  try:
+    strike = float(option_item.get("strike", 0))
+    cost = float(option_item.get("cost", 0))
+    premium = float(option_item.get("premium", 0))
+    contracts = int(option_item.get("contracts", 1))
+    opt_type = option_item.get("type", "Call").lower()
+    action = option_item.get("action", "Buy").lower()
+    expiration_str = option_item.get("expiration", "")
+
+    if expiration_str:
+      exp_date = pd.to_datetime(expiration_str)
+      days_to_expiry = max(1, (exp_date - pd.Timestamp.now()).days)
+      T = days_to_expiry / 365.0
+    else:
+      days_to_expiry = 30
+      T = 30 / 365.0
+
+    S = current_stock_price if current_stock_price > 0 else 100.0
+    K = strike if strike > 0 else S
+    r = 0.045
+    sigma = 0.30
+
+    d1 = (np.log(S / K) + (r + 0.5 * sigma**2) * T) / (sigma * np.sqrt(T))
+    d2 = d1 - sigma * np.sqrt(T)
+
+    if "call" in opt_type:
+      delta = float(norm.cdf(d1))
+      theta = float(
+          -(S * norm.pdf(d1) * sigma) / (2 * np.sqrt(T))
+          - r * K * np.exp(-r * T) * norm.cdf(d2)
+      ) / 365.0
+    else:
+      delta = float(norm.cdf(d1) - 1)
+      theta = float(
+          -(S * norm.pdf(d1) * sigma) / (2 * np.sqrt(T))
+          + r * K * np.exp(-r * T) * norm.cdf(-d2)
+      ) / 365.0
+
+    gamma = float(norm.pdf(d1) / (S * sigma * np.sqrt(T)))
+    vega = float(S * norm.pdf(d1) * np.sqrt(T) / 100.0)
+
+    if "sell" in action and "put" in opt_type:
+      collateral_req = K * 100 * contracts
+      collateral_type = "Cash-Secured Put Collateral"
+    elif "sell" in action and "call" in opt_type:
+      collateral_req = S * 100 * contracts
+      collateral_type = "Short Call Margin Req."
+    else:
+      collateral_req = cost * 100 * contracts
+      collateral_type = "Capital Risk (Premium Paid)"
+
+    iv_crush_risk = "High (Earnings/Near Expiry)" if days_to_expiry <= 14 else "Normal"
+
+    return {
+        "delta": round(delta, 3),
+        "gamma": round(gamma, 4),
+        "theta": round(theta, 3),
+        "vega": round(vega, 3),
+        "collateral_req": round(collateral_req, 2),
+        "collateral_type": collateral_type,
+        "days_to_expiry": days_to_expiry,
+        "iv_crush_risk": iv_crush_risk,
+    }
+  except Exception:
+    return {
+        "delta": 0.0,
+        "gamma": 0.0,
+        "theta": 0.0,
+        "vega": 0.0,
+        "collateral_req": 0.0,
+        "collateral_type": "N/A",
+        "days_to_expiry": 0,
+        "iv_crush_risk": "N/A",
+    }
 
 # --- NEW TICKERS ---
 @app.get("/portfolio/{username}/new-tickers")
@@ -450,13 +523,14 @@ def clear_watchlist(username: str):
     save_db(db)
   return {"status": "success", "message": "Watchlist cleared."}
 
-# --- VALUATION TAB API ---
+# --- VALUATION TAB API (Includes Options Greeks & Collateral Analysis) ---
 @app.get("/portfolio/{username}/valuation")
 def get_valuation(username: str):
   db = load_db()
   user_data = db.get(username, {})
   stocks = user_data.get("stocks", [])
   crypto = user_data.get("crypto", [])
+  options = user_data.get("options", [])
   watchlist = user_data.get("watchlist", [])
 
   holdings = []
@@ -545,6 +619,33 @@ def get_valuation(username: str):
     except Exception:
       pass
 
+  # Process Options Greeks and Collateral
+  options_summary = []
+  total_collateral_req = 0.0
+  for opt in options:
+    sym = opt.get("symbol")
+    if not sym:
+      continue
+    try:
+      t = yf.Ticker(sym, session=session)
+      hist = t.history(period="1d")
+      curr_stock_price = float(hist["Close"].iloc[-1]) if not hist.empty else float(opt.get("strike", 100))
+    except Exception:
+      curr_stock_price = float(opt.get("strike", 100))
+
+    greeks_data = calculate_option_greeks_and_collateral(opt, curr_stock_price)
+    total_collateral_req += greeks_data["collateral_req"]
+
+    options_summary.append({
+        "symbol": sym,
+        "type": opt.get("type"),
+        "action": opt.get("action"),
+        "contracts": opt.get("contracts"),
+        "strike": opt.get("strike"),
+        "expiration": opt.get("expiration"),
+        **greeks_data
+    })
+
   unrealized_pnl = total_value - total_cost_basis
   return_pct = (unrealized_pnl / total_cost_basis * 100) if total_cost_basis > 0 else 0
 
@@ -553,6 +654,7 @@ def get_valuation(username: str):
       "cost_basis": total_cost_basis,
       "unrealized_pnl": unrealized_pnl,
       "return_pct": return_pct,
+      "total_collateral_req": total_collateral_req
   }
 
   watchlist_resolved = []
@@ -586,6 +688,7 @@ def get_valuation(username: str):
       "status": "success",
       "summary": summary,
       "holdings": holdings,
+      "options_analysis": options_summary,
       "watchlist": watchlist_resolved,
   }
 

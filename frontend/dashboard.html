@@ -487,10 +487,6 @@
                         <button class="btn-run" onclick="loadValuationTab(true)">Run</button>
                     </div>
                 </div>
-                
-                <div style="background-color: rgba(251, 191, 36, 0.08); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.25); padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 13px; font-weight: 500; text-align: justify;">
-                    <strong>Warning:</strong> Options contracts are currently excluded from total portfolio valuation calculations.
-                </div>
 
                 <div class="table-container" style="margin-bottom: 25px;">
                     <table id="val-breakdown-table" style="min-width: 800px;">
@@ -519,7 +515,7 @@
                                 <td id="val-crypto-return">0.00%</td>
                             </tr>
                             <tr style="background: rgba(251, 191, 36, 0.08);">
-                                <td><strong style="color: #fde047;">Portfolio</strong></td>
+                                <td><strong style="color: #fde047;">Portfolio (Stocks + Crypto)</strong></td>
                                 <td><strong id="sum-total-value" style="color: #fff;">$0.00</strong></td>
                                 <td><strong id="sum-cost-basis" style="color: #fff;">$0.00</strong></td>
                                 <td><strong id="sum-unrealized-pnl" style="color: #fff;">$0.00</strong></td>
@@ -546,6 +542,29 @@
                         </thead>
                         <tbody>
                             <tr><td colspan="8" style="text-align: center; color: var(--text-secondary); padding: 25px;">Click 'Run' to load valuation.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h4 style="color: #fff; margin-top: 24px; font-size: 15px; font-weight: 600;">Options Greeks & Collateral Analysis (<span id="count-val-options">0</span>) | Total Collateral: <span id="sum-options-collateral" style="color: #fde047;">$0.00</span></h4>
+                <div class="table-container" style="margin-bottom: 25px;">
+                    <table id="val-options-table" style="min-width: 1000px;">
+                        <thead>
+                            <tr>
+                                <th>Ticker</th>
+                                <th>Type / Action</th>
+                                <th>Contracts</th>
+                                <th>Strike</th>
+                                <th>Delta ($\Delta$)</th>
+                                <th>Gamma ($\Gamma$)</th>
+                                <th>Theta ($\Theta$)</th>
+                                <th>Vega ($\nu$)</th>
+                                <th>Collateral / Margin</th>
+                                <th>IV Crush Risk</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="10" style="text-align: center; color: var(--text-secondary); padding: 25px;">Click 'Run' to calculate Greeks and collateral.</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -688,6 +707,7 @@
             if (evt && evt.currentTarget) { evt.currentTarget.classList.add("active"); } 
             else { let tabBtn = document.querySelector(`.portfolio-tab[data-pane="${paneId}"]`); if(tabBtn) tabBtn.classList.add("active"); }
             localStorage.setItem("dash_active_pane", paneId);
+            if (paneId === 'pane-value') { loadValuationTab(false); }
         }
 
         function switchAiTab(evt, paneId) {
@@ -714,6 +734,106 @@
             let body = headerElem.nextElementSibling;
             let isOpen = body.style.display !== "none";
             body.style.display = isOpen ? "none" : "block";
+        }
+
+        async function loadValuationTab(forceRun = false) {
+            const timestamp = new Date().toLocaleString();
+            if (forceRun) {
+                document.getElementById("last-run-timestamp").innerText = `Last Run: ${timestamp}`;
+                localStorage.setItem(`dash_val_last_run_${currentUser}`, timestamp);
+            } else {
+                let savedRun = localStorage.getItem(`dash_val_last_run_${currentUser}`);
+                if (savedRun) { document.getElementById("last-run-timestamp").innerText = `Last Run: ${savedRun}`; }
+            }
+
+            try {
+                const res = await fetch(`${API_URL}/portfolio/${currentUser}/valuation`);
+                const data = await res.json();
+                if (data.status === "success") {
+                    const sum = data.summary;
+                    document.getElementById("val-stocks-value").innerText = `$${(sum.total_value).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+                    document.getElementById("val-stocks-cost").innerText = `$${(sum.cost_basis).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+                    document.getElementById("val-stocks-pnl").innerText = `$${(sum.unrealized_pnl).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+                    document.getElementById("val-stocks-return").innerText = `${sum.return_pct.toFixed(2)}%`;
+
+                    document.getElementById("sum-total-value").innerText = `$${(sum.total_value).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+                    document.getElementById("sum-cost-basis").innerText = `$${(sum.cost_basis).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+                    document.getElementById("sum-unrealized-pnl").innerText = `$${(sum.unrealized_pnl).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+                    document.getElementById("sum-return-pct").innerText = `${sum.return_pct.toFixed(2)}%`;
+
+                    const holdingsTbody = document.querySelector("#val-holdings-table tbody");
+                    holdingsTbody.innerHTML = "";
+                    updateTabCount('val-holdings', data.holdings.length);
+                    if (data.holdings.length === 0) {
+                        holdingsTbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-secondary); padding: 25px;">No active stock or crypto holdings found.</td></tr>`;
+                    } else {
+                        data.holdings.forEach(h => {
+                            const pnlColor = h.total_pnl >= 0 ? "#34d399" : "#f87171";
+                            const dayColor = h.day_pnl >= 0 ? "#34d399" : "#f87171";
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td><strong>${h.ticker}</strong></td>
+                                <td>${h.shares.toLocaleString()}</td>
+                                <td>$${h.avg_cost.toFixed(2)}</td>
+                                <td>$${h.current_price.toFixed(2)}</td>
+                                <td style="color: ${dayColor};">$${h.day_pnl.toFixed(2)}</td>
+                                <td style="color: ${pnlColor};">$${h.total_pnl.toFixed(2)}</td>
+                                <td style="color: ${pnlColor};">${h.total_return_pct.toFixed(2)}%</td>
+                                <td><strong>$${h.current_total_value.toFixed(2)}</strong></td>
+                            `;
+                            holdingsTbody.appendChild(tr);
+                        });
+                    }
+
+                    // Options Greeks & Collateral Table
+                    const optionsTbody = document.querySelector("#val-options-table tbody");
+                    optionsTbody.innerHTML = "";
+                    updateTabCount('val-options', data.options_analysis.length);
+                    document.getElementById("sum-options-collateral").innerText = `$${(sum.total_collateral_req || 0).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+
+                    if (data.options_analysis.length === 0) {
+                        optionsTbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: var(--text-secondary); padding: 25px;">No active options contracts found.</td></tr>`;
+                    } else {
+                        data.options_analysis.forEach(o => {
+                            const ivColor = o.iv_crush_risk.includes("High") ? "#f87171" : "#34d399";
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td><strong>${o.symbol}</strong></td>
+                                <td>${o.type} (${o.action})</td>
+                                <td>${o.contracts}</td>
+                                <td>$${o.strike.toFixed(2)}</td>
+                                <td>${o.delta}</td>
+                                <td>${o.gamma}</td>
+                                <td>${o.theta}</td>
+                                <td>${o.vega}</td>
+                                <td>$${o.collateral_req.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})} <span style="font-size:10px; color:var(--text-secondary);">(${o.collateral_type})</span></td>
+                                <td style="color: ${ivColor}; font-weight:700;">${o.iv_crush_risk}</td>
+                            `;
+                            optionsTbody.appendChild(tr);
+                        });
+                    }
+
+                    const watchlistTbody = document.querySelector("#val-watchlist-table tbody");
+                    watchlistTbody.innerHTML = "";
+                    updateTabCount('val-watchlist', data.watchlist.length);
+                    if (data.watchlist.length === 0) {
+                        watchlistTbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 25px;">No watchlist items found.</td></tr>`;
+                    } else {
+                        data.watchlist.forEach(w => {
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td><strong>${w.symbol}</strong></td>
+                                <td>$${w.target_price.toFixed(2)}</td>
+                                <td>$${w.current_price.toFixed(2)}</td>
+                                <td>${w.notes}</td>
+                            `;
+                            watchlistTbody.appendChild(tr);
+                        });
+                    }
+                }
+            } catch (e) {
+                console.error("Error loading valuation:", e);
+            }
         }
 
         function runAiAnalysis() {
